@@ -81,95 +81,36 @@ EOP;
 //====================================================
 // •â•”FØ
 //====================================================
-$mobile = Net_UserAgent_Mobile::singleton();
-
-$p_htm['auth_ctl'] = '';
-
-// docomo”FØ
-if ($mobile->isDoCoMo()) {
-    if (file_exists($_conf['auth_imodeid_file'])) {
-        $p_htm['auth_ctl'] .= <<<EOP
-iƒ‚[ƒhID”FØ“o˜^Ï[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_imodeid=1{$_conf['k_at_a']}">‰ğœ</a>]<br>
-EOP;
-    }
-    if (file_exists($_conf['auth_docomo_file'])) {
-        $p_htm['auth_ctl'] .= <<<EOP
-’[––ID”FØ“o˜^Ï[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_docomo=1{$_conf['k_at_a']}">‰ğœ</a>]<br>
-EOP;
-    }
-
-    if ($p_htm['auth_ctl'] == '' && $_login->pass_x) {
-        if (empty($_SERVER['HTTPS'])) {
-            $p_htm['auth_ctl'] = <<<EOP
-[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_imodeid=1&amp;regist_imodeid=1&amp;guid=ON{$_conf['k_at_a']}">iƒ‚[ƒhID‚Å”FØ‚ğ“o˜^</a>]<br>
-EOP;
-        } else {
-            $p_htm['auth_ctl'] = <<<EOP
-[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_docomo=1&amp;regist_docomo=1{$_conf['k_at_a']}" utn>’[––ID‚Å”FØ‚ğ“o˜^</a>]<br>
-EOP;
-        }
-    }
-
-// EZ”FØ
-} elseif ($mobile->isEZweb()) {
-    if (file_exists($_conf['auth_ez_file'])) {
-        $p_htm['auth_ctl'] = <<<EOP
-’[––ID”FØ“o˜^Ï[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_ez=1{$_conf['k_at_a']}">‰ğœ</a>]<br>
-EOP;
-    } elseif ($mobile->getUID() !== null) {
-        if ($_login->pass_x) {
-            $p_htm['auth_ctl'] = <<<EOP
-[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_ez=1&amp;regist_ez=1{$_conf['k_at_a']}">’[––ID‚Å”FØ‚ğ“o˜^</a>]<br>
-EOP;
-        }
-    }
-
-// Y!”FØ
-} elseif ($mobile->isSoftBank()) {
-    if (file_exists($_conf['auth_jp_file'])) {
-        $p_htm['auth_ctl'] = <<<EOP
-’[––ID”FØ“o˜^Ï[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_jp=1{$_conf['k_at_a']}">‰ğœ</a>]<br>
-EOP;
-    } elseif ($mobile->getSerialNumber() !== null) {
-        if ($_login->pass_x) {
-            $p_htm['auth_ctl'] = <<<EOP
-[<a href="{$_SERVER['SCRIPT_NAME']}?ctl_regist_jp=1&amp;regist_jp=1{$_conf['k_at_a']}">’[––ID‚Å”FØ‚ğ“o˜^</a>]<br>
-EOP;
-        }
-    }
-
 // Cookie”FØ
+if ($_login->checkUserPwWithCid($_COOKIE['cid'])) {
+    $p_htm['auth_cookie'] = <<<EOP
+Cookie”FØ“o˜^Ï[<a href="cookie.php?ctl_keep_login=1{$_conf['k_at_a']}">‰ğœ</a>]<br>
+EOP;
 } else {
-    if ($_login->checkUserPwWithCid($_COOKIE['cid'])) {
-            $p_htm['auth_cookie'] = <<<EOP
-cookie”FØ“o˜^Ï[<a href="cookie.php?ctl_regist_cookie=1{$_conf['k_at_a']}">‰ğœ</a>]<br>
+    if ($_login->pass_x) {
+        $p_htm['auth_cookie'] = <<<EOP
+[<a href="cookie.php?ctl_keep_login=1&amp;keep_login=1{$_conf['k_at_a']}">Cookie‚ÉƒƒOƒCƒ“ó‘Ô‚ğ•Û</a>]<br>
 EOP;
-    } else {
-        if ($_login->pass_x) {
-            $p_htm['auth_cookie'] = <<<EOP
-[<a href="cookie.php?ctl_regist_cookie=1&amp;regist_cookie=1{$_conf['k_at_a']}">cookie‚Å”FØ‚ğ“o˜^</a>]<br>
-EOP;
-        }
     }
 }
 
 //====================================================
 // Cookie”FØƒ`ƒFƒbƒN
 //====================================================
-if (!empty($_REQUEST['check_regist_cookie'])) {
-
+if (!empty($_REQUEST['check_keep_login'])) {
+    $keep_login = isset($_REQUEST['keep_login']) ? $_REQUEST['keep_login'] : '';
     if ($_login->checkUserPwWithCid($_COOKIE['cid'])) {
-        if ($_REQUEST['regist_cookie'] == '1') {
-            $info_msg_ht = '<p>›cookie”FØ“o˜^Š®—¹</p>';
+        if ($keep_login === '1') {
+            $info_msg_ht = '<p>›Cookie”FØ“o˜^Š®—¹</p>';
         } else {
-            $info_msg_ht = '<p>~cookie”FØ‰ğœ¸”s</p>';
+            $info_msg_ht = '<p>~Cookie”FØ‰ğœ¸”s</p>';
         }
 
     } else {
-        if ($_REQUEST['regist_cookie'] == '1') {
-            $info_msg_ht = '<p>~cookie”FØ“o˜^¸”s</p>';
+        if ($keep_login === '1') {
+            $info_msg_ht = '<p>~Cookie”FØ“o˜^¸”s</p>';
         } else  {
-            $info_msg_ht = '<p>›cookie”FØ‰ğœŠ®—¹</p>';
+            $info_msg_ht = '<p>›Cookie”FØ‰ğœŠ®—¹</p>';
         }
     }
 
@@ -259,7 +200,6 @@ P2Util::printInfoHtml();
 echo '<p id="login_status">';
 echo <<<EOP
 {$p_str['autho_user']}: {$_login->user_u}<br>
-{$p_htm['auth_ctl']}
 {$p_htm['auth_cookie']}
 <br>
 [<a href="./index.php?logout=1" target="_parent">{$p_str['logout']}‚·‚é</a>]

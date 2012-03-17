@@ -40,15 +40,10 @@ if (file_exists($_conf['conf_user_file'])) {
         $config_version = '000000.0000';
     }
 
-    $config_custom_version = array_key_exists('p2custom-ver', $conf_user) ?
-        $conf_user['p2custom-ver'] : '';
-
-    if (($config_version !== $_conf['p2expack'] || $config_custom_version !== $_conf['p2custom']) && !defined('P2_CLI_RUN')) {
-        if ($config_version !== $_conf['p2expack']) {
-            // 設定の更新
-            if ($migrators = p2_check_migration($config_version)) {
-                $conf_user = p2_invoke_migrators($migrators, $conf_user);
-            }
+    if ($config_version !== $_conf['p2expack'] && !defined('P2_CLI_RUN')) {
+        // 設定の更新
+        if ($migrators = p2_check_migration($config_version)) {
+            $conf_user = p2_invoke_migrators($migrators, $conf_user);
         }
 
         // デフォルト設定を読み込み、ユーザー設定とともにマージ
@@ -75,7 +70,6 @@ if (defined('P2_CLI_RUN')) {
 // 新しいユーザー設定をシリアライズして保存
 if ($save_conf_user) {
     $conf_save = array('.' => $_conf['p2expack']);
-    $conf_save['p2custom-ver'] = $_conf['p2custom'];
     foreach ($conf_user_def as $k => $v) {
         $conf_save[$k] = $_conf[$k];
     }
@@ -85,18 +79,6 @@ if ($save_conf_user) {
     if (FileCtl::file_write_contents($_conf['conf_user_file'], $cont) === false) {
         $dispname = '$_conf[\'pref_dir\']/' . basename($_conf['conf_user_file']);
         p2die("ユーザー設定ファイル {$dispname} に書き込めませんでした。");
-    }
-}
-
-// }}}
-// {{{ ホストチェック
-
-if (!($_conf['secure']['auth_host_only_http'] && !empty($_SERVER['HTTPS']))) {
-    if ($_conf['secure']['auth_host'] && !HostCheck::getHostAuth()) {
-        HostCheck::forbidden();
-    }
-    if ($_conf['secure']['auth_bbq'] && HostCheck::getHostBurned()) {
-        HostCheck::forbidden();
     }
 }
 
@@ -137,15 +119,15 @@ if (!empty($_GET) || !empty($_POST)) {
     // エンコーディング判定
     if ($hint) {
         $request_encoding = mb_detect_encoding($hint, 'ASCII,UTF-8,SJIS-win');
-        if ($request_encoding == 'ASCII') {
+        if ($request_encoding === 'ASCII') {
             p2die('不正なエンコーディング判定ヒントです。');
         }
     } else {
-        $request_encoding = 'ASCII,UTF-8,SJIS-win';
+        $request_encoding = null;
     }
 
     // UTF-8ならShift_JISに変換
-    if ($request_encoding == 'UTF-8') {
+    if ($request_encoding === 'UTF-8') {
         mb_convert_variables('SJIS-win', 'UTF-8', $_GET, $_POST);
     }
 
@@ -416,13 +398,18 @@ if (!$_conf['ktai']) {
 
 // iPhone用HTMLヘッダ要素
 if ($_conf['client_type'] == 'i') {
+    $_conf['touch_icon_ht'] = <<<EOS
+<link rel="apple-touch-icon" type="image/png" href="img/touch-icon/p2-serif.png" />
+EOS;
+//<link rel="apple-touch-icon-precomposed" href="data:image/png;base64,iVBORw0K..." />
+
     switch ($_conf['b']) {
 
     // 強制PCビュー時
     case 'pc':
         $_conf['extra_headers_ht'] .= <<<EOS
 <meta name="format-detection" content="telephone=no">
-<link rel="apple-touch-icon" type="image/png" href="img/touch-icon/p2-serif.png">
+{$_conf['touch_icon_ht']}
 <style type="text/css">body { -webkit-text-size-adjust: none; }</style>
 EOS;
         break;
@@ -432,7 +419,7 @@ EOS;
         $_conf['extra_headers_ht'] .= <<<EOS
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes">
 <meta name="format-detection" content="telephone=no">
-<link rel="apple-touch-icon" type="image/png" href="img/touch-icon/p2-serif.png">
+{$_conf['touch_icon_ht']}
 <style type="text/css">
 body { word-break: normal; word-break: break-all; -webkit-text-size-adjust: none; }
 * { font-family: sans-serif; font-size: medium; line-height: 150%; }
@@ -449,7 +436,7 @@ EOS;
         $_conf['extra_headers_ht'] .= <<<EOS
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes">
 <meta name="format-detection" content="telephone=no">
-<link rel="apple-touch-icon" type="image/png" href="img/touch-icon/p2-serif.png">
+{$_conf['touch_icon_ht']}
 <link rel="stylesheet" type="text/css" media="screen" href="css/iphone.css?{$_conf['p2_version_id']}">
 <script type="text/javascript" src="js/iphone.js?{$_conf['p2_version_id']}"></script>
 EOS;
@@ -606,7 +593,10 @@ if ($_conf['ktai']) {
 // }}}
 // {{{ セッション
 
-// 名前は、セッションクッキーを破棄するときのために、セッション利用の有無に関わらず設定する
+ini_set('session.use_cookies', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.use_trans_sid', 0);
+session_set_cookie_params(0); // session.cookie_lifetime = 0
 session_name('PS');
 
 // {{{ セッションデータ保存ディレクトリをチェック
