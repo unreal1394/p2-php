@@ -114,7 +114,7 @@ if (isset($_POST['action'])) {
             if (!empty($failed_files)) {
                 $info_msg_ht = '<p>以下のファイルが削除できませんでした。</p>';
                 $info_msg_ht .= '<ul><li>';
-                $info_msg_ht .= implode('</li><li>', array_map('htmlspecialchars', $failed_files));
+                $info_msg_ht .= implode('</li><li>', array_map('p2h', $failed_files));
                 $info_msg_ht .= '</li></ul>';
                 P2Util::pushInfoHtml($info_msg_ht);
             }
@@ -139,7 +139,7 @@ if (isset($_POST['action'])) {
             if (!empty($result_files['failed'])) {
                 $info_msg_ht = '<p>以下のコンパイル済みテンプレートが削除できませんでした。</p>';
                 $info_msg_ht .= '<ul><li>';
-                $info_msg_ht .= implode('</li><li>', array_map('htmlspecialchars', $result_files['failed']));
+                $info_msg_ht .= implode('</li><li>', array_map('p2h', $result_files['failed']));
                 $info_msg_ht .= '</li></ul>';
                 P2Util::pushInfoHtml($info_msg_ht);
             }

@@ -20,9 +20,9 @@ class ResFilterElement extends ResFilter
     static public function getHiddenFields($host, $bbs, $key, $xhtml = false)
     {
         $slash = $xhtml ? ' /' : '';
-        $host = htmlspecialchars($host, ENT_QUOTES, 'Shift_JIS');
-        $bbs = htmlspecialchars($bbs, ENT_QUOTES, 'Shift_JIS');
-        $key = htmlspecialchars($key, ENT_QUOTES, 'Shift_JIS');
+        $host = p2h($host);
+        $bbs = p2h($bbs);
+        $key = p2h($key);
         return <<<EOF
 <input type="hidden" name="host" value="{$host}"{$slash}>
 <input type="hidden" name="bbs" value="{$bbs}"{$slash}>
@@ -49,15 +49,15 @@ EOF;
         $name = 'rf[word]';
         $id = 'rf_word';
         if ($id_suffix !== null) {
-            $id .= htmlspecialchars($id_suffix, ENT_QUOTES, 'Shift_JIS');
+            $id .= p2h($id_suffix);
         }
         $word = parent::getWord('htmlspecialchars', array(ENT_QUOTES, 'Shift_JIS'));
 
         $html = "<input type=\"text\" id=\"{$id}\" name=\"rf[word]\" value=\"{$word}\"";
         if ($extra_attributes) {
             foreach ($extra_attributes as $key => $value) {
-                $key = htmlspecialchars($key, ENT_QUOTES, 'Shift_JIS');
-                $value = htmlspecialchars($value, ENT_QUOTES, 'Shift_JIS');
+                $key = p2h($key);
+                $value = p2h($value);
                 $html .= " {$key}=\"{$value}\"";
             }
         }
@@ -158,8 +158,8 @@ EOF;
         if ($id_suffix !== null) {
             $id .= $id_suffix;
         }
-        $name = htmlspecialchars($name, ENT_QUOTES, 'Shift_JIS');
-        $id = htmlspecialchars($id, ENT_QUOTES, 'Shift_JIS');
+        $name = p2h($name);
+        $id = p2h($id);
 
         $html = "<select id=\"{$id}\" name=\"{$name}\">";
         foreach ($fields as $value => $label) {
@@ -172,8 +172,8 @@ EOF;
             } else {
                 $selected = '';
             }
-            $value = htmlspecialchars($value, ENT_QUOTES, 'Shift_JIS');
-            $label = htmlspecialchars($label, ENT_QUOTES, 'Shift_JIS');
+            $value = p2h($value);
+            $label = p2h($label);
             $html .= "<option value=\"{$value}\"{$selected}>{$label}</option>";
         }
         $html .= '</select>';

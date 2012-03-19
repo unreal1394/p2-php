@@ -16,7 +16,7 @@ $bbs_q = '&amp;bbs=' . $aThread->bbs;
 $key_q = '&amp;key=' . $aThread->key;
 $host_bbs_key_q = 'host=' . $aThread->host . $bbs_q . $key_q;
 $offline_q = '&amp;offline=1';
-$itaj_hd = htmlspecialchars($aThread->itaj, ENT_QUOTES);
+$itaj_hd = p2h($aThread->itaj);
 $rnum_range = $_conf['mobile.rnum_range'];
 $thread_info = get_thread_info($aThread->host, $aThread->bbs, $aThread->key);
 
@@ -347,7 +347,7 @@ if ($do_filtering) {
 // }}}
 
 if ($_GET['showbl']) {
-    echo  '<div class="hits">' . htmlspecialchars($aThread->resrange['start']) . '‚Ö‚ÌÚ½</div>';
+    echo  '<div class="hits">' . p2h($aThread->resrange['start']) . '‚Ö‚ÌÚ½</div>';
 }
 
 echo '</div>'; // end toolbar

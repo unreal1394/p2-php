@@ -99,7 +99,7 @@ if ($_conf['ktai']) {
     $selected_group = 'all';
     if (isset($_REQUEST['active_tab1'])) {
         $active_tab1 = $_REQUEST['active_tab1'];
-        $active_tab1_ht = htmlspecialchars($active_tab1, ENT_QUOTES);
+        $active_tab1_ht = p2h($active_tab1);
         $active_tab1_js = "'" . StrCtl::toJavaScript($active_tab1) . "'";
     } else {
         $active_tab1 = null;
@@ -108,7 +108,7 @@ if ($_conf['ktai']) {
     }
     if (isset($_REQUEST['active_tab2'])) {
         $active_tab2 = $_REQUEST['active_tab2'];
-        $active_tab2_ht = htmlspecialchars($active_tab2, ENT_QUOTES);
+        $active_tab2_ht = p2h($active_tab2);
         $active_tab2_js = "'" . StrCtl::toJavaScript($active_tab2) . "'";
     } else {
         $active_tab2 = null;
@@ -852,7 +852,7 @@ EOP;
                 echo '</optgroup><optgroup label="iPhone設定">';
             }
         }
-        $group_ht = htmlspecialchars($groupname, ENT_QUOTES);
+        $group_ht = p2h($groupname);
         $group_en = UrlSafeBase64::encode($groupname);
         $selected = ($selected_group == $groupname) ? ' selected' : '';
         echo "<option value=\"{$group_en}\"{$selected}>{$group_ht}</option>";
@@ -1062,15 +1062,13 @@ function invalidUrlToDef($val, $def)
 /**
  * 既存のエンティティを除いて特殊文字をHTMLエンティティ化する
  *
- * htmlspecialchars() の第四引数 $double_encode は PHP 5.2.3 で追加された
- *
  * @param   string  $str    入力された値
  * @param   string  $def    デフォルトの値
  * @return  string
  */
 function escapeHtmlExceptEntity($val, $def)
 {
-    return htmlspecialchars($val, ENT_QUOTES, 'Shift_JIS', false);
+    return p2h($val, false);
 }
 
 // }}}
@@ -1467,7 +1465,7 @@ function getConfBorderHtml($label)
         $format = '<tr class="group"><td colspan="3" align="center">%s</td></tr>';
     }
 
-    return sprintf($format, htmlspecialchars($label, ENT_QUOTES, 'Shift_JIS'));
+    return sprintf($format, p2h($label));
 }
 
 // }}}
@@ -1528,7 +1526,7 @@ function getEditConfHtml($name, $description_ht, $flags)
         return '';
     }
 
-    $name_view = htmlspecialchars($_conf[$name], ENT_QUOTES);
+    $name_view = p2h($_conf[$name]);
 
     // 無効or非表示なら
     if ($flags & (P2_EDIT_CONF_USER_HIDDEN | P2_EDIT_CONF_USER_DISABLED)) {
@@ -1543,7 +1541,7 @@ function getEditConfHtml($name, $description_ht, $flags)
             $form_ht .= $name_view;
         }
         if (is_string($conf_user_def[$name])) {
-            $def_views[$name] = htmlspecialchars($conf_user_def[$name], ENT_QUOTES);
+            $def_views[$name] = p2h($conf_user_def[$name]);
         } else {
             $def_views[$name] = strval($conf_user_def[$name]);
         }
@@ -1551,12 +1549,12 @@ function getEditConfHtml($name, $description_ht, $flags)
     } elseif (isset($conf_user_sel[$name])) {
         $form_ht = getEditConfSelHtml($name);
         $key = $conf_user_def[$name];
-        $def_views[$name] = htmlspecialchars($conf_user_sel[$name][$key], ENT_QUOTES);
+        $def_views[$name] = p2h($conf_user_sel[$name][$key]);
     // radio 選択形式なら
     } elseif (isset($conf_user_rad[$name])) {
         $form_ht = getEditConfRadHtml($name);
         $key = $conf_user_def[$name];
-        $def_views[$name] = htmlspecialchars($conf_user_rad[$name][$key], ENT_QUOTES);
+        $def_views[$name] = p2h($conf_user_rad[$name][$key]);
     // input 入力式なら
     } else {
         if (!$_conf['ktai']) {
@@ -1569,7 +1567,7 @@ function getEditConfHtml($name, $description_ht, $flags)
 <input type="{$input_type}" name="conf_edit[{$name}]" value="{$name_view}"{$input_size_at}>
 EOP;
         if (is_string($conf_user_def[$name])) {
-            $def_views[$name] = htmlspecialchars($conf_user_def[$name], ENT_QUOTES);
+            $def_views[$name] = p2h($conf_user_def[$name]);
         } else {
             $def_views[$name] = strval($conf_user_def[$name]);
         }
@@ -1609,9 +1607,9 @@ function getEditConfHidHtml($name)
     global $_conf, $conf_user_def;
 
     if (isset($_conf[$name]) && $_conf[$name] != $conf_user_def[$name]) {
-        $value_ht = htmlspecialchars($_conf[$name], ENT_QUOTES);
+        $value_ht = p2h($_conf[$name]);
     } else {
-        $value_ht = htmlspecialchars($conf_user_def[$name], ENT_QUOTES);
+        $value_ht = p2h($conf_user_def[$name]);
     }
 
     $form_ht = "<input type=\"hidden\" name=\"conf_edit[{$name}]\" value=\"{$value_ht}\">";
@@ -1644,8 +1642,8 @@ function getEditConfSelHtml($name)
         if ($_conf[$name] == $key) {
             $selected = " selected";
         }
-        $key_ht = htmlspecialchars($key, ENT_QUOTES);
-        $value_ht = htmlspecialchars($value, ENT_QUOTES);
+        $key_ht = p2h($key);
+        $value_ht = p2h($value);
         $form_ht .= "\t<option value=\"{$key_ht}\"{$selected}>{$value_ht}</option>\n";
     } // foreach
 
@@ -1679,8 +1677,8 @@ function getEditConfRadHtml($name)
         if ($_conf[$name] == $key) {
             $checked = " checked";
         }
-        $key_ht = htmlspecialchars($key, ENT_QUOTES);
-        $value_ht = htmlspecialchars($value, ENT_QUOTES);
+        $key_ht = p2h($key);
+        $value_ht = p2h($value);
         if ($_conf['iphone']) {
             $form_ht .= "<input type=\"radio\" name=\"conf_edit[{$name}]\" value=\"{$key_ht}\"{$checked}><span onclick=\"if(!this.previousSibling.checked)this.previousSibling.checked=true;\">{$value_ht}</span>\n";
         } else {

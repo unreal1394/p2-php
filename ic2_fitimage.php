@@ -47,9 +47,9 @@ if (preg_match('/^' . preg_quote($thumbnailer->sourcedir, '/') . '/', $url) && f
     $y = 0;
 }
 
-$info_key_value = htmlspecialchars($info_key_value, ENT_QUOTES);
+$info_key_value = p2h($info_key_value);
 
-$alt = htmlspecialchars(basename($url));
+$alt = p2h(basename($url));
 
 $autofit = '';
 if ($x && $y) {

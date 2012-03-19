@@ -63,7 +63,7 @@ if (!$aThreadList->spmode) {
 if ($aThreadList->spmode == 'fav' && $_conf['expack.misc.multi_favs']) {
     $ptitle_hd = FavSetManager::getFavSetPageTitleHt('m_favlist_set', $aThreadList->ptitle);
 } else {
-    $ptitle_hd = htmlspecialchars($aThreadList->ptitle, ENT_QUOTES);
+    $ptitle_hd = p2h($aThreadList->ptitle);
 }
 $ptitle_json = JStyle::encode($aThreadList->ptitle);
 
@@ -136,7 +136,7 @@ EOP;
 // ƒtƒBƒ‹ƒ^ŒŸõ ==================================================
 $selected_method = array('and' => '', 'or' => '', 'just' => '', 'regex' => '', 'similar' => '');
 $selected_method[($sb_filter['method'])] = ' selected';
-$hd['word'] = (isset($GLOBALS['wakati_word'])) ? htmlspecialchars($GLOBALS['wakati_word'], ENT_QUOTES) : htmlspecialchars($word, ENT_QUOTES);
+$hd['word'] = p2h(isset($GLOBALS['wakati_word']) ? $GLOBALS['wakati_word'] : $word);
 $checked_ht = array('find_cont' => (!empty($_REQUEST['find_cont'])) ? 'checked' : '');
 
 $input_find_cont_ht = <<<EOP

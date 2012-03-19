@@ -110,7 +110,7 @@ class ThreadList
         } else {
             $this->itaj = $this->bbs;
         }
-        $this->itaj_hd = htmlspecialchars($this->itaj, ENT_QUOTES);
+        $this->itaj_hd = p2h($this->itaj);
         $this->ptitle = $this->itaj;
 
         return true;
@@ -373,8 +373,7 @@ class ThreadList
             }
             break;
         default:
-            $info_msg_ht = sprintf('<p class="info-msg">ソート指定が変です。(%s)</p>',
-                                   htmlspecialchars($mode, ENT_QUOTES));
+            $info_msg_ht = sprintf('<p class="info-msg">ソート指定が変です。(%s)</p>', p2h($mode));
             P2Util::pushInfoHtml($info_msg_ht);
         }
 

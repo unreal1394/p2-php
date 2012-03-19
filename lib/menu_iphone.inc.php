@@ -162,7 +162,7 @@ function menu_iphone_show_matched_boards($word)
 
     $brd_menus = BrdCtl::read_brds();
 
-    $word_ht = htmlspecialchars($word, ENT_QUOTES);
+    $word_ht = p2h($word);
     $title = $word_ht . ' (”Â)';
 
     if (!$brd_menus) {
@@ -227,7 +227,7 @@ function menu_iphone_show_favorite_boards($title, $no = null)
         foreach ($lines as $l) {
             if (preg_match("/^\t?(.+)\t(.+)\t(.+)\$/", $l, $matches)) {
                 $itaj = rtrim($matches[3]);
-                $itaj_view = htmlspecialchars($itaj, ENT_QUOTES);
+                $itaj_view = p2h($itaj);
                 $itaj_en = UrlSafeBase64::encode($itaj);
                 echo "<li><a href=\"{$_conf['subject_php']}?host={$matches[1]}&amp;bbs={$matches[2]}",
                         "&amp;itaj_en={$itaj_en}\" target=\"_self\">{$itaj_view}</a></li>";
@@ -282,7 +282,7 @@ function menu_iphone_show_feed_list($title, $no = null)
                     $site_en = UrlSafeBase64::encode($site);
                     $xml_en = rawurlencode($xml);
                     $rss_q = sprintf('?xml=%s&site_en=%s%s&mt=%d', $xml_en, $site_en, $atom_q, $mtime);
-                    $rss_q_ht = htmlspecialchars($rss_q, ENT_QUOTES);
+                    $rss_q_ht = p2h($rss_q);
                     echo "<li><a href=\"subject_rss.php{$rss_q_ht}\" target=\"_self\">{$site}</a></li>";
                 }
             }

@@ -32,7 +32,7 @@ if (isset($word) && strlen($word) > 0) {
     if (substr_count($word, '.') == strlen($word)) {
         $word = null;
     } elseif (p2_set_filtering_word($word, 'and') !== null) {
-        $hd['word'] = htmlspecialchars($word, ENT_QUOTES);
+        $hd['word'] = p2h($word);
     } else {
         $word = null;
     }

@@ -600,7 +600,7 @@ if ($all == 0) {
 
     // ページ遷移用リンク（iPhone）を生成
     if ($_conf['iphone']) {
-        $pg_base = htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES);
+        $pg_base = p2h($_SERVER['SCRIPT_NAME']);
         $pager = '';
         if ($page != 1) {
             $pager .= sprintf('<a href="%s?page=%d">%s</a> ', $pg_base,          1, $emj['lt2']);
@@ -615,7 +615,7 @@ if ($all == 0) {
 
     // ページ遷移用リンク（携帯）を生成
     } elseif ($_conf['ktai']) {
-        $pg_base = htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES);
+        $pg_base = p2h($_SERVER['SCRIPT_NAME']);
         $pg_pos = sprintf('%d/%d', $page, $last_page);
         $pager1 = '';
         $pager2 = '';
@@ -877,7 +877,7 @@ if ($all == 0) {
         // Lightbox Plus 用パラメータを設定
         if ($lightbox) {
             $item['lightbox_attrs'] = ' rel="lightbox[iv2]" class="ineffectable"';
-            $item['lightbox_attrs'] .= ' title="' . htmlspecialchars($item['memo'], ENT_QUOTES) . '"';
+            $item['lightbox_attrs'] .= ' title="' . p2h($item['memo']) . '"';
         } else {
             $item['lightbox_attrs'] = '';
         }

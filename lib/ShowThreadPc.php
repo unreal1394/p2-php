@@ -827,7 +827,7 @@ EOP;
             $_attr = $attr;
             $attr = '';
             foreach ($_attr as $key => $value) {
-                $attr .= ' ' . $key . '="' . htmlspecialchars($value, ENT_QUOTES) . '"';
+                $attr .= ' ' . $key . '="' . p2h($value) . '"';
             }
         } elseif ($attr !== '' && substr($attr, 0, 1) != ' ') {
             $attr = ' ' . $attr;
@@ -852,7 +852,7 @@ EOP;
             global $skin, $STYLE;
             $custom_pop_img = "skin/{$skin}/pop.png";
             if (file_exists($custom_pop_img)) {
-                $pop_img = htmlspecialchars($custom_pop_img, ENT_QUOTES);
+                $pop_img = p2h($custom_pop_img);
                 $x = $STYLE['iframe_popup_mark_width'];
                 $y = $STYLE['iframe_popup_mark_height'];
             } else {
@@ -890,9 +890,7 @@ EOP;
      */
     public function iframePopupCallback($s)
     {
-        return $this->iframePopup(htmlspecialchars($s[1], ENT_QUOTES, 'Shift_JIS', false),
-                                  htmlspecialchars($s[3], ENT_QUOTES, 'Shift_JIS', false),
-                                  $s[2]);
+        return $this->iframePopup(p2h($s[1], false), p2h($s[3], false), $s[2]);
     }
 
     // }}}
@@ -1639,7 +1637,7 @@ EOP;
 
         foreach($replaced as $v) {
             $url_en = rawurlencode($v['url']);
-            $url_ht = htmlspecialchars($v['url'], ENT_QUOTES);
+            $url_ht = p2h($v['url']);
             $ref_en = $v['referer'] ? '&amp;ref=' . rawurlencode($v['referer']) : '';
 
             // €”õ

@@ -545,45 +545,45 @@ if ($_conf['ktai']) {
     // 基本色
     if (!$_conf['iphone']) {
         if ($_conf['mobile.background_color']) {
-            $_conf['k_colors'] .= ' bgcolor="' . htmlspecialchars($_conf['mobile.background_color']) . '"';
+            $_conf['k_colors'] .= ' bgcolor="' . p2h($_conf['mobile.background_color']) . '"';
         }
         if ($_conf['mobile.text_color']) {
-            $_conf['k_colors'] .= ' text="' . htmlspecialchars($_conf['mobile.text_color']) . '"';
+            $_conf['k_colors'] .= ' text="' . p2h($_conf['mobile.text_color']) . '"';
         }
         if ($_conf['mobile.link_color']) {
-            $_conf['k_colors'] .= ' link="' . htmlspecialchars($_conf['mobile.link_color']) . '"';
+            $_conf['k_colors'] .= ' link="' . p2h($_conf['mobile.link_color']) . '"';
         }
         if ($_conf['mobile.vlink_color']) {
-            $_conf['k_colors'] .= ' vlink="' . htmlspecialchars($_conf['mobile.vlink_color']) . '"';
+            $_conf['k_colors'] .= ' vlink="' . p2h($_conf['mobile.vlink_color']) . '"';
         }
     }
 
     // 文字色
     if ($_conf['mobile.newthre_color']) {
-        $STYLE['mobile_subject_newthre_color'] = htmlspecialchars($_conf['mobile.newthre_color']);
+        $STYLE['mobile_subject_newthre_color'] = p2h($_conf['mobile.newthre_color']);
     }
     if ($_conf['mobile.newres_color']) {
-        $STYLE['mobile_read_newres_color']    = htmlspecialchars($_conf['mobile.newres_color']);
-        $STYLE['mobile_subject_newres_color'] = htmlspecialchars($_conf['mobile.newres_color']);
+        $STYLE['mobile_read_newres_color']    = p2h($_conf['mobile.newres_color']);
+        $STYLE['mobile_subject_newres_color'] = p2h($_conf['mobile.newres_color']);
     }
     if ($_conf['mobile.ttitle_color']) {
-        $STYLE['mobile_read_ttitle_color'] = htmlspecialchars($_conf['mobile.ttitle_color']);
+        $STYLE['mobile_read_ttitle_color'] = p2h($_conf['mobile.ttitle_color']);
     }
     if ($_conf['mobile.ngword_color']) {
-        $STYLE['mobile_read_ngword_color'] = htmlspecialchars($_conf['mobile.ngword_color']);
+        $STYLE['mobile_read_ngword_color'] = p2h($_conf['mobile.ngword_color']);
     }
     if ($_conf['mobile.onthefly_color']) {
-        $STYLE['mobile_read_onthefly_color'] = htmlspecialchars($_conf['mobile.onthefly_color']);
+        $STYLE['mobile_read_onthefly_color'] = p2h($_conf['mobile.onthefly_color']);
     }
 
     // マーカー
     if ($_conf['mobile.match_color']) {
         if ($_conf['iphone']) {
             $_conf['extra_headers_ht'] .= sprintf('<style type="text/css">b.filtering, span.matched { color: %s; }</style>',
-                                                  htmlspecialchars($_conf['mobile.match_color']));
+                                                  p2h($_conf['mobile.match_color']));
             $_conf['k_filter_marker'] = '<span class="matched">\\1</span>';
         } else {
-            $_conf['k_filter_marker'] = '<font color="' . htmlspecialchars($_conf['mobile.match_color']) . '">\\1</font>';
+            $_conf['k_filter_marker'] = '<font color="' . p2h($_conf['mobile.match_color']) . '">\\1</font>';
         }
     } else {
         $_conf['k_filter_marker'] = false;

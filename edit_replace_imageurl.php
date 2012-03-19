@@ -185,13 +185,13 @@ if (!empty($formdata)) {
     foreach ($formdata as $k => $v) {
         printf($row_format,
             $k,
-            htmlspecialchars($v['match'], ENT_QUOTES),
-            htmlspecialchars($v['replace'], ENT_QUOTES),
-            htmlspecialchars($v['referer'], ENT_QUOTES),
-            htmlspecialchars($v['extract'], ENT_QUOTES),
-            htmlspecialchars($v['source'], ENT_QUOTES),
+            p2h($v['match']),
+            p2h($v['replace']),
+            p2h($v['referer']),
+            p2h($v['extract']),
+            p2h($v['source']),
             $v['recheck'] ? ' checked' : '',
-            htmlspecialchars($v['ident'], ENT_QUOTES)
+            p2h($v['ident'])
         );
     }
     echo $htm['form_submit'];

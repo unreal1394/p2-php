@@ -191,7 +191,7 @@ class P2Ime
             $url = $this->{$this->_method}($url, $delay);
         }
         if ($escape) {
-            return htmlspecialchars($url, ENT_QUOTES, 'Shift_JIS', false);
+            return p2h($url, false);
         } else {
             return $url;
         }

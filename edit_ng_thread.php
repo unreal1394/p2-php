@@ -189,12 +189,12 @@ if (!empty($formdata)) {
     foreach ($formdata as $k => $v) {
         printf($row_format,
             $k,
-            htmlspecialchars($v['word'], ENT_QUOTES),
+            p2h($v['word']),
             $v['ignorecase'],
             $v['regex'],
-            htmlspecialchars($v['bbs'], ENT_QUOTES),
-            htmlspecialchars($v['lasttime'], ENT_QUOTES),
-            htmlspecialchars($v['hits'], ENT_QUOTES)
+            p2h($v['bbs']),
+            p2h($v['lasttime']),
+            p2h($v['hits'])
         );
     }
     echo $htm['form_submit'];

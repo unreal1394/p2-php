@@ -94,7 +94,7 @@ if ($site === '') {
 // ログに記録する変数を最低限のサニタイズ
 $xml = preg_replace_callback('/\\s/', 'rawurlencode', $xml);
 $site = preg_replace('/\\s+/', ' ', $site);
-$site = htmlspecialchars($site, ENT_QUOTES);
+$site = p2h($site);
 
 // }}}
 // {{{ 読み込み

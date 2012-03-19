@@ -240,7 +240,7 @@ if (count($errors) > 0) {
     echo '<body>';
     echo '<p><b>AAS Error</b></p>';
     echo '<ul><li>';
-    echo implode('</li><li>', array_map('htmlspecialchars', $errors));
+    echo implode('</li><li>', array_map('p2h', $errors));
     echo '</li></ul>';
     echo '</body>';
     echo '</html>';

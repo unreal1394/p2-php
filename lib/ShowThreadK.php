@@ -292,7 +292,7 @@ EOMSG;
                     $aas_txt = "AAS";
                 }
                 if ($_conf['iphone']) {
-                    //$img_title = htmlspecialchars($this->thread->getMotoThread(true, $i), ENT_QUOTES);
+                    //$img_title = p2h($this->thread->getMotoThread(true, $i));
                     //$img_title = "{$this->thread->bbs}/{$this->thread->key}/{$i}";
                     //$img_title = "{$this->thread->ttitle_hd}&#10;&gt;&gt;{$i}";
                     $msg .= " <a class=\"aas limelight\" href=\"{$aas_url}&amp;b=pc\" title=\"&gt;&gt;{$i}\"{$this->target_at}>{$aas_txt}</a>";
@@ -1144,15 +1144,15 @@ EOP;
                 return sprintf('<a href="%s%s">[IC2:%s:%s]</a>',
                                $img_url,
                                $backto,
-                               htmlspecialchars($purl['host'], ENT_QUOTES),
-                               htmlspecialchars(basename($purl['path']), ENT_QUOTES)
+                               p2h($purl['host']),
+                               p2h(basename($purl['path']))
                                );
             }
 
             if ($_conf['iphone']) {
-                $img_title = htmlspecialchars($purl['host'], ENT_QUOTES)
+                $img_title = p2h($purl['host'])
                            . '&#10;'
-                           . htmlspecialchars(basename($purl['path']), ENT_QUOTES);
+                           . p2h(basename($purl['path']));
                 return "<a class=\"limelight\" href=\"{$src_url}\" title=\"{$img_title}\" target=\"_blank\">{$img_str}</a>"
                    //. ' <img class="ic2-show-info" src="img/s2a.png" width="16" height="16" onclick="ic2info.show('
                      . ' <input type="button" class="ic2-show-info" value="i" onclick="ic2info.show('
@@ -1325,17 +1325,17 @@ EOP;
 
             if (is_null($img_str)) {
                 $result .= sprintf('<a href="%s%s">[IC2:%s:%s]</a>',
-                               $img_url,
-                               $backto,
-                               htmlspecialchars($purl['host'], ENT_QUOTES),
-                               htmlspecialchars(basename($purl['path']), ENT_QUOTES)
-                               );
+                                   $img_url,
+                                   $backto,
+                                   p2h($purl['host']),
+                                   p2h(basename($purl['path']))
+                                   );
             }
 
             if ($_conf['iphone']) {
-                $img_title = htmlspecialchars($purl['host'], ENT_QUOTES)
+                $img_title = p2h($purl['host'])
                            . '&#10;'
-                           . htmlspecialchars(basename($purl['path']), ENT_QUOTES);
+                           . p2h(basename($purl['path']));
                 $result .= "<a class=\"limelight\" href=\"{$src_url}\" title=\"{$img_title}\" target=\"_blank\">{$img_str}</a>"
                    //. ' <img class="ic2-show-info" src="img/s2a.png" width="16" height="16" onclick="ic2info.show('
                      . ' <input type="button" class="ic2-show-info" value="i" onclick="ic2info.show('

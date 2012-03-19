@@ -38,7 +38,7 @@ foreach ($secret_dirs as $dir) {
 
 $me_url = P2Util::getMyUrl();
 $me_dir_url = dirname($me_url);
-$me_url_b = htmlspecialchars(rtrim($me_dir_url, '/') . '/?b=', ENT_QUOTES);
+$me_url_b = p2h(rtrim($me_dir_url, '/') . '/?b=');
 
 if ($_conf['ktai']) {
 

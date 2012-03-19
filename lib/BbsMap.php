@@ -154,7 +154,7 @@ class BbsMap
         // }}}
         // {{{ 書込
 
-        $brd_name = htmlspecialchars(basename($brd_path), ENT_QUOTES);
+        $brd_name = p2h(basename($brd_path));
         if ($updated) {
             self::_writeData($brd_path, $neolines);
             P2Util::pushInfoHtml(sprintf('<p class="info-msg">rep2 info: %s を同期しました。</p>', $brd_name));
@@ -223,7 +223,7 @@ class BbsMap
         // }}}
         // {{{ 書込
 
-        $idx_name = htmlspecialchars(basename($idx_path), ENT_QUOTES);
+        $idx_name = p2h(basename($idx_path));
         if ($updated) {
             self::_writeData($idx_path, $neolines);
             P2Util::pushInfoHtml(sprintf('<p class="info-msg">rep2 info: %s を同期しました。</p>', $idx_name));
@@ -315,8 +315,8 @@ class BbsMap
 
         // エラーのとき、代わりのメニューを使ってみる
         if (PEAR::isError($err) && $use_alt) {
-            P2Util::pushInfoHtml(sprintf($err_fmt, htmlspecialchars($err->getMessage(), ENT_QUOTES), htmlspecialchars($bbsmenu_url, ENT_QUOTES)));
-            P2Util::pushInfoHtml(sprintf("<p>代わりに %s をダウンロードします。</p>", htmlspecialchars($altmenu_url, ENT_QUOTES)));
+            P2Util::pushInfoHtml(sprintf($err_fmt, p2h($err->getMessage()), p2h($bbsmenu_url)));
+            P2Util::pushInfoHtml(sprintf("<p>代わりに %s をダウンロードします。</p>", p2h($altmenu_url)));
             $bbsmenu_url = $altmenu_url;
             unset ($req, $err);
             $req = new HTTP_Request($bbsmenu_url, $params);
@@ -326,7 +326,7 @@ class BbsMap
 
         // エラーを検証
         if (PEAR::isError($err)) {
-            P2Util::pushInfoHtml(sprintf($err_fmt, htmlspecialchars($err->getMessage(), ENT_QUOTES), htmlspecialchars($bbsmenu_url, ENT_QUOTES)));
+            P2Util::pushInfoHtml(sprintf($err_fmt, p2h($err->getMessage()), p2h($bbsmenu_url)));
             if (file_exists($map_cache_path)) {
                 return unserialize(file_get_contents($map_cache_path));
             } else {
@@ -341,7 +341,7 @@ class BbsMap
             self::$_map = unserialize($map_cahce);
             return self::$_map;
         } elseif ($code != 200) {
-            P2Util::pushInfoHtml(sprintf($err_fmt, htmlspecialchars(strval($code), ENT_QUOTES), htmlspecialchars($bbsmenu_url, ENT_QUOTES)));
+            P2Util::pushInfoHtml(sprintf($err_fmt, p2h(strval($code)), p2h($bbsmenu_url)));
             if (file_exists($map_cache_path)) {
                 return unserialize(file_get_contents($map_cache_path));
             } else {

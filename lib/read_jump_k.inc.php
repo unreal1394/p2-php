@@ -44,7 +44,7 @@ function _get_read_jump(ThreadRead $aThread, $use_onchange)
     } else {
         //if ($aThread->resrange['start'] != 1 && $aThread->resrange['start'] % $rpp) {
         if (($aThread->resrange['start'] - 1) % $rpp) {
-            $ls = htmlspecialchars($aThread->ls, ENT_QUOTES);
+            $ls = p2h($aThread->ls);
             $options = "<option value=\"{$ls}\" selected>{$ls}</option>";
         } else {
             $options = '';
@@ -173,7 +173,7 @@ function _get_read_jump_form(ThreadRead $aThread, $options)
 {
     global $_conf;
 
-    $word = htmlspecialchars($GLOBALS['word'], ENT_QUOTES);
+    $word = p2h($GLOBALS['word']);
 
     return <<<EOP
 <input type="hidden" name="host" value="{$aThread->host}">

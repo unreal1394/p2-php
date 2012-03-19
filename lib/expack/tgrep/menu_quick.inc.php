@@ -49,7 +49,7 @@ function tgrep_print_quick_list()
     if ($tgrep_quick_list) {
         foreach ($tgrep_quick_list as $tgrep_quick_query) {
             $tgrep_quick_query_en = rawurlencode($tgrep_quick_query);
-            $tgrep_quick_query_ht = htmlspecialchars($tgrep_quick_query, ENT_QUOTES);
+            $tgrep_quick_query_ht = p2h($tgrep_quick_query);
             echo '<a class="fav" href="#" onclick="return tGrepRemoveListItem(\'quick\',\'c_tgrep_quick\',\'' . $tgrep_quick_query_en . '\');" target="_self">Åö</a>' . "\n";
             echo '<a href="tgrepc.php?Q=' . $tgrep_quick_query_en . '">' . $tgrep_quick_query_ht . '</a><br>' . "\n";
         }
@@ -78,7 +78,7 @@ function tgrep_print_quick_list_k()
         echo '<ul>' . "\n";
         foreach ($tgrep_quick_list as $tgrep_quick_query) {
             $tgrep_quick_query_en = rawurlencode($tgrep_quick_query);
-            $tgrep_quick_query_ht = htmlspecialchars($tgrep_quick_query, ENT_QUOTES);
+            $tgrep_quick_query_ht = p2h($tgrep_quick_query);
             echo '<li><a href="tgrepc.php?Q=' . $tgrep_quick_query_en . '">' . $tgrep_quick_query_ht . '</a>' . "\n";
             echo '<small>[<a href="tgrepctl.php?file=quick&amp;query=' . $tgrep_quick_query_en . '&amp;purge=true">çÌ</a>]</small></li>' . "\n";
         }
@@ -111,7 +111,7 @@ function tgrep_print_quick_list_i()
     if ($tgrep_quick_list) {
         foreach ($tgrep_quick_list as $tgrep_quick_query) {
             $tgrep_quick_query_en = rawurlencode($tgrep_quick_query);
-            $tgrep_quick_query_ht = htmlspecialchars($tgrep_quick_query, ENT_QUOTES);
+            $tgrep_quick_query_ht = p2h($tgrep_quick_query);
             echo '<li><a href="tgrepc.php?iq=' . $tgrep_quick_query_en . '">' . $tgrep_quick_query_ht . '</a></li>' . "\n";
         }
     } else {

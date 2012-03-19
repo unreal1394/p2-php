@@ -29,7 +29,7 @@ $atom = empty($_REQUEST['atom']) ? 0 : 1;
 $site_en = trim($_REQUEST['site_en']);
 
 $xml_en = rawurlencode($xml);
-$xml_ht = htmlspecialchars($xml, ENT_QUOTES, 'Shift_JIS', false);
+$xml_ht = p2h($xml, false);
 
 
 //============================================================
@@ -68,7 +68,7 @@ if ($xml) {
 //===================================================================
 
 //タイトル
-$title = isset($channel['title']) ? htmlspecialchars($channel['title'], ENT_QUOTES, 'Shift_JIS', false) : '';
+$title = isset($channel['title']) ? p2h($channel['title'], false) : '';
 
 //更新時刻
 $reloaded_time = date('m/d G:i:s');

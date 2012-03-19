@@ -70,7 +70,7 @@ function viewTxtFile($file, $encode)
         } elseif ($encode == 'UTF-8') {
             $cont = mb_convert_encoding($cont, 'CP932', 'UTF-8');
         }
-        $cont_area = htmlspecialchars($cont, ENT_QUOTES);
+        $cont_area = p2h($cont);
     }
 
     // ƒvƒŠƒ“ƒg

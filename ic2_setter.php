@@ -189,7 +189,7 @@ function ic2_check_uploaded_file($path, $name, $type, $filesize, $tmpname, $errc
     global $_conf, $ini, $err_fmt;
     global $mimemap, $mimeregex, $maxsize, $maxwidth, $maxheight;
 
-    $path_ht = htmlspecialchars($path, ENT_QUOTES);
+    $path_ht = p2h($path);
 
     // アップロード失敗のとき
     if ($errcode != UPLOAD_ERR_OK) {
@@ -276,8 +276,8 @@ function ic2_register_uploaded_file($file)
 
     $utf8_path = mb_convert_encoding($file['path'], 'UTF-8', 'CP932');
     $utf8_name = mb_convert_encoding($file['name'], 'UTF-8', 'CP932');
-    $file['path'] = htmlspecialchars($file['path'], ENT_QUOTES);
-    $file['name'] = htmlspecialchars($file['name'], ENT_QUOTES);
+    $file['path'] = p2h($file['path']);
+    $file['name'] = p2h($file['name']);
     $file['memo'] = $f_memo;
     $file['rank'] = $f_rank;
     $file['img_src'] = $thumbnailer->srcPath($file['size'], $file['md5'], $file['mime']);

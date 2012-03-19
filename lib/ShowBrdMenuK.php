@@ -225,7 +225,7 @@ EOP;
                 $i++;
                 if (preg_match("/^\t?(.+)\t(.+)\t(.+)\$/", $l, $matches)) {
                     $itaj = rtrim($matches[3]);
-                    $itaj_view = htmlspecialchars($itaj, ENT_QUOTES);
+                    $itaj_view = p2h($itaj);
                     $itaj_en = UrlSafeBase64::encode($itaj);
                     if ($i <= 9) {
                         $accesskey_at = $_conf['k_accesskey_at'][$i];

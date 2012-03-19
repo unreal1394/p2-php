@@ -28,7 +28,7 @@ $resid = $_GET['copy'];
 $quote = !empty($_GET['inyou']);
 
 if (isset($_SERVER['HTTP_REFERER'])) {
-    $back_link = '<a href="' . htmlspecialchars($_SERVER['HTTP_REFERER'], ENT_QUOTES) . '" title="戻る">戻る</a> ';
+    $back_link = '<a href="' . p2h($_SERVER['HTTP_REFERER']) . '" title="戻る">戻る</a> ';
 }
 
 //=================================================
@@ -42,7 +42,7 @@ if (file_exists($aThread->keydat)) {
     $one = $aThread->explodeDatLine($aThread->datlines[0]);
     $ttitle = trim($one[4]);
     $ttitle_en = UrlSafeBase64::encode($ttitle);
-    $ttitle_ht = htmlspecialchars($ttitle, ENT_QUOTES);
+    $ttitle_ht = p2h($ttitle);
     $url_txt = $aThread->getMotoThread(true);
     $url_k_txt = $aThread->getMotoThread();
     if ($quote) {
@@ -94,7 +94,7 @@ for ($i = 0; $i < $msg_len; $i += $len) {
 //=====================================================
 // コピー用フォームを表示
 //=====================================================
-$action_ht = htmlspecialchars($_SERVER['SCRIPT_NAME'] . '?host=' . $_GET['host'] . '&bbs=' . $_GET['bbs'] . '&key=' . $_GET['key'] . '&copy=' . $_GET['copy'], ENT_QUOTES);
+$action_ht = p2h($_SERVER['SCRIPT_NAME'] . '?host=' . $_GET['host'] . '&bbs=' . $_GET['bbs'] . '&key=' . $_GET['key'] . '&copy=' . $_GET['copy']);
 
 // willcom はtextareaのサイズが小さいと使いにくいらしい
 /*

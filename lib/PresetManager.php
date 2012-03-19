@@ -260,14 +260,14 @@ class PresetManager
         $data = $this->getAllData($as_tree, $as_utf8);
 
         if (isset($options['id']) && strlen($options['id']) > 0) {
-            $id_str = htmlspecialchars($options['id'], ENT_QUOTES);
+            $id_str = p2h($options['id']);
             $id_attr = " id=\"{$id_str}\"";
         } else {
             $id_attr = $id_str = '';
         }
 
         if (isset($options['class']) && strlen($options['class']) > 0) {
-            $class_str = htmlspecialchars($options['class'], ENT_QUOTES);
+            $class_str = p2h($options['class']);
             $class_attr = " class=\"{$class_str}\"";
         } else {
             $class_attr = $class_str = '';
@@ -484,13 +484,11 @@ class PresetManager
 function presetmanager_samplelinker($node, $id_str, $is_branch = false)
 {
     if ($is_branch) {
-        return sprintf('<span>%s/</span>',
-                       htmlspecialchars($node->name, ENT_QUOTES)
-                       );
+        return sprintf('<span>%s/</span>', p2h($node->name));
     } else {
         return sprintf('<span title="%s">%s</span>',
-                       htmlspecialchars($node->value, ENT_QUOTES),
-                       htmlspecialchars($node->name, ENT_QUOTES)
+                       p2h($node->value),
+                       p2h($node->name)
                        );
     }
 }

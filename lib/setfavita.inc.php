@@ -61,7 +61,7 @@ function setFavItaByRequest()
                 $host = preg_replace('{/test/read\.cgi$}', '', $host);
                 $bbs = $matches[2];
             } else {
-                $url_ht = htmlspecialchars($_POST['url'], ENT_QUOTES);
+                $url_ht = p2h($_POST['url']);
                 P2Util::pushInfoHtml("<p>p2 info: Åu{$url_ht}ÅvÇÕî¬ÇÃURLÇ∆ÇµÇƒñ≥å¯Ç≈Ç∑ÅB</p>");
             }
         } elseif (!empty($_POST['submit_setfavita']) && $_POST['list']) {

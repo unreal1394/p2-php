@@ -101,7 +101,7 @@ if (url_v=="" || url_v=="{$ini_url_text}") {
     return false;
 }
 EOP;
-$onclick_ht = htmlspecialchars($onclick_ht, ENT_QUOTES);
+$onclick_ht = p2h($onclick_ht);
 echo <<<EOP
     <form id="urlform" method="GET" action="{$_conf['read_php']}" target="read">
             ƒXƒŒURL‚ğ’¼Úw’è

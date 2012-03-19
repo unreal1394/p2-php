@@ -28,7 +28,7 @@ function setPal($host, $bbs, $key, $setpal, $ttitle = null)
     } else {
         $data = array_fill(0, 12, '');
         if (is_string($ttitle) && strlen($ttitle)) {
-            $data[0] = htmlspecialchars($ttitle, ENT_QUOTES, 'Shift_JIS', false);
+            $data[0] = p2h($ttitle, false);
         }
     }
 

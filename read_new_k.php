@@ -109,7 +109,7 @@ if ($spmode == 'merge_favita') {
 }
 
 // ページヘッダ表示 ===================================
-$ptitle_hd = htmlspecialchars($aThreadList->ptitle, ENT_QUOTES);
+$ptitle_hd = p2h($aThreadList->ptitle);
 $ptitle_ht = "{$ptitle_hd} の 新着まとめ読み";
 $matomeCache = new MatomeCache($ptitle_hd, $_conf['matome_cache_max']);
 ob_start();
@@ -444,7 +444,7 @@ function readNew($aThread)
     $host_bbs_key_q = 'host=' . $aThread->host . $bbs_q . $key_q;
     $popup_q = '&amp;popup=1';
 
-    $itaj_hd = htmlspecialchars($aThread->itaj, ENT_QUOTES, 'Shift_JIS');
+    $itaj_hd = p2h($aThread->itaj);
     if ($spmode) {
         $read_header_itaj_ht = "({$itaj_hd})";
     } else {

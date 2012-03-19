@@ -125,7 +125,7 @@ if (strpos($mode, '_msg') !== false) {
         // $selected_stringはJavaScriptのencodeURIComponent()関数でURLエンコードされており、
         // encodeURIComponent()はECMA-262 3rd Editionの仕様により文字列をUTF-8で扱うため。
         $aborn_str = mb_convert_encoding($aborn_str, 'CP932', 'UTF-8');
-        $aborn_str = htmlspecialchars($aborn_str, ENT_QUOTES);
+        $aborn_str = p2h($aborn_str);
     }
 }
 if (!isset($aborn_str)) {
@@ -333,14 +333,14 @@ if ($popup == 1 && $msg != "") {
         if ($idx == 'selected_string') {
             continue;
         }
-        $value_ht = htmlspecialchars($value, ENT_QUOTES);
+        $value_ht = p2h($value);
         echo "\t<input type=\"hidden\" name=\"{$idx}\" value=\"{$value_ht}\">\n";
     }
     if (isset($aborn_str_en)) {
         echo "\t<input type=\"hidden\" name=\"aborn_str_en\" value=\"{$aborn_str_en}\">\n";
     }
     if (isset($aborn_id)) {
-        $aborn_id_ht = htmlspecialchars($aborn_id, ENT_QUOTES);
+        $aborn_id_ht = p2h($aborn_id);
         echo "\t<input type=\"hidden\" name=\"aborn_id\" value=\"{$aborn_id_ht}\">\n";
     }
     echo "\t<input type=\"submit\" value=\"　Ｏ　Ｋ　\">\n";
@@ -370,7 +370,7 @@ if (isset($edit_value)) {
     $cols = $_conf['ktai'] ? 0 : 128;
     $edit_php = ($mode == 'aborn_res') ? 'editfile.php' : 'edit_aborn_word.php';
     $filename = basename($path);
-    $filename_ht = htmlspecialchars($filename, ENT_QUOTES);
+    $filename_ht = p2h($filename);
     echo <<<EOFORM
 <form action="{$edit_php}" method="get"{$target_edit_at}>
     {$_conf['k_input_ht']}

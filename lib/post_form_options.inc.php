@@ -82,8 +82,8 @@ EOP;
 
 if ($lines = FileCtl::file_read_lines($key_idx, FILE_IGNORE_NEW_LINES)) {
     $line = explode('<>', $lines[0]);
-    $hd['FROM'] = htmlspecialchars($line[7], ENT_QUOTES);
-    $hd['mail'] = htmlspecialchars($line[8], ENT_QUOTES);
+    $hd['FROM'] = p2h($line[7]);
+    $hd['mail'] = p2h($line[8]);
 }
 
 // }}}
@@ -94,10 +94,10 @@ $post_config_key = PostDataStore::getKeyForConfig($host, $bbs);
 
 // 前回のPOST失敗データ
 if ($post_backup = PostDataStore::get($post_backup_key)) {
-    $hd['FROM'] = htmlspecialchars($post_backup['FROM'], ENT_QUOTES, 'Shift_JIS');
-    $hd['mail'] = htmlspecialchars($post_backup['mail'], ENT_QUOTES, 'Shift_JIS');
-    $hd['MESSAGE'] = htmlspecialchars($post_backup['MESSAGE'], ENT_QUOTES, 'Shift_JIS');
-    $hd['subject'] = htmlspecialchars($post_backup['subject'], ENT_QUOTES, 'Shift_JIS');
+    $hd['FROM'] = p2h($post_backup['FROM']);
+    $hd['mail'] = p2h($post_backup['mail']);
+    $hd['MESSAGE'] = p2h($post_backup['MESSAGE']);
+    $hd['subject'] = p2h($post_backup['subject']);
 }
 
 // beres/p2res
@@ -115,10 +115,10 @@ if ($post_config = PostDataStore::get($post_config_key)) {
 
 // 空白はユーザ設定値に変換
 if ($hd['FROM'] === '') {
-    $hd['FROM'] = htmlspecialchars($_conf['my_FROM'], ENT_QUOTES, 'Shift_JIS');
+    $hd['FROM'] = p2h($_conf['my_FROM']);
 }
 if ($hd['mail'] === '') {
-    $hd['mail'] = htmlspecialchars($_conf['my_mail'], ENT_QUOTES, 'Shift_JIS');
+    $hd['mail'] = p2h($_conf['my_mail']);
 }
 
 // P2NULLは空白に変換

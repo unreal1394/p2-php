@@ -168,7 +168,7 @@ if ($filter_hits !== NULL) {
 $similar_q = '&amp;itaj_en=' . UrlSafeBase64::encode($aThread->itaj)
            . '&amp;method=similar&amp;word=' . rawurlencode($aThread->ttitle_hc)
            . '&amp;refresh=1';
-$itaj_hd = htmlspecialchars($aThread->itaj, ENT_QUOTES);
+$itaj_hd = p2h($aThread->itaj);
 $toolbar_right_ht = <<<EOTOOLBAR
 <a href="{$_conf['subject_php']}?{$host_bbs_key_q}{$_conf['k_at_a']}"{$_conf['k_accesskey_at']['up']}>{$_conf['k_accesskey_st']['up']}{$itaj_hd}</a>
 <a href="info.php?{$host_bbs_key_q}{$ttitle_en_q}{$_conf['k_at_a']}"{$_conf['k_accesskey_at']['info']}>{$_conf['k_accesskey_st']['info']}{$info_st}</a>
@@ -256,7 +256,7 @@ if ($do_filtering) {
     echo ($resFilter->match == ResFilter::MATCH_ON) ? 'ŠÜ‚Þ' : 'ŠÜ‚Ü‚È‚¢';
 }
 if ($_GET['showbl']) {
-    echo  htmlspecialchars($aThread->resrange['start']) . '‚Ö‚ÌÚ½';
+    echo  p2h($aThread->resrange['start']) . '‚Ö‚ÌÚ½';
 }
 
 echo '<hr>';

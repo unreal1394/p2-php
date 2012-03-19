@@ -292,7 +292,7 @@ function rss_format_date($date)
         }
         return date('y/m/d H:i:s', strtotime($time));
     }
-    return htmlspecialchars($date, ENT_QUOTES);
+    return p2h($date);
 }
 
 // }}}

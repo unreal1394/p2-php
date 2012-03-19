@@ -53,7 +53,7 @@ function print_rss_list()
                     $site_en = UrlSafeBase64::encode($site);
                     $xml_en = rawurlencode($xml);
                     $rss_q = sprintf('?xml=%s&site_en=%s%s&mt=%d', $xml_en, $site_en, $atom_q, $mtime);
-                    $rss_q_ht = htmlspecialchars($rss_q, ENT_QUOTES);
+                    $rss_q_ht = p2h($rss_q);
                     echo "\tÅ@<a href=\"subject_rss.php{$rss_q_ht}\">{$site}</a><br>\n";
                 }
                 flush();
@@ -112,7 +112,7 @@ function print_rss_list_k()
                     $site_en = UrlSafeBase64::encode($site);
                     $xml_en = rawurlencode($xml);
                     $rss_q = sprintf('?xml=%s&site_en=%s%s&mt=%d', $xml_en, $site_en, $atom_q, $mtime);
-                    $rss_q_ht = htmlspecialchars($rss_q, ENT_QUOTES);
+                    $rss_q_ht = p2h($rss_q);
                     echo "{$accesskey_st}<a href=\"subject_rss.php{$rss_q_ht}\"{$accesskey_at}>{$site}</a><br>\n";
                 }
                 $i++;

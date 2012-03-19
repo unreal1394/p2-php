@@ -296,7 +296,7 @@ if (isset($title_msg)) {
     $hc['title'] = "info - {$hc['ttitle_name']}";
 }
 
-$hd = array_map('htmlspecialchars', $hc);
+$hd = array_map('p2h', $hc);
 
 
 P2Util::header_nocache();
@@ -469,7 +469,7 @@ function print_info_line($s, $c_ht)
  */
 function getCopypaFormHtml($url, $ttitle_name_hd)
 {
-    $url_hd = htmlspecialchars($url, ENT_QUOTES);
+    $url_hd = p2h($url);
 
     $me_url = $me_url = P2Util::getMyUrl();
     // $_SERVER['REQUEST_URI']

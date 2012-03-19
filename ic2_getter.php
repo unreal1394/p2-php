@@ -301,7 +301,7 @@ if ($execDL) {
 
     foreach ($URLs as $url) {
         $icdb = new IC2_DataObject_Images;
-        $img_title = htmlspecialchars($url, ENT_QUOTES);
+        $img_title = p2h($url);
         $url_en = rawurlencode($url);
         $src_url = 'ic2.php?r=1&uri=' . $url_en;
         $thumb_url = 'ic2.php?r=1&t=' . $thumb_type . '&uri=' . $url_en;

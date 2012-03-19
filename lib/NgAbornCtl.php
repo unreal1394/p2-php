@@ -268,7 +268,7 @@ class NgAbornCtl
 
                 // 正規表現でないなら、エスケープされていない特殊文字をエスケープ
                 /*if (!$ar['regex']) {
-                    $ar['word'] = htmlspecialchars($ar['word'], ENT_COMPAT, 'Shift_JIS', false);
+                    $ar['word'] = p2h($ar['word'], false);
                 }*/
                 // 2chの仕様上、↑は期待通りの結果が得られないことが多いので、<>だけ実体参照にする
                 if (!$ar['regex']) {

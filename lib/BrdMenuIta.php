@@ -22,7 +22,7 @@ class BrdMenuIta
     {
         $this->itaj = $itaj;
         $this->itaj_en = UrlSafeBase64::encode($this->itaj);
-        $this->itaj_ht = htmlspecialchars($this->itaj, ENT_QUOTES);
+        $this->itaj_ht = p2h($this->itaj);
     }
 
     // }}}

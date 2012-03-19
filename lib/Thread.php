@@ -188,7 +188,7 @@ class Thread
     {
         if ($this->_ttitle_hd === null) {
             // HTML•\Ž¦—p‚É htmlspecialchars() ‚µ‚½‚à‚Ì
-            $this->_ttitle_hd = htmlspecialchars($this->ttitle, ENT_QUOTES, 'Shift_JIS', false);
+            $this->_ttitle_hd = p2h($this->ttitle, false);
         }
         return $this->_ttitle_hd;
     }
@@ -230,7 +230,7 @@ class Thread
                         $a_ttitle = mb_strcut($ttitle_hc, 0, $tt_trim_len);
                         $a_ttitle .= ' ...';
                     }
-                    $this->_ttitle_ht = htmlspecialchars($a_ttitle, ENT_QUOTES, 'Shift_JIS', false);
+                    $this->_ttitle_ht = p2h($a_ttitle, false);
                 } else {
                     $this->_ttitle_ht = $this->getTtitleHd();
                 }

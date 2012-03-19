@@ -165,10 +165,9 @@ echo $htm['form_submit'];
 if (!empty($formdata)) {
     foreach ($formdata as $k => $v) {
         printf($row_format,
-            $k,
-            htmlspecialchars($v['match'], ENT_QUOTES),
-            htmlspecialchars($v['replace'], ENT_QUOTES)
-        );
+               $k,
+               p2h($v['match']),
+               p2h($v['replace']));
     }
     echo $htm['form_submit'];
 }

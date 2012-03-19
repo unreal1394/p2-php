@@ -46,14 +46,14 @@ if ($_conf['expack.tgrep.recent_num'] > 0) {
 <?php if ($errors) { ?>
 <!-- Errors -->
 <h4>╢в╟</h4>
-<ul><?php foreach ($errors as $error) { ?><li><?php echo htmlspecialchars($error, ENT_QUOTES); ?></li><?php } ?></ul>
+<ul><?php foreach ($errors as $error) { ?><li><?php echo p2h($error); ?></li><?php } ?></ul>
 <?php } ?>
 
 <?php if (!$errors && $profile) { ?>
 <!-- Result and Filter -->
 <p>
 <?php if ($htm['category'] && isset($profile['categories'][$htm['category']])) { ?>
-<b><?php echo htmlspecialchars($profile['categories'][$htm['category']]->name, ENT_QUOTES); ?></b>┌╘┌Г<b><?php echo $htm['query']; ?></b>┌П▄÷█У:<?php echo $htm['hits']; ?>hit!(all:<?php echo $htm['allhits']; ?>)
+<b><?php echo p2h($profile['categories'][$htm['category']]->name); ?></b>┌╘┌Г<b><?php echo $htm['query']; ?></b>┌П▄÷█У:<?php echo $htm['hits']; ?>hit!(all:<?php echo $htm['allhits']; ?>)
 <?php } else { ?>
 <b><?php echo $htm['query']; ?></b>┌е▄÷█У:<?php echo $htm['hits']; ?>hit!
 <?php } ?>
@@ -62,7 +62,7 @@ if ($_conf['expack.tgrep.recent_num'] > 0) {
 <input type="hidden" name="Q" value="<?php echo $htm['query']; ?>">
 <select name="C">
 <option value="">╤ц╨чь┌П▒I▒П</option>
-<?php foreach ($profile['categories'] as $c) { ?><option value="<?php echo $c->id; ?>"<?php if ($c->id == $htm['category']) { echo ' selected'; } ?>><?php echo mb_convert_kana(htmlspecialchars($c->name, ENT_QUOTES), 'rnsk'); ?> (<?php echo $c->hits; ?>)</option><?php } ?>
+<?php foreach ($profile['categories'] as $c) { ?><option value="<?php echo $c->id; ?>"<?php if ($c->id == $htm['category']) { echo ' selected'; } ?>><?php echo mb_convert_kana(p2h($c->name), 'rnsk'); ?> (<?php echo $c->hits; ?>)</option><?php } ?>
 </select>
 <input type="submit" value="█i█·">
 </form>

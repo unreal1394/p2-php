@@ -173,7 +173,7 @@ class FavSetManager
             if ($_conf['view_forced_by_query']) {
                 $k_to_index_q .= '&b=k';
             }
-            $k_to_index_q = htmlspecialchars($k_to_index_q, ENT_QUOTES);
+            $k_to_index_q = p2h($k_to_index_q);
             $_conf['k_to_index_ht'] = "<a href=\"index.php?{$k_to_index_q}\"{$_conf['k_accesskey_at'][0]}>{$_conf['k_accesskey_st'][0]}TOP</a>";
         }
 
@@ -233,7 +233,7 @@ class FavSetManager
             } else {
                 $title = $default_title . $i;
             }
-            $title = htmlspecialchars($title, ENT_QUOTES);
+            $title = p2h($title);
         } else {
             $title = $favlist_titles[$i];
         }
@@ -281,7 +281,7 @@ class FavSetManager
         $form_ht .= $_conf['k_input_ht'];
         if (is_array($hidden_values)) {
             foreach ($hidden_values as $key => $value) {
-                $value = htmlspecialchars($value, ENT_QUOTES);
+                $value = p2h($value);
                 $form_ht .= "<input type=\"hidden\" name=\"{$key}\" value=\"{$value}\">";
             }
         }

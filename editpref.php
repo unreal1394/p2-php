@@ -198,9 +198,9 @@ if (!$_conf['ktai'] && $_conf['expack.skin.enabled']) {
     $skin_options_ht = '';
     foreach ($skin_options as $_name => $_title) {
         $skin_options_ht .= sprintf('<option value="%s"%s>%s</option>',
-                                    htmlspecialchars($_name, ENT_QUOTES),
+                                    p2h($_name),
                                     ($_name == $skin_name) ? ' selected' : '',
-                                    htmlspecialchars($_title, ENT_QUOTES));
+                                    p2h($_title));
     }
     echo <<<EOP
  ｜ <a href="edit_user_font.php">フォント設定編集</a>
@@ -516,7 +516,7 @@ function printEditFileForm($filename, $submit_value)
         $edit_php = 'editfile.php';
         $target = 'editfile';
     }
-    $filename_ht = htmlspecialchars($filename, ENT_QUOTES);
+    $filename_ht = p2h($filename);
 
     $ht = <<<EOFORM
 <form action="{$edit_php}" method="GET" target="{$target}" class="inline-form"{$onsubmit}>
@@ -680,7 +680,7 @@ function updateFavSetList()
                 }
                 $newname = trim($_POST["{$setlist_name}_titles"][$i]);
                 $newname = preg_replace('/\r\n\t/', ' ', $newname);
-                $newname = htmlspecialchars($newname, ENT_QUOTES);
+                $newname = p2h($newname);
                 $setlist_titles[$setlist_name][$i] = $newname;
             }
         }

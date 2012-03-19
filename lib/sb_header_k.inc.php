@@ -54,7 +54,7 @@ if (!$aThreadList->spmode) {
 if ($aThreadList->spmode == 'fav' && $_conf['expack.misc.multi_favs']) {
     $ptitle_hd = FavSetManager::getFavSetPageTitleHt('m_favlist_set', $aThreadList->ptitle);
 } else {
-    $ptitle_hd = htmlspecialchars($aThreadList->ptitle, ENT_QUOTES);
+    $ptitle_hd = p2h($aThreadList->ptitle);
 }
 
 if ($aThreadList->spmode == 'taborn') {
@@ -86,7 +86,7 @@ EOP;
 
 // ÉtÉBÉãÉ^åüçı ==================================================
 
-$hd['word'] = htmlspecialchars($word, ENT_QUOTES);
+$hd['word'] = p2h($word);
 
 $filter_form_ht = '';
 $hit_ht = '';

@@ -45,7 +45,7 @@ if (!$aThreadList->spmode) {
 if ($aThreadList->spmode == 'fav' && $_conf['expack.misc.multi_favs']) {
     $ptitle_hd = FavSetManager::getFavSetPageTitleHt('m_favlist_set', $aThreadList->ptitle);
 } else {
-    $ptitle_hd = htmlspecialchars($aThreadList->ptitle, ENT_QUOTES);
+    $ptitle_hd = p2h($aThreadList->ptitle);
 }
 
 if ($aThreadList->spmode == 'taborn') {
@@ -69,7 +69,7 @@ EOP;
 
 // フィルタ検索 ==================================================
 
-$hd['word'] = htmlspecialchars($word, ENT_QUOTES);
+$hd['word'] = p2h($word);
 
 // iPhone用ヘッダ要素
 $_conf['extra_headers_ht'] .= <<<EOS
@@ -245,7 +245,7 @@ $htm['change_sort'] .= '</select>';
 
 if (!empty($_REQUEST['sb_view'])) {
     $htm['change_sort'] .= '<input type="hidden" name="sb_view" value="'
-                        . htmlspecialchars($_REQUEST['sb_view']) . '">';
+                        . p2h($_REQUEST['sb_view']) . '">';
 }
 
 if (!empty($_REQUEST['rsort'])) {

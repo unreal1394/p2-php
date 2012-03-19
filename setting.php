@@ -43,7 +43,7 @@ if ($hc['remote_host'] == $_SERVER['REMOTE_ADDR']) {
 
 $hc['ua'] = $_SERVER['HTTP_USER_AGENT'];
 
-$hd = array_map('htmlspecialchars', $hc);
+$hd = array_map('p2h', $hc);
 
 //=========================================================
 // HTMLƒvƒŠƒ“ƒg

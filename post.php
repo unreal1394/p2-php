@@ -64,7 +64,7 @@ if (!empty($_POST['fix_source'])) {
     // タブをスペースに
     $MESSAGE = tab2space($MESSAGE);
     // 特殊文字を実体参照に
-    $MESSAGE = htmlspecialchars($MESSAGE, ENT_QUOTES, 'Shift_JIS');
+    $MESSAGE = p2h($MESSAGE);
     // 自動URLリンク回避
     $MESSAGE = str_replace('tp://', 't&#112;://', $MESSAGE);
     // 行頭のスペースを実体参照に
@@ -325,7 +325,7 @@ if ($_conf['res_write_rec']) {
     P2Util::transResHistLogPhpToDat();
 
     $date_and_id = date('y/m/d H:i');
-    $message = htmlspecialchars($MESSAGE, ENT_NOQUOTES);
+    $message = htmlspecialchars($MESSAGE, ENT_NOQUOTES, 'Shift_JIS');
     $message = preg_replace('/\\r\\n|\\r|\\n/', '<br>', $message);
 
     FileCtl::make_datafile($_conf['res_hist_dat'], $_conf['res_write_perm']); // なければ生成
@@ -449,7 +449,7 @@ function postIt($host, $bbs, $key, $post)
     // WEBサーバへ接続
     $fp = fsockopen($send_host, $send_port, $errno, $errstr, $_conf['http_conn_timeout']);
     if (!$fp) {
-        $errstr = htmlspecialchars($errstr, ENT_QUOTES);
+        $errstr = p2h($errstr);
         showPostMsg(false, "サーバ接続エラー: $errstr ($errno)<br>p2 Error: 板サーバへの接続に失敗しました", false);
         return false;
     }
@@ -547,7 +547,7 @@ function postIt($host, $bbs, $key, $post)
         }
 
         return true;
-        //$response_ht = htmlspecialchars($response, ENT_QUOTES);
+        //$response_ht = p2h($response);
         //echo "<pre>{$response_ht}</pre>";
 
     // cookie確認（post再チャレンジ）
@@ -591,7 +591,7 @@ function postIt2($host, $bbs, $key, $FROM, $mail, $MESSAGE)
         showPostMsg(true, '書きこみが終わりました。', $reload);
     } else {
         $result_msg = '公式p2ポスト失敗</p>'
-                    . '<pre>' . htmlspecialchars($response['body'], ENT_QUOTES, 'Shift_JIS') . '</pre>'
+                    . '<pre>' . p2h($response['body']) . '</pre>'
                     . '<p>-';
         showPostMsg(false, $result_msg, false);
     }
@@ -908,7 +908,7 @@ function showUnexpectedResponse($response, $line = null)
         echo "({$line})";
     }
     echo '</p><pre>';
-    echo htmlspecialchars($response, ENT_QUOTES);
+    echo p2h($response);
     echo '</pre></body></html>';
 }
 

@@ -49,7 +49,7 @@ function tgrep_print_recent_list()
     if ($tgrep_recent_list) {
         foreach ($tgrep_recent_list as $tgrep_recent_query) {
             $tgrep_recent_query_en =rawurlencode($tgrep_recent_query);
-            $tgrep_recent_query_ht = htmlspecialchars($tgrep_recent_query, ENT_QUOTES);
+            $tgrep_recent_query_ht = p2h($tgrep_recent_query);
             echo 'Å@<a href="tgrepc.php?Q=' . $tgrep_recent_query_en . '">' . $tgrep_recent_query_ht . '</a><br>' . "\n";
         }
     } else {
@@ -77,7 +77,7 @@ function tgrep_print_recent_list_k()
         echo '<ul>' . "\n";
         foreach ($tgrep_recent_list as $tgrep_recent_query) {
             $tgrep_recent_query_en = rawurlencode($tgrep_recent_query);
-            $tgrep_recent_query_ht = htmlspecialchars($tgrep_recent_query, ENT_QUOTES);
+            $tgrep_recent_query_ht = p2h($tgrep_recent_query);
             echo '<li><a href="tgrepc.php?Q=' . $tgrep_recent_query_en . '">' . $tgrep_recent_query_ht . '</a></li>' . "\n";
         }
         echo '</ul>' . "\n";
@@ -102,7 +102,7 @@ function tgrep_print_recent_list_i()
     if ($tgrep_recent_list) {
         foreach ($tgrep_recent_list as $tgrep_recent_query) {
             $tgrep_recent_query_en = rawurlencode($tgrep_recent_query);
-            $tgrep_recent_query_ht = htmlspecialchars($tgrep_recent_query, ENT_QUOTES);
+            $tgrep_recent_query_ht = p2h($tgrep_recent_query);
             echo '<li><a href="tgrepc.php?iq=' . $tgrep_recent_query_en . '">' . $tgrep_recent_query_ht . '</a></li>' . "\n";
         }
     } else {

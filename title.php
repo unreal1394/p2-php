@@ -64,7 +64,7 @@ $htm['auth_user'] = "<p>ログインユーザ: {$_login->user_u} - " . date("Y/m/d (D) 
 // （携帯）ログイン用URL
 $base_url = rtrim(dirname(P2Util::getMyUrl()), '/') . '/';
 $url_b = $base_url . '?user=' . rawurlencode($_login->user_u) . '&b=';
-$url_b_ht = htmlspecialchars($url_b, ENT_QUOTES);
+$url_b_ht = p2h($url_b);
 
 // 携帯用ビューを開くブックマークレット
 $bookmarklet = <<<JS
@@ -94,8 +94,8 @@ $bookmarklet = str_replace('{%space%}', ' ', $bookmarklet);
 
 $bookmarklet_k = $bookmarklet . "('{$url_b}k',240,320,20,-100)";
 $bookmarklet_i = $bookmarklet . "('{$url_b}i',320,480,20,-100)";
-$bookmarklet_k_ht = htmlspecialchars($bookmarklet_k, ENT_QUOTES);
-$bookmarklet_i_ht = htmlspecialchars($bookmarklet_i, ENT_QUOTES);
+$bookmarklet_k_ht = p2h($bookmarklet_k);
+$bookmarklet_i_ht = p2h($bookmarklet_i);
 $bookmarklet_k_en = rawurlencode($bookmarklet_k);
 $bookmarklet_i_en = rawurlencode($bookmarklet_i);
 
@@ -121,7 +121,7 @@ $htm['log'] = '';
 $htm['last_login'] = '';
 if ($_conf['login_log_rec'] && $_conf['last_login_log_show']) {
     if (($log = P2Util::getLastAccessLog($_conf['login_log_file'])) !== false) {
-        $htm['log'] = array_map('htmlspecialchars', $log);
+        $htm['log'] = array_map('p2h', $log);
         $htm['last_login'] = <<<EOT
 <br>
 <table border="0" cellspacing="0" cellpadding="1">

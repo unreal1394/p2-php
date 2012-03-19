@@ -14,10 +14,10 @@ $paging_q = $host_bbs_q . '&amp;spmode=' . $aThreadList->spmode . $norefresh_q;
 if (!empty($GLOBALS['wakati_words'])) {
     $paging_q .= '&amp;method=similar&amp;word=' . rawurlencode($GLOBALS['wakati_word']);
     $word_input_ht = '<input type="hidden" name="method" value="similar">';
-    $word_input_ht .= '<input type="hidden" name="word" value="' . htmlspecialchars($GLOBALS['wakati_word'], ENT_QUOTES, 'Shift_JIS') . '">';
+    $word_input_ht .= '<input type="hidden" name="word" value="' . p2h($GLOBALS['wakati_word']) . '">';
 } elseif ($word) {
     $paging_q .= '&amp;word=' . rawurlencode($word);
-    $word_input_ht = '<input type="hidden" name="word" value="' . htmlspecialchars($word, ENT_QUOTES, 'Shift_JIS') . '">';
+    $word_input_ht = '<input type="hidden" name="word" value="' . p2h($word) . '">';
     if (isset($sb_filter['method']) && $sb_filter['method'] == 'or') {
         $paging_q .= '&amp;method=or';
         $word_input_ht = '<input type="hidden" name="method" value="or">';
@@ -57,7 +57,7 @@ EOP;
 
 if (!empty($_REQUEST['sb_view'])) {
     $paging_q = '&amp;sb_view=' . rawurlencode($_REQUEST['sb_view']);
-    $sb_view_input_ht = '<input type="hidden" name="sb_view" value="' . htmlspecialchars($_REQUEST['sb_view'], ENT_QUOTES) . '">';
+    $sb_view_input_ht = '<input type="hidden" name="sb_view" value="' . p2h($_REQUEST['sb_view']) . '">';
 } else {
     $sb_view_input_ht = '';
 }

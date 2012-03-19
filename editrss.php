@@ -8,7 +8,7 @@ require_once './conf/conf.inc.php';
 $_login->authorize(); // ユーザ認証
 
 // 変数 =============
-$editrss_php_ht = htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES);
+$editrss_php_ht = p2h($_SERVER['SCRIPT_NAME']);
 
 //================================================================
 //特殊な前置処理
@@ -128,7 +128,7 @@ if ($lines = FileCtl::file_read_lines($_conf['expack.rss.setting_path'], FILE_IG
             $myrss["li{$i}"] = array(
                 'site'      => $site,
                 'site_en'   => $site_en,
-                'site_view' => htmlspecialchars($site, ENT_QUOTES),
+                'site_view' => p2h($site),
                 'site_ht'   => "&amp;site_en={$site_en}",
                 'xml'       => $xml,
                 'xml_en'    => rawurlencode($xml),

@@ -309,7 +309,7 @@ if ($_conf['expack.misc.multi_favs']) {
 <h2>‘O‰ñ‚ÌƒƒOƒCƒ“</h2>
 <pre style="word-wrap:break-word;word-break:break-all"><?php
 if (($log = P2Util::getLastAccessLog($_conf['login_log_file'])) !== false) {
-    $log_hd = array_map('htmlspecialchars', $log);
+    $log_hd = array_map('p2h', $log);
     echo <<<EOP
 <strong>DATE:</strong> {$log_hd['date']}
 <strong>USER:</strong> {$log_hd['user']}

@@ -290,17 +290,17 @@ function toolbar_i_action_board_button($icon, $label, ThreadList $aThreadList)
     $host = $aThreadList->host;
     $bbs = $aThreadList->bbs;
     $url = "http://{$host}/{$bbs}/";
-    $uri = htmlspecialchars(strtr($pattern, array(
+    $uri = p2h(strtr($pattern, array(
         '$time' => time(),
         '$host' => rawurlencode($host),
         '$bbs'  => rawurlencode($bbs),
         '$url'  => $url,
         '$eurl' => rawurlencode($url),
-    )), ENT_QUOTES, 'Shift_JIS', false);
+    )), false);
 
     $title = $_conf["expack.tba.{$type}.board_title"];
     if ($title !== '') {
-        $label = htmlspecialchars($title, ENT_QUOTES, 'Shift_JIS', false);
+        $label = p2h($title, false);
     }
 
     return _toolbar_i_button($icon, $label, $uri);
@@ -328,7 +328,7 @@ function toolbar_i_action_thread_button($icon, $label, Thread $aThread)
     }
 
     $url = $aThread->getMotoThread(true, '');
-    $uri = htmlspecialchars(strtr($pattern, array(
+    $uri = p2h(strtr($pattern, array(
         '$time' => time(),
         '$host' => rawurlencode($aThread->host),
         '$bbs'  => rawurlencode($aThread->bbs),
@@ -337,11 +337,11 @@ function toolbar_i_action_thread_button($icon, $label, Thread $aThread)
         '$url'  => $url,
         '$eurl' => rawurlencode($url),
         '$path' => preg_replace('!^https?://!', '', $url),
-    )), ENT_QUOTES, 'Shift_JIS', false);
+    )), false);
 
     $title = $_conf["expack.tba.{$type}.thread_title"];
     if ($title !== '') {
-        $label = htmlspecialchars($title, ENT_QUOTES, 'Shift_JIS', false);
+        $label = p2h($title, false);
     }
 
     return _toolbar_i_button($icon, $label, $uri);

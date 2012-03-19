@@ -160,17 +160,17 @@ if ($query) {
 
 // äÓñ{ïœêî
 $htm = array();
-$htm['tgrep_url'] = htmlspecialchars($_conf['expack.tgrep_url'], ENT_QUOTES);
-$htm['php_self']  = 'tgrepc.php'; //htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_QUOTES);
-$htm['query']     = (isset($_GET['Q'])) ? htmlspecialchars($_GET['Q'], ENT_QUOTES) : '';
+$htm['tgrep_url'] = p2h($_conf['expack.tgrep_url']);
+$htm['php_self']  = 'tgrepc.php'; //p2h($_SERVER['SCRIPT_NAME']);
+$htm['query']     = (isset($_GET['Q'])) ? p2h($_GET['Q']) : '';
 $htm['query_en']  = (isset($_GET['Q'])) ? rawurlencode($_GET['Q']) : '';
 
 if (isset($_GET['ib']) && isset($_GET['S']) && isset($_GET['B'])) {
     $htm['category'] = 0;
     $htm['board']   = intval($_GET['ib']);
-    $htm['site']    = htmlspecialchars($_GET['S'], ENT_QUOTES);
+    $htm['site']    = p2h($_GET['S']);
     $htm['site_en'] = rawurlencode($_GET['S']);
-    $htm['bbs']     = htmlspecialchars($_GET['B'], ENT_QUOTES);
+    $htm['bbs']     = p2h($_GET['B']);
     $htm['bbs_en']  = rawurlencode($_GET['B']);
 } elseif (isset($_GET['C'])) {
     $htm['category'] = intval($_GET['C']);

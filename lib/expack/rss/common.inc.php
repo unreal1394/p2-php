@@ -23,7 +23,7 @@ function rss_get_save_path($remotefile)
 
     $pURL = @parse_url($remotefile);
     if (!$pURL || !isset($pURL['scheme']) || $pURL['scheme'] != 'http' || !isset($pURL['host'])) {
-        $errmsg = 'p2 error: ïsê≥Ç»RSSÇÃURL (' . htmlspecialchars($remotefile, ENT_QUOTES) . ')';
+        $errmsg = 'p2 error: ïsê≥Ç»RSSÇÃURL (' . p2h($remotefile) . ')';
         $error = PEAR::raiseError($errmsg);
         return ($finished[$remotefile] = $error);
     }

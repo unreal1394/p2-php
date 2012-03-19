@@ -708,7 +708,7 @@ class ThreadRead extends Thread
             return $this->_downloadDat2chKako($uri, ".dat");
         }
         if (!empty($_GET['kakolog'])) {
-            $kako_html_url = htmlspecialchars($_GET['kakolog'] . '.html', ENT_QUOTES);
+            $kako_html_url = p2h($_GET['kakolog'] . '.html');
             $kakolog_ht = "<p><a href=\"{$kako_html_url}\"{$_conf['bbs_win_target_at']}>{$kako_html_url}</a></p>";
         }
         $this->getdat_error_msg_ht = "<p>rep2 info: 2ちゃんねる過去ログ倉庫からのスレッド取り込みに失敗しました。</p>";
@@ -867,7 +867,7 @@ EOP;
             } else {
                 if (!empty($_GET['kakolog'])) {
                     $dat_response_status = 'そんな板orスレッドないです。';
-                    $kako_html_url = htmlspecialchars($_GET['kakolog'] . '.html', ENT_QUOTES);
+                    $kako_html_url = p2h($_GET['kakolog'] . '.html');
                     $kakolog_query = rawurlencode($_GET['kakolog']);
                     $read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_query}&amp;kakoget=1";
                     $dat_response_msg = '<p>2ch info - そんな板orスレッドないです。</p>';
@@ -881,7 +881,7 @@ EOP;
         // 原因が分からない場合でも、とりあえず過去ログ取り込みのリンクを維持している。と思う。あまり覚えていない 2005/2/27 aki
         } elseif (!empty($_GET['kakolog'])) {
             $dat_response_status = '';
-            $kako_html_url = htmlspecialchars($_GET['kakolog'] . '.html', ENT_QUOTES);
+            $kako_html_url = p2h($_GET['kakolog'] . '.html');
             $kakolog_query = rawurlencode($_GET['kakolog']);
             $read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_query}&amp;kakoget=1";
             $dat_response_msg = "<p><a href=\"{$kako_html_url}\"{$_conf['bbs_win_target_at']}>{$kako_html_url}</a> [<a href=\"{$read_kako_url}\">rep2にログを取り込んで読む</a>]</p>";
@@ -1385,11 +1385,12 @@ EOP;
 
         if ($_conf['p2_2ch_mail'] && $_conf['p2_2ch_pass']) {
             $csrfid = $this->_getCsrfIdForMoritapoDat();
-            $query = htmlspecialchars('host=' . rawurldecode($this->host)
-                                    . '&bbs=' . rawurldecode($this->bbs)
-                                    . '&key=' . rawurldecode($this->key)
-                                    . '&ls=' . rawurldecode($this->ls)
-                                    . '&moritapodat=true&csrfid=' . $csrfid, ENT_QUOTES);
+            $query = p2h('host=' . rawurlencode($this->host)
+                       . '&bbs=' . rawurlencode($this->bbs)
+                       . '&key=' . rawurlencode($this->key)
+                       . '&ls='  . rawurlencode($this->ls)
+                       . '&moritapodat=true'
+					   . '&csrfid=' . rawurlencode($csrfid));
             return " [<a href=\"{$_conf['read_php']}?{$query}{$_conf['k_at_a']}\">モリタポでrep2に取り込む</a>]";
         } else {
             return '';
@@ -1415,7 +1416,7 @@ EOP;
             $body = $client->downloadDat($this->host, $this->bbs, $this->key, $response);
             // DEBUG
             /*
-            $GLOBALS['_downloadDat2chMoritapo_response_dump'] = '<pre>' . htmlspecialchars(print_r($response, true)) . '</pre>';
+            $GLOBALS['_downloadDat2chMoritapo_response_dump'] = '<pre>' . p2h(print_r($response, true)) . '</pre>';
             register_shutdown_function(create_function('', 'echo $GLOBALS[\'_downloadDat2chMoritapo_response_dump\'];'));
             */
         } catch (P2Exception $e) {
@@ -1485,12 +1486,12 @@ EOP;
         $key_en = rawurlencode($this->key);
         $ls_en = rawurlencode($this->ls);
 
-        $host_ht = htmlspecialchars($this->host, ENT_QUOTES);
-        $bbs_ht = htmlspecialchars($this->bbs, ENT_QUOTES);
-        $key_ht = htmlspecialchars($this->key, ENT_QUOTES);
-        $ls_ht = htmlspecialchars($this->ls, ENT_QUOTES);
+        $host_ht = p2h($this->host);
+        $bbs_ht = p2h($this->bbs);
+        $key_ht = p2h($this->key);
+        $ls_ht = p2h($this->ls);
 
-        $query_ht = htmlspecialchars("host={$host_en}&bbs={$bbs_en}&key={$key_en}&ls={$ls_en}&maru=true");
+        $query_ht = p2h("host={$host_en}&bbs={$bbs_en}&key={$key_en}&ls={$ls_en}&maru=true");
         $marutori_ht = " [<a href=\"{$_conf['read_php']}?{$query_ht}{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
 
         if ($hosts = $this->scanOriginalHosts()) {
@@ -1672,7 +1673,7 @@ EOF;
         return sprintf('<a href="%s"%s>%s</a>',
                        P2Util::throughIme($url),
                        $_conf['ext_win_target_at'],
-                       htmlspecialchars($url, ENT_QUOTES));
+                       p2h($url));
     }
 
     // }}}

@@ -11,9 +11,9 @@
  * @param   string  $alt  値が空のときの代替文字列
  * @return  string|null
  */
-function hs($str, $alt = '', $quoteStyle = ENT_QUOTES)
+function hs($str, $alt = '', $quoteStyle = ENT_QUOTES, $charset = 'Shift_JIS')
 {
-    return (isset($str) && strlen($str) > 0) ? htmlspecialchars($str, $quoteStyle) : $alt;
+    return (isset($str) && strlen($str) > 0) ? htmlspecialchars($str, $quoteStyle, $charset) : $alt;
 }
 
 /**
@@ -23,9 +23,9 @@ function hs($str, $alt = '', $quoteStyle = ENT_QUOTES)
  * @param   &string  $str  文字列変数の参照
  * @return  string|null
  */
-function hsi(&$str, $alt = '', $quoteStyle = ENT_QUOTES)
+function hsi(&$str, $alt = '', $quoteStyle = ENT_QUOTES, $charset = 'Shift_JIS')
 {
-    return (isset($str) && strlen($str) > 0) ? htmlspecialchars($str, $quoteStyle) : $alt;
+    return (isset($str) && strlen($str) > 0) ? htmlspecialchars($str, $quoteStyle, $charset) : $alt;
 }
 
 /**
@@ -44,9 +44,9 @@ function eh($str, $alt = '', $quoteStyle = ENT_QUOTES)
  * @param   &string  $str  文字列変数の参照
  * @return  void
  */
-function ehi(&$str, $alt = '', $quoteStyle = ENT_QUOTES)
+function ehi(&$str, $alt = '', $quoteStyle = ENT_QUOTES, $charset = 'Shift_JIS')
 {
-    echo hs($str, $alt, $quoteStyle);
+    echo hs($str, $alt, $quoteStyle, $charset);
 }
 
 /**
@@ -146,16 +146,15 @@ define('P2_REGEX_NFD_KANA', '/([\\x{3046}\\x{304b}-\\x{3053}\\x{3055}-\\x{305d}\
 // {{{ p2h()
 
 /**
-* htmlspecialchars($value, ENT_QUOTES) のショートカット
+* htmlspecialchars($string, ENT_QUOTES, 'Shift_JIS') のショートカット
 *
-* @param    string $str
-* @param    string $charset
+* @param    string $string
 * @param    bool   $double_encode
 * @return   string
 */
-function p2h($str, $charset = 'Shift_JIS', $double_encode = true)
+function p2h($string, $double_encode = true)
 {
-    return htmlspecialchars($str, ENT_QUOTES, $charset, $double_encode);
+    return htmlspecialchars($string, ENT_QUOTES, 'Shift_JIS', $double_encode);
 }
 
 // }}}
@@ -197,14 +196,14 @@ EOH;
     echo '<h3>rep2 error</h3>';
 
     if ($err !== null) {
-        echo '<p><strong>', htmlspecialchars($err, ENT_QUOTES), '</strong></p>';
+        echo '<p><strong>', p2h($err), '</strong></p>';
     }
 
     if ($msg !== null) {
         if ($raw) {
             echo $msg;
         } else {
-            echo '<p>', nl2br(htmlspecialchars($msg, ENT_QUOTES)), '</p>';
+            echo '<p>', nl2br(p2h($msg)), '</p>';
         }
     }
 
@@ -317,7 +316,7 @@ function p2_scan_script_injection($request)
     foreach (array('host', 'bbs', 'key', 'ls') as $key) {
         if (array_key_exists($key, $request)) {
             $value = $request[$key];
-            if (htmlspecialchars($value, ENT_QUOTES) != $value) {
+            if (p2h($value) != $value) {
                 p2die('リクエストパラメータに不正な文字があります。');
             }
         }

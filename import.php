@@ -11,9 +11,9 @@ $_login->authorize(); // ユーザ認証
 $link_ht = '';
 $max_size = 1000000;
 
-$default_host = !empty($_REQUEST['host']) ? htmlspecialchars($_REQUEST['host'], ENT_QUOTES) : '_.2ch.net';
-$default_bbs = !empty($_REQUEST['bbs']) ? htmlspecialchars($_REQUEST['bbs'], ENT_QUOTES) : '';
-$default_key = !empty($_REQUEST['key']) ? htmlspecialchars($_REQUEST['key'], ENT_QUOTES) : 'auto';
+$default_host = !empty($_REQUEST['host']) ? p2h($_REQUEST['host']) : '_.2ch.net';
+$default_bbs = !empty($_REQUEST['bbs']) ? p2h($_REQUEST['bbs']) : '';
+$default_key = !empty($_REQUEST['key']) ? p2h($_REQUEST['key']) : 'auto';
 
 //================================================================
 // アップロードされたファイルの処理

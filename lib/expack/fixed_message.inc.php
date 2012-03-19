@@ -32,16 +32,16 @@ function fixed_message_get_persister()
  */
 function fixed_name_get_select_element($name = 'fixed_message', $onchange = null)
 {
-    $name_ht = htmlspecialchars($name, ENT_QUOTES, 'Shift_JIS');
+    $name_ht = p2h($name);
     if ($onchange !== null) {
-        $onchange_ht = htmlspecialchars($onchange, ENT_QUOTES, 'Shift_JIS');
+        $onchange_ht = p2h($onchange);
         $select = "<select id=\"{$name_ht}\" name=\"{$name_ht}\" onchange=\"{$onchange_ht}\">\n";
     } else {
         $select = "<select id=\"{$name_ht}\" name=\"{$name_ht}\">\n";
     }
     $select .= "<option value=\"\">’èŒ^•¶</option>\n";
     foreach (fixed_message_get_persister()->getKeys() as $key) {
-        $key_ht = htmlspecialchars($onchange, ENT_QUOTES, 'Shift_JIS');
+        $key_ht = p2h($onchange);
         $select .= "<option value=\"{$key_ht}\">{$key_ht}</option>\n";
     }
     $select .= "</option>";

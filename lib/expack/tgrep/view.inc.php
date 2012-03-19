@@ -87,7 +87,7 @@
 <!-- Errors -->
 <div class="tgrep_message">
 <h4>エラー</h4>
-<ul><?php foreach ($errors as $error) { ?><li><?php echo htmlspecialchars($error, ENT_QUOTES); ?></li><?php } ?></ul>
+<ul><?php foreach ($errors as $error) { ?><li><?php echo p2h($error); ?></li><?php } ?></ul>
 </div>
 <?php } ?>
 
@@ -95,7 +95,7 @@
 <!-- Result and Filter -->
 <div class="tgrep_result">
 <?php if ($htm['category'] && isset($profile['categories'][$htm['category']])) { ?>
-<b><?php echo htmlspecialchars($profile['categories'][$htm['category']]->name, ENT_QUOTES); ?></b> から <b><?php echo $htm['query']; ?></b> を検索: <?php echo $htm['hits']; ?> hit! (all: <?php echo $htm['allhits']; ?>)
+<b><?php echo p2h($profile['categories'][$htm['category']]->name); ?></b> から <b><?php echo $htm['query']; ?></b> を検索: <?php echo $htm['hits']; ?> hit! (all: <?php echo $htm['allhits']; ?>)
 <?php } else { ?>
 <b><?php echo $htm['query']; ?></b> で検索: <?php echo $htm['hits']; ?> hit!
 <?php } ?>
@@ -106,13 +106,13 @@
 | カテゴリで絞り込む:
 <select onchange="location.href=document.getElementById('h_php_self').value+'?Q='+document.getElementById('h_query_en').value+this.options[this.selectedIndex].value">
 <option value="">-</option>
-<?php foreach ($profile['categories'] as $c) { ?><option value="&amp;C=<?php echo $c->id; ?>"<?php if ($c->id == $htm['category']) { echo ' selected="selected"'; } ?>><?php echo htmlspecialchars($c->name, ENT_QUOTES); ?> (<?php echo $c->hits; ?>)</option><?php } ?>
+<?php foreach ($profile['categories'] as $c) { ?><option value="&amp;C=<?php echo $c->id; ?>"<?php if ($c->id == $htm['category']) { echo ' selected="selected"'; } ?>><?php echo p2h($c->name); ?> (<?php echo $c->hits; ?>)</option><?php } ?>
 </select>
 | 板で絞り込む:
 <select onchange="location.href=document.getElementById('h_subject_php').value+'?word='+document.getElementById('h_query_en').value+this.options[this.selectedIndex].value">
 <option value="">-</option>
 <?php $m = ($htm['category'] && isset($profile['categories'][$htm['category']])) ? $profile['categories'][$htm['category']]->member : null; ?>
-<?php foreach ($profile['boards'] as $n => $b) { if (!$m || in_array($n, $m)) { ?><option value="<?php printf('&amp;host=%s&amp;bbs=%s&amp;itaj_en=%s', $b->host, $b->bbs, UrlSafeBase64::encode($b->name)); ?>"><?php echo htmlspecialchars($b->name, ENT_QUOTES); ?> (<?php echo $b->hits; ?>)</option><?php } } ?>
+<?php foreach ($profile['boards'] as $n => $b) { if (!$m || in_array($n, $m)) { ?><option value="<?php printf('&amp;host=%s&amp;bbs=%s&amp;itaj_en=%s', $b->host, $b->bbs, UrlSafeBase64::encode($b->name)); ?>"><?php echo p2h($b->name); ?> (<?php echo $b->hits; ?>)</option><?php } } ?>
 </select>
 </div>
 <?php } ?>

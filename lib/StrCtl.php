@@ -25,8 +25,7 @@ class StrCtl
             $word_fm = mb_convert_kana($word_fm, 's');
         }
 
-        $word_fm = trim($word_fm);
-        $word_fm = htmlspecialchars($word_fm, ENT_NOQUOTES);
+        $word_fm = p2h(trim($word_fm));
 
         if (in_array($method, array('and', 'or', 'just'))) {
             // preg_quote()で2バイト目が0x5B("[")の"ー"なども変換されてしまうので

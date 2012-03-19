@@ -120,7 +120,7 @@ if (is_array($lines)) {
             $okini_itas[$id]['itaj_en']    = $itaj_en = UrlSafeBase64::encode($itaj);
             $okini_itas[$id]['host']       = $host = $matches[1];
             $okini_itas[$id]['bbs']        = $bbs = $matches[2];
-            $okini_itas[$id]['itaj_view']  = htmlspecialchars($itaj);
+            $okini_itas[$id]['itaj_view']  = p2h($itaj);
             $okini_itas[$id]['itaj_ht']    = "&amp;itaj_en=" . $itaj_en;
             $okini_itas[$id]['value']      = StrCtl::toJavaScript("{$host}@{$bbs}@{$itaj_en}");
 
@@ -289,7 +289,7 @@ if ($lines) {
             $itaj_en    = UrlSafeBase64::encode($itaj);
             $host       = $matches[1];
             $bbs        = $matches[2];
-            $itaj_view  = htmlspecialchars($itaj, ENT_QUOTES);
+            $itaj_view  = p2h($itaj);
             $itaj_q     = '&amp;itaj_en='.$itaj_en;
             echo <<<EOP
             <tr>

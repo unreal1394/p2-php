@@ -81,16 +81,16 @@ EOP;
     }
 
     if (preg_match("/^[0-9A-Za-z_{$add_mail}]+\$/", $_login->user_u)) {
-        $hd['form_login_id'] = htmlspecialchars($_login->user_u, ENT_QUOTES);
+        $hd['form_login_id'] = p2h($_login->user_u);
     } elseif (!empty($_POST['form_login_id']) && preg_match("/^[0-9A-Za-z_{$add_mail}]+\$/", $_POST['form_login_id'])) {
-        $hd['form_login_id'] = htmlspecialchars($_POST['form_login_id'], ENT_QUOTES);
+        $hd['form_login_id'] = p2h($_POST['form_login_id']);
     } else {
         $hd['form_login_id'] = '';
     }
 
 
     if (!empty($_POST['form_login_pass']) && preg_match('/^[0-9A-Za-z_]+$/', $_POST['form_login_pass'])) {
-        $hd['form_login_pass'] = htmlspecialchars($_POST['form_login_pass'], ENT_QUOTES);
+        $hd['form_login_pass'] = p2h($_POST['form_login_pass']);
     } else {
         $hd['form_login_pass'] = '';
     }
@@ -104,7 +104,7 @@ EOP;
 
     // {{{ ログイン用フォームを生成
 
-    $hd['REQUEST_URI'] = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES);
+    $hd['REQUEST_URI'] = p2h($_SERVER['REQUEST_URI']);
     if ($mobile->isDoCoMo()) {
         if (strpos($hd['REQUEST_URI'], '?') === false) {
             $hd['REQUEST_URI'] .= '?guid=ON';
@@ -160,7 +160,7 @@ EOP;
             $_login->makeUser($_POST['form_login_id'], $_POST['form_login_pass']);
 
             // 新規登録成功
-            $hd['form_login_id'] = htmlspecialchars($_POST['form_login_id'], ENT_QUOTES);
+            $hd['form_login_id'] = p2h($_POST['form_login_id']);
             $body_ht .= "<p class=\"info-msg\">○ 認証{$p_str['user']}「{$hd['form_login_id']}」を登録しました</p>";
             $body_ht .= "<p><a href=\"{$myname}?form_login_id={$hd['form_login_id']}{$_conf['k_at_a']}\">rep2 start</a></p>";
 

@@ -56,17 +56,17 @@ function kspform($aThread, $default = '', $params = null)
 
     // 隠しパラメータ
     $hidden = '<input type="hidden" name="%s" value="%s">';
-    $form .= sprintf($hidden, 'host', htmlspecialchars($aThread->host, ENT_QUOTES));
-    $form .= sprintf($hidden, 'bbs', htmlspecialchars($aThread->bbs, ENT_QUOTES));
-    $form .= sprintf($hidden, 'key', htmlspecialchars($aThread->key, ENT_QUOTES));
+    $form .= sprintf($hidden, 'host', p2h($aThread->host));
+    $form .= sprintf($hidden, 'bbs', p2h($aThread->bbs));
+    $form .= sprintf($hidden, 'key', p2h($aThread->key));
     $form .= sprintf($hidden, 'rescount', $aThread->rescount);
     $form .= sprintf($hidden, 'offline', '1');
-    $form .= sprintf($hidden, 'ttitle_en',htmlspecialchars(base64_encode($aThread->ttitle), ENT_QUOTES));
+    $form .= sprintf($hidden, 'ttitle_en', p2h(base64_encode($aThread->ttitle)));
 
     // 追加の隠しパラメータ
     if (is_array($params)) {
         foreach ($params as $param_name => $param_value) {
-            $form .= sprintf($hidden, $param_name, htmlspecialchars($param_value, ENT_QUOTES));
+            $form .= sprintf($hidden, $param_name, p2h($param_value));
         }
     }
 
@@ -104,7 +104,7 @@ function kspDetectThread()
 
     if (!($host && $bbs && $key)) {
         if ($nama_url) {
-            $nama_url = htmlspecialchars($nama_url, ENT_QUOTES);
+            $nama_url = p2h($nama_url);
             p2die('スレッドの指定が変です。', "<a href=\"{$nama_url}\">{$nama_url}</a>", true);
         } else {
             p2die('スレッドの指定が変です。');

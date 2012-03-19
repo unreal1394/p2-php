@@ -40,8 +40,8 @@ EOP;
     $ch_link = P2Util::throughIme($channel['link']);
     $ch_dscr_all = str_replace(array('&amp;', '&gt;', '&lt;', '&quot;'), array('&', '>', '<', '"'), strip_tags($channel['description']));
     $ch_dscr = (mb_strwidth($ch_dscr_all) > 36) ? mb_strcut($ch_dscr_all, 0, 36) . '...' : $ch_dscr_all;
-    $ch_dscr_all = htmlspecialchars($ch_dscr_all, ENT_QUOTES);
-    $ch_dscr = htmlspecialchars($ch_dscr, ENT_QUOTES);
+    $ch_dscr_all = p2h($ch_dscr_all);
+    $ch_dscr = p2h($ch_dscr);
     $rss_toolbar_ht = <<<EOP
 <span class="itatitle"><a class="aitatitle" href="{$ch_link}" title="{$ch_dscr_all}"{$onmouse_popup}><b>{$title}</b></a></span> <span class="time">{$ch_dscr}</span></td>
 <td class="toolbar-update" width="100%">
@@ -153,11 +153,11 @@ foreach ($items as $item) {
     }
     // トピック
     if ($subject_column_ht) {
-        $subject_ht = "<td class=\"t\">" . htmlspecialchars($item['dc:subject'], ENT_QUOTES, 'Shift_JIS', false) . "</td>";
+        $subject_ht = "<td class=\"t\">" . p2h($item['dc:subject'], false) . "</td>";
     }
     // 文責
     if ($creator_column_ht) {
-        $creator_ht = "<td class=\"t\">" . htmlspecialchars($item['dc:creator'], ENT_QUOTES, 'Shift_JIS', false) . "</td>";
+        $creator_ht = "<td class=\"t\">" . p2h($item['dc:creator'], false) . "</td>";
     }
     // 日時
     if ($date_column_ht) {

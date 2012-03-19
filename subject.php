@@ -1094,7 +1094,7 @@ function setSbSimilarity($aThread)
     $score = getSbScore($common_words, mb_strlen($aThread->ttitle_hc, 'CP932'));
     $aThread->similarity = $score / $GLOBALS['wakati_score'];
     // debug (title ‘®«)
-    //$aThread->ttitle_hd = mb_convert_encoding(htmlspecialchars(implode(' ', $common_words)), 'CP932', 'UTF-8');
+    //$aThread->ttitle_hd = mb_convert_encoding(p2h(implode(' ', $common_words)), 'CP932', 'UTF-8');
     return true;
 }
 

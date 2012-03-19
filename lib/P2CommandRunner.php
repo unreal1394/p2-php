@@ -65,7 +65,7 @@ class P2CommandRunner
 
         $command = implode(' ', $args);
 
-        //P2Util::pushInfoHtml('<p>' . htmlspecialchars($command, ENT_QUOTES) . '</p>');
+        //P2Util::pushInfoHtml('<p>' . p2h($command) . '</p>');
 
         // é¿çs
         $pipe = popen($command, 'r');
@@ -87,7 +87,7 @@ class P2CommandRunner
             if ($status == 2) {
                 P2Util::pushInfoHtml($output);
             } else {
-                P2Util::pushInfoHtml('<p>' . nl2br(htmlspecialchars($output, ENT_QUOTES)) . '</p>');
+                P2Util::pushInfoHtml('<p>' . nl2br(p2h($output)) . '</p>');
             }
         }
 

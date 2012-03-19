@@ -131,7 +131,7 @@ GOTO;
 $similar_q = '&amp;itaj_en=' . UrlSafeBase64::encode($aThread->itaj)
            . '&amp;method=similar&amp;word=' . rawurlencode($aThread->ttitle_hc)
            . '&amp;refresh=1';
-$itaj_hd = htmlspecialchars($aThread->itaj, ENT_QUOTES);
+$itaj_hd = p2h($aThread->itaj);
 
 if ($_conf['expack.misc.multi_favs']) {
     $favlist_titles = FavSetManager::getFavSetTitles('m_favlist_set');

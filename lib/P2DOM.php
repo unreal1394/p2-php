@@ -46,7 +46,7 @@ class P2DOM
                 $orig_html = $html;
                 foreach ($fallbackEncodings as $charset) {
                     // <head>íºå„Ç…<meta>ÇñÑÇﬂçûÇﬁ
-                    $charset = htmlspecialchars($charset, ENT_QUOTES);
+                    $charset = p2h($charset);
                     $html = str_replace('<rep2:charset>',
                                         "<meta http-equiv=\"Content-Type\" content=\"text/html; charset={$charset}\">",
                                         preg_replace('/<head[^<>]*>/i', '$0<rep2:charset>', $orig_html));

@@ -186,7 +186,7 @@ if (P2_FETCH_SUBJECT_TXT_DEBUG) {
 
     if (file_put_contents(P2_FETCH_SUBJECT_TXT_DEBUG_OUTPUT_FILE, $debug_output, LOCK_EX | FILE_APPEND) === false) {
         $errmsg .= sprintf("<p><b>cannot write to `%s'.</b></p>\n",
-                           htmlspecialchars(P2_FETCH_SUBJECT_TXT_DEBUG_OUTPUT_FILE, ENT_QUOTES)
+                           p2h(P2_FETCH_SUBJECT_TXT_DEBUG_OUTPUT_FILE)
                            );
     }
 }

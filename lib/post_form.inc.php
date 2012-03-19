@@ -63,7 +63,7 @@ EOP;
         $htm['kaiko_on_js_func'] = 'DraftKakiko.startAutoSave(this.form, ' . ($_conf['expack.editor.savedraft.interval'] * 1000) . '); ' . $htm['kaiko_on_js_func'];
     }
     $htm['kaiko_on_js_cond'] = '!event||((event.keyCode&&(event.keyCode==8||event.keyCode==13))||event.ctrlKey||event.metaKey||event.altKey)';
-    $htm['kaiko_on_js'] = sprintf($htm['kaiko_on_js_fmt'], $htm['kaiko_on_js_func'], htmlspecialchars($htm['kaiko_on_js_cond'], ENT_QUOTES));
+    $htm['kaiko_on_js'] = sprintf($htm['kaiko_on_js_fmt'], $htm['kaiko_on_js_func'], p2h($htm['kaiko_on_js_cond']));
     //$htm['kaiko_on_js'] .= ' ondblclick="this.rows=this.value.split(/\r\n|\r|\n/).length+1"';
     $htm['kaiko_set_hidden_js'] = ' onclick="setHiddenValue(this);"';
     $htm['table_begin'] = '<table border="0" cellpadding="0" cellspacing="0"><tr><td align="left" colspan="2">';

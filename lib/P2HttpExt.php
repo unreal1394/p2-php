@@ -348,7 +348,7 @@ class P2HttpGet extends HttpRequest
                 $this->setError(sprintf('%s (%d) %s',
                                         get_class($e),
                                         $e->getCode(),
-                                        htmlspecialchars($e->getMessage(), ENT_QUOTES)
+                                        p2h($e->getMessage())
                                         ),
                                 self::E_EXCEPTION
                                 );
@@ -826,8 +826,8 @@ class P2HttpRequestPool
                     if ($req instanceof P2HttpGet) {
                         if ($req->hasError()) {
                             $err .= sprintf('<li><em>%s</em>: %s</li>',
-                                            htmlspecialchars($req->getUrl(), ENT_QUOTES),
-                                            htmlspecialchars($req->getErrorInfo(), ENT_QUOTES)
+                                            p2h($req->getUrl()),
+                                            p2h($req->getErrorInfo())
                                             );
                         }
 
@@ -850,7 +850,7 @@ class P2HttpRequestPool
             $err .= sprintf('<li>%s (%d) %s</li>',
                             get_class($e),
                             $e->getCode(),
-                            htmlspecialchars($e->getMessage(), ENT_QUOTES)
+                            p2h($e->getMessage())
                             );
         }
 
@@ -863,9 +863,7 @@ class P2HttpRequestPool
                 $ph_dump = str_replace('  ', ' ', print_r($ph, true));
                 $ph_dump = preg_replace('/[\\r\\n]+/', "\n", $ph_dump);
                 $ph_dump = preg_replace('/(Array|Object)\\n *\(/', '$1(', $ph_dump);
-                $info_msg_ht = "<pre>Persistent Handles:\n";
-                $info_msg_ht .= htmlspecialchars($ph_dump, ENT_QUOTES);
-                $info_msg_ht .= "</pre>\n";
+                $info_msg_ht = "<pre>Persistent Handles:\n" . p2h($ph_dump) . "</pre>\n";
                 P2Util::pushInfoHtml($info_msg_ht);
             }
         }

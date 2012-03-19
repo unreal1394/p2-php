@@ -279,7 +279,7 @@ class P2Util
             $info_msg_ht = "<p class=\"info-msg\">Error: {$wap_res->code} {$wap_res->message}<br>";
             if ($wap_res->isRedirect() && array_key_exists('Location', $wap_res->headers)) {
                 $location = $wap_res->headers['Location'];
-                $location_ht = htmlspecialchars($location, ENT_QUOTES);
+                $location_ht = p2h($location);
                 $location_t = self::throughIme($location);
                 $info_msg_ht .= "Location: <a href=\"{$location_t}\"{$_conf['ext_win_target_at']}>{$location_ht}</a><br>";
             }
@@ -1110,7 +1110,7 @@ class P2Util
 
         // 新しいログ行を設定
         $newdata = implode('<>', array($date, $remote_addr, $remote_host, $user_agent, $referrer, '', $user));
-        //$newdata = htmlspecialchars($newdata, ENT_QUOTES);
+        //$newdata = p2h($newdata);
 
         // まずタブを全て外して
         $newdata = str_replace("\t", "", $newdata);
@@ -1497,7 +1497,7 @@ ERR;
                     } elseif ($key == '背景色' || substr($key, -6) == '_COLOR') { //カラーサンプル
                         $table .= "<span class=\"colorset\" style=\"color:{$value};\">■</span>（{$value}）";
                     } else {
-                        $table .= htmlspecialchars($value, ENT_QUOTES);
+                        $table .= p2h($value);
                     }
                 }
                 $table .= '</td></tr>' . "\n";
@@ -1509,17 +1509,6 @@ ERR;
             '<td class="tdcont"><table border="0" cellspacing="1" cellpadding="0" class="child">', $table);
 
         return $table;
-    }
-
-    // }}}
-    // {{{ re_htmlspecialchars()
-
-    /**
-     * ["&<>]が実体参照になっているかどうか不明な文字列に対してhtmlspecialchars()をかける
-     */
-    static public function re_htmlspecialchars($str, $charset = 'Shift_JIS')
-    {
-        return htmlspecialchars($str, ENT_QUOTES, $charset, false);
     }
 
     // }}}
@@ -2028,13 +2017,13 @@ ERR;
     {
         echo PHP_EOL;
         echo '/', '*', '<pre>', PHP_EOL;
-        echo htmlspecialchars(print_r(self::$_hostDirs, true)), PHP_EOL;
-        echo htmlspecialchars(print_r(array_map('intval', self::$_hostIs2chs), true)), PHP_EOL;
-        //echo htmlspecialchars(print_r(array_map('intval', self::$_hostIsBe2chNet), true)), PHP_EOL;
-        echo htmlspecialchars(print_r(array_map('intval', self::$_hostIsBbsPink), true)), PHP_EOL;
-        echo htmlspecialchars(print_r(array_map('intval', self::$_hostIsMachiBbs), true)), PHP_EOL;
-        echo htmlspecialchars(print_r(array_map('intval', self::$_hostIsMachiBbsNet), true)), PHP_EOL;
-        echo htmlspecialchars(print_r(array_map('intval', self::$_hostIsJbbsShitaraba), true)), PHP_EOL;
+        echo p2h(print_r(self::$_hostDirs, true)), PHP_EOL;
+        echo p2h(print_r(array_map('intval', self::$_hostIs2chs), true)), PHP_EOL;
+        //echo p2h(print_r(array_map('intval', self::$_hostIsBe2chNet), true)), PHP_EOL;
+        echo p2h(print_r(array_map('intval', self::$_hostIsBbsPink), true)), PHP_EOL;
+        echo p2h(print_r(array_map('intval', self::$_hostIsMachiBbs), true)), PHP_EOL;
+        echo p2h(print_r(array_map('intval', self::$_hostIsMachiBbsNet), true)), PHP_EOL;
+        echo p2h(print_r(array_map('intval', self::$_hostIsJbbsShitaraba), true)), PHP_EOL;
         echo '</pre>', '*', '/', PHP_EOL;
     }
     */

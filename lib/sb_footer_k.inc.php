@@ -15,10 +15,10 @@ $host_bbs_q = 'host=' . $aThreadList->host . $bbs_q;
 if (!empty($GLOBALS['wakati_words'])) {
     $word_at = '&amp;method=similar&amp;word=' . rawurlencode($GLOBALS['wakati_word']);
     $word_input_ht = '<input type="hidden" name="method" value="similar">';
-    $word_input_ht .= '<input type="hidden" name="word" value="' . htmlspecialchars($GLOBALS['wakati_word'], ENT_QUOTES) . '">';
+    $word_input_ht .= '<input type="hidden" name="word" value="' . p2h($GLOBALS['wakati_word']) . '">';
 } elseif ($word) {
     $word_at = '&amp;word=' . rawurldecode($word);
-    $word_input_ht = '<input type="hidden" name="word" value="' . htmlspecialchars($word, ENT_QUOTES) . '">';
+    $word_input_ht = '<input type="hidden" name="word" value="' . p2h($word) . '">';
     if (isset($sb_filter['method']) && $sb_filter['method'] == 'or') {
         $word_at .= '&amp;method=or';
         $word_input_ht = '<input type="hidden" name="method" value="or">';
@@ -59,7 +59,7 @@ EOP;
 
 if (!empty($_REQUEST['sb_view'])) {
     $sb_view_at = "&amp;sb_view=" . rawurlencode($_REQUEST['sb_view']);
-    $sb_view_input_ht = '<input type="hidden" name="sb_view" value="' . htmlspecialchars($_REQUEST['sb_view'], ENT_QUOTES) . '">';
+    $sb_view_input_ht = '<input type="hidden" name="sb_view" value="' . p2h($_REQUEST['sb_view']) . '">';
 } else {
     $sb_view_at = '';
     $sb_view_input_ht = '';
@@ -243,7 +243,7 @@ $htm['change_sort'] .= '</select>';
 
 if (!empty($_REQUEST['sb_view'])) {
     $htm['change_sort'] .= '<input type="hidden" name="sb_view" value="'
-                        . htmlspecialchars($_REQUEST['sb_view']) . '">';
+                        . p2h($_REQUEST['sb_view']) . '">';
 }
 
 if (!empty($_REQUEST['rsort'])) {

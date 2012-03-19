@@ -293,7 +293,7 @@ class Login
             // セッションが利用されているなら、セッションの妥当性チェック
             if (isset($_p2session)) {
                 if ($msg = $_p2session->checkSessionError()) {
-                    P2Util::pushInfoHtml('<p>p2 error: ' . htmlspecialchars($msg) . '</p>');
+                    P2Util::pushInfoHtml('<p>p2 error: ' . p2h($msg) . '</p>');
                     //Session::unSession();
                     // ログイン失敗
                     return false;

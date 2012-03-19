@@ -167,7 +167,7 @@ function sb_print_k($aThreadList)
         // 板名 ============================================
         if ($ita_name_bool) {
             $ita_name = $aThread->itaj ? $aThread->itaj : $aThread->bbs;
-            $ita_name_hd = htmlspecialchars($ita_name, ENT_QUOTES);
+            $ita_name_hd = p2h($ita_name);
 
             // 全角英数カナスペースを半角に
             if (!empty($_conf['mobile.save_packet'])) {
@@ -207,7 +207,7 @@ function sb_print_k($aThreadList)
         $ttitle_ht = $aThread->ttitle_ht;
         if (strlen($ttitle_ht) == 0) {
             // 見かけ上のタイトルなので携帯対応URLである必要はない
-            $ttitle_ht = htmlspecialchars($aThread->getMotoThread(true, ''));
+            $ttitle_ht = p2h($aThread->getMotoThread(true, ''));
         }
 
         // 全角英数カナスペースを半角に

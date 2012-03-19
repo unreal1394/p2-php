@@ -116,7 +116,7 @@ if (!empty($_GET['one'])) {
     }
 
     $preview = $aThread->previewOne();
-    $ptitle_ht = htmlspecialchars($aThread->itaj, ENT_QUOTES) . ' / ' . $aThread->ttitle_hd;
+    $ptitle_ht = p2h($aThread->itaj) . ' / ' . $aThread->ttitle_hd;
 
     include READ_HEADER_INC_PHP;
     echo $preview;
@@ -197,7 +197,7 @@ $aThread->lsToPoint();
 //===============================================================
 // プリント
 //===============================================================
-$ptitle_ht = htmlspecialchars($aThread->itaj, ENT_QUOTES)." / ".$aThread->ttitle_hd;
+$ptitle_ht = p2h($aThread->itaj) . ' / ' . $aThread->ttitle_hd;
 
 if ($_conf['ktai']) {
 
@@ -276,7 +276,7 @@ if ($_conf['ktai']) {
         echo "<p><b id=\"filterstart\">{$all}レス中 <span id=\"searching\">n</span>レスがヒット</b></p>\n";
     }
     if ($_GET['showbl']) {
-        echo  '<p><b>' . htmlspecialchars($aThread->resrange['start']) . 'へのレス</b></p>';
+        echo  '<p><b>' . p2h($aThread->resrange['start']) . 'へのレス</b></p>';
     }
 
     //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("datToHtml");
@@ -438,7 +438,7 @@ function detectThread()
 
     if (!($host && $bbs && $key)) {
         if ($nama_url) {
-            $nama_url = htmlspecialchars($nama_url, ENT_QUOTES);
+            $nama_url = p2h($nama_url);
             p2die('スレッドの指定が変です。', "<a href=\"{$nama_url}\">{$nama_url}</a>", true);
         } else {
             p2die('スレッドの指定が変です。');

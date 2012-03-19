@@ -63,7 +63,7 @@ EOP;
         if (version_compare($php_version, $recommended_version, '<')) {
             // title.php のみメッセージを表示
             if (!is_numeric($check_recommended)) {
-                $check_recommended = htmlspecialchars($check_recommended, ENT_QUOTES);
+                $check_recommended = p2h($check_recommended);
             }
             if (basename($_SERVER['PHP_SELF'], '.php') == 'title') {
                 $info_msg_ht = <<<EOP

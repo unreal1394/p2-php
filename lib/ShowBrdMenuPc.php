@@ -32,7 +32,7 @@ class ShowBrdMenuPc
         global $_conf;
 
         if ($categories) {
-            $menu_php_ht = htmlspecialchars((isset($GLOBALS['menu_php_self'])) ? $GLOBALS['menu_php_self'] : $_SERVER['SCRIPT_NAME']);
+            $menu_php_ht = p2h(isset($GLOBALS['menu_php_self']) ? $GLOBALS['menu_php_self'] : $_SERVER['SCRIPT_NAME']);
 
             foreach ($categories as $cate) {
                 if ($cate->num > 0) {
@@ -64,7 +64,7 @@ class ShowBrdMenuPc
     {
         global $_conf, $matome_i, $STYLE;
 
-        $menu_php_ht = htmlspecialchars((isset($GLOBALS['menu_php_self'])) ? $GLOBALS['menu_php_self'] : $_SERVER['SCRIPT_NAME']);
+        $menu_php_ht = p2h(isset($GLOBALS['menu_php_self']) ? $GLOBALS['menu_php_self'] : $_SERVER['SCRIPT_NAME']);
 
         echo <<<EOP
 <div class="menu_cate">
@@ -120,7 +120,7 @@ EOP;
 
             foreach ($favitas as $favita) {
                 extract($favita);
-                $itaj_view = htmlspecialchars($itaj, ENT_QUOTES);
+                $itaj_view = p2h($itaj);
                 $itaj_en = UrlSafeBase64::encode($itaj);
                 $itaj_js = addslashes($itaj_view);
 

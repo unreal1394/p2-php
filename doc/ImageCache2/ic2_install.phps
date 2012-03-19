@@ -308,9 +308,9 @@ Deny from all
     Allow from all
 </FilesMatch>\n
 EOS;
-$cachedir_path_ht = htmlspecialchars(realpath($ini['General']['cachedir']), ENT_QUOTES);
-$htaccess_path_ht = htmlspecialchars($htaccess_path, ENT_QUOTES);
-$htaccess_cont_ht = htmlspecialchars($htaccess_cont, ENT_QUOTES);
+$cachedir_path_ht = p2h(realpath($ini['General']['cachedir']));
+$htaccess_path_ht = p2h($htaccess_path);
+$htaccess_cont_ht = p2h($htaccess_cont);
 
 if (FileCtl::file_write_contents($htaccess_path, $htaccess_cont) !== false) {
     echo <<<EOS

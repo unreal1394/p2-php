@@ -96,8 +96,7 @@ function editFile($path, $encode, $title)
     }
 
     $filename = basename($path);
-    $ptitle = 'Edit: ' . htmlspecialchars($title, ENT_QUOTES, 'Shift_JIS')
-            . ' (' . $filename . ')';
+    $ptitle = 'Edit: ' . p2h($title) . ' (' . $filename . ')';
 
     //ファイル内容読み込み
     FileCtl::make_datafile($path) or p2die("cannot make file. ({$path})");
@@ -107,7 +106,7 @@ function editFile($path, $encode, $title)
         $cont = mb_convert_encoding($cont, 'CP932', 'CP51932');
     }
 
-    $cont_area = htmlspecialchars($cont, ENT_QUOTES);
+    $cont_area = p2h($cont);
 
     if ($modori_url) {
         $modori_url_ht = "<p><a href=\"{$modori_url}\">Back</a></p>\n";

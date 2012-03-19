@@ -745,7 +745,7 @@ abstract class ShowThread
             $type |= $this->_markNgAborn($i, self::NG_MSG, true);
             $info[] = sprintf('NG%s:%s',
                               ($_conf['ktai']) ? 'ﾜｰﾄﾞ' : 'ワード',
-                              htmlspecialchars($a_ng_msg, ENT_QUOTES));
+                              p2h($a_ng_msg));
         }
 
         // }}}
@@ -834,7 +834,7 @@ abstract class ShowThread
                     /*if ($re_method($v['word'], $resfield, $matches)) {
                         $this->ngAbornUpdate($code, $k);
                         //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('ngAbornCheck()');
-                        return htmlspecialchars($matches[0], ENT_QUOTES);
+                        return p2h($matches[0]);
                     }*/
                      if ($re_method($v['word'], $resfield)) {
                         $this->ngAbornUpdate($code, $k);
@@ -1069,8 +1069,8 @@ abstract class ShowThread
         }
 
         // エスケープされていない特殊文字をエスケープ
-        $url = htmlspecialchars($url, ENT_QUOTES, 'Shift_JIS', false);
-        $str = htmlspecialchars($str, ENT_QUOTES, 'Shift_JIS', false);
+        $url = p2h($url, false);
+        $str = p2h($str, false);
         // 実態参照・数値参照を完全にデコードしようとすると負荷が大きいし、
         // "&"以外の特殊文字はほとんどの場合URLエンコードされているはずなので
         // 中途半端に凝った処理はせず、"&amp;"→"&"のみ再変換する。

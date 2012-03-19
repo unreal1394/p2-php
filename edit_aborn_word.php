@@ -308,15 +308,14 @@ if (!empty($formdata)) {
     }
     foreach ($formdata as $k => $v) {
         printf($row_format,
-            $k,
-            htmlspecialchars($v['word'], ENT_QUOTES),
-            $v['ic'],
-            $v['re'],
-            htmlspecialchars($v['ht'], ENT_QUOTES),
-            $v['hn'],
-            htmlspecialchars($v['bbs'], ENT_QUOTES),
-            htmlspecialchars($v['tt'], ENT_QUOTES)
-        );
+               $k,
+               p2h($v['word']),
+               $v['ic'],
+               $v['re'],
+               p2h($v['ht']),
+               $v['hn'],
+               p2h($v['bbs']),
+               p2h($v['tt']));
     }
     echo $htm['form_submit'];
 }

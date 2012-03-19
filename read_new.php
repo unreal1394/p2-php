@@ -89,7 +89,7 @@ if ($spmode == 'merge_favita') {
 }
 
 // ページヘッダ表示 ===================================
-$ptitle_hd = htmlspecialchars($aThreadList->ptitle, ENT_QUOTES);
+$ptitle_hd = p2h($aThreadList->ptitle);
 $ptitle_ht = "{$ptitle_hd} の 新着まとめ読み";
 $matomeCache = new MatomeCache($ptitle_hd, $_conf['matome_cache_max']);
 ob_start();
@@ -638,7 +638,7 @@ EOP;
     // ツールバー部分HTML =======
 
     // お気にマーク設定
-    $itaj_hd = htmlspecialchars($aThread->itaj, ENT_QUOTES);
+    $itaj_hd = p2h($aThread->itaj);
     $similar_q = '&amp;itaj_en=' . UrlSafeBase64::encode($aThread->itaj)
                . '&amp;method=similar&amp;word=' . rawurlencode($aThread->ttitle_hc);
 

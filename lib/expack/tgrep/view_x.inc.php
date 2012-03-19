@@ -54,7 +54,7 @@ if (isset($_GET['ic'])) {
                     ' <span class="size-l">(%d)</span></a></li>',
                $ix_base_url,
                $category->id,
-               htmlspecialchars($category->name, ENT_QUOTES),
+               p2h($category->name),
                $category->hits
                );
 
@@ -82,7 +82,7 @@ if (isset($_GET['ic'])) {
                    $board->id,
                    rawurlencode($board->site),
                    rawurlencode($board->bbs),
-                   htmlspecialchars($board->name, ENT_QUOTES),
+                   p2h($board->name),
                    $board->hits
                    );
         }

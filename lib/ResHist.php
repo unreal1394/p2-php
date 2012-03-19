@@ -122,9 +122,9 @@ class ResHist
         echo "<div class=\"thread\">\n";
 
         foreach ($data as $a_res) {
-            $hd['daytime'] = htmlspecialchars($a_res->daytime, ENT_QUOTES);
-            $hd['ttitle'] = htmlspecialchars(html_entity_decode($a_res->ttitle, ENT_COMPAT, 'Shift_JIS'), ENT_QUOTES);
-            $hd['itaj'] = htmlspecialchars($a_res->itaj, ENT_QUOTES);
+            $hd['daytime'] = p2h($a_res->daytime);
+            $hd['ttitle'] = p2h(html_entity_decode($a_res->ttitle, ENT_COMPAT, 'Shift_JIS'));
+            $hd['itaj'] = p2h($a_res->itaj);
 
             $href_ht = "";
             if ($a_res->key) {
@@ -146,10 +146,10 @@ EOP;
             $res_ht = "<div class=\"res\">\n";
             $res_ht .= "<div class=\"res-header\"><input name=\"checked_hists[]\" type=\"checkbox\" value=\"{$a_res->order},,,,{$hd['daytime']}\"> ";
             $res_ht .= "{$a_res->order} ："; // 番号
-            $res_ht .= '<span class="name"><b>' . htmlspecialchars($a_res->name, ENT_QUOTES) . '</b></span> ：'; // 名前
+            $res_ht .= '<span class="name"><b>' . p2h($a_res->name) . '</b></span> ：'; // 名前
             // メール
             if ($a_res->mail) {
-                $res_ht .= htmlspecialchars($a_res->mail, ENT_QUOTES) . ' ：';
+                $res_ht .= p2h($a_res->mail) . ' ：';
             }
             $res_ht .= "{$hd['daytime']}</div>\n"; // 日付とID
             // 板名
@@ -253,9 +253,9 @@ EOP;
         global $_conf;
 
         foreach ($this->articles as $a_res) {
-            $hd['daytime'] = htmlspecialchars($a_res->daytime, ENT_QUOTES);
-            $hd['ttitle'] = htmlspecialchars(html_entity_decode($a_res->ttitle, ENT_COMPAT, 'Shift_JIS'), ENT_QUOTES);
-            $hd['itaj'] = htmlspecialchars($a_res->itaj, ENT_QUOTES);
+            $hd['daytime'] = p2h($a_res->daytime);
+            $hd['ttitle'] = p2h(html_entity_decode($a_res->ttitle, ENT_COMPAT, 'Shift_JIS'));
+            $hd['itaj'] = p2h($a_res->itaj);
 
             if ($a_res->order < $this->resrange['start'] or $a_res->order > $this->resrange['to']) {
                 continue;
@@ -304,10 +304,10 @@ EOP;
             }
 
             $res_ht = "[$a_res->order]"; // 番号
-            $res_ht .= htmlspecialchars($a_res->name, ENT_QUOTES) . ':'; // 名前
+            $res_ht .= p2h($a_res->name) . ':'; // 名前
             // メール
             if ($a_res->mail) {
-                $res_ht .= htmlspecialchars($a_res->mail, ENT_QUOTES) . ':';
+                $res_ht .= p2h($a_res->mail) . ':';
             }
             $res_ht .= "{$hd['daytime']}<br>\n"; // 日付とID
             $res_ht .= "<a href=\"{$_conf['subject_php']}?host={$a_res->host}&amp;bbs={$a_res->bbs}{$_conf['k_at_a']}\">{$hd['itaj']}</a> / ";

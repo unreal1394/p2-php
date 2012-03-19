@@ -90,7 +90,7 @@ $aThread->lsToPoint();
 //===============================================================
 // プリント
 //===============================================================
-$ptitle_ht = htmlspecialchars($aThread->itaj, ENT_QUOTES).' / '.$aThread->ttitle_hd;
+$ptitle_ht = p2h($aThread->itaj).' / '.$aThread->ttitle_hd;
 
 // {{{ HTTPヘッダとXML宣言
 

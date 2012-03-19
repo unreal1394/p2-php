@@ -27,11 +27,11 @@ $itaj = P2Util::getItaName($host, $bbs);
 if (!$itaj) {
     $itaj = $bbs;
 }
-$itaj_hd = htmlspecialchars($itaj, ENT_QUOTES, 'Shift_JIS', false);
+$itaj_hd = p2h($itaj, false);
 
 $ttitle_en = isset($_GET['ttitle_en']) ? $_GET['ttitle_en'] : '';
 $ttitle = (strlen($ttitle_en) > 0) ? UrlSafeBase64::decode($ttitle_en) : '';
-$ttitle_hd = htmlspecialchars($ttitle, ENT_QUOTES);
+$ttitle_hd = p2h($ttitle);
 
 $key_idx = P2Util::idxDirOfHostBbs($host, $bbs) . $key . '.idx';
 

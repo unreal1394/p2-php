@@ -270,7 +270,7 @@ EOP;
 
         // î¬ñº ============================================
         if ($ita_name_bool) {
-            $ita_name_ht = htmlspecialchars($aThread->itaj ? $aThread->itaj : $aThread->bbs, ENT_QUOTES);
+            $ita_name_ht = p2h($aThread->itaj ? $aThread->itaj : $aThread->bbs);
             $td['ita'] = <<<EOP
 <td{$class_t}><a href="{$_conf['subject_php']}?host={$aThread->host}&amp;bbs={$aThread->bbs}" target="_self">{$ita_name_ht}</a></td>\n
 EOP;
@@ -337,7 +337,7 @@ EOP;
         if ($_conf['sb_show_motothre']) {
             if (!$aThread->isKitoku()) {
                 $moto_thre_ht = '<a class="thre_title moto_thre" href="'
-                              . htmlspecialchars($aThread->getMotoThread(false, ''), ENT_QUOTES)
+                              . p2h($aThread->getMotoThread(false, ''))
                               . '">ÅE</a>';
             }
         }

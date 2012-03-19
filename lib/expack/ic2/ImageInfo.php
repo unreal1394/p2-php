@@ -16,7 +16,7 @@ class IC2_ImageInfo
         // ’·‚·‚¬‚éURI‚ÍÜ‚è•Ô‚·
         if (strlen($img['uri']) > 45) {
             $w = explode("\n", wordwrap($img['uri'], 45, "\n", 1));
-            $w = array_map('htmlspecialchars', $w);
+            $w = array_map('p2h', $w);
             $add['uri_w'] = implode('<br />', $w);
         } else {
             $add['uri_w'] = $img['uri'];

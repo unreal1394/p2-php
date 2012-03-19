@@ -5,7 +5,7 @@
 
 // {{{ ヘッダ
 
-$ch_title = htmlspecialchars($channel['title'], ENT_QUOTES, 'Shift_JIS', false);
+$ch_title = p2h($channel['title'], false);
 $info_msg_ht = P2Util::getInfoHtml();
 
 echo <<<EOH
@@ -57,7 +57,7 @@ function rss_print_content_k($item, $num, $count)
     $next_item_ht = '';
 
     // タイトル
-    $item_title = htmlspecialchars($item['title'], ENT_QUOTES, 'Shift_JIS', false);
+    $item_title = p2h($item['title'], false);
 
     // リンク
     $link_orig = P2Util::throughIme($item['link']);
