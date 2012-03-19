@@ -25,7 +25,7 @@ $key_q = '&amp;key=' . $aThread->key;
 $host_bbs_key_q = 'host=' . $aThread->host . $bbs_q . $key_q;
 $offline_q = '&amp;offline=1';
 
-$hd['word'] = ResFilter::getWord('htmlspecialchars', array(ENT_QUOTES, 'Shift_JIS'));
+$hd['word'] = ResFilter::getWord('p2h');
 $do_filtering = ($hd['word'] === null) ? false : true;
 
 //=================================================================

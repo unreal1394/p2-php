@@ -51,7 +51,7 @@ EOF;
         if ($id_suffix !== null) {
             $id .= p2h($id_suffix);
         }
-        $word = parent::getWord('htmlspecialchars', array(ENT_QUOTES, 'Shift_JIS'));
+        $word = parent::getWord('p2h');
 
         $html = "<input type=\"text\" id=\"{$id}\" name=\"rf[word]\" value=\"{$word}\"";
         if ($extra_attributes) {

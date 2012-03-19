@@ -332,7 +332,7 @@ if ($do_filtering) {
         ResFilter::FIELD_DATE => '“ú•t',
         ResFilter::FIELD_ID => 'ID',
     );
-    $hd['word'] = ResFilter::getWord('htmlspecialchars', array(ENT_QUOTES, 'Shift_JIS'));
+    $hd['word'] = ResFilter::getWord('p2h');
     echo "<div class=\"hits\">{$htm['rf_field_names'][$resFilter->field]}‚É&quot;{$hd['word']}&quot;‚ð";
     echo ($resFilter->match == ResFilter::MATCH_ON) ? 'ŠÜ‚Þ' : 'ŠÜ‚Ü‚È‚¢';
     if ($resFilter->include & ResFilter::INCLUDE_REFERENCES) {

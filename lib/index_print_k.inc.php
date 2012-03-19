@@ -25,7 +25,7 @@ function index_print_k()
     // 前回のログイン情報
     if ($_conf['login_log_rec'] && $_conf['last_login_log_show']) {
         if (($log = P2Util::getLastAccessLog($_conf['login_log_file'])) !== false) {
-            $log_hd = array_map('htmlspecialchars', $log);
+            $log_hd = array_map('p2h', $log);
             $htm['last_login'] = <<<EOP
 前回のﾛｸﾞｲﾝ情報 - {$log_hd['date']}<br>
 ﾕｰｻﾞ:   {$log_hd['user']}<br>
