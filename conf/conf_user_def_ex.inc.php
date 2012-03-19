@@ -217,7 +217,7 @@ $conf_user_rad['expack.ic2.fav_auto_rank'] = array('1' => 'する', '0' => 'しない
 $conf_user_def['expack.ic2.fav_auto_rank_setting'] = '1,1,2,3,4,5';
 
 // お気にスレの画像を自動ランク設定する場合に、キャッシュ済み画像に自動ランクを上書きするか
-$conf_user_def['expack.ic2.fav_auto_rank_override'] = 3; // (0)
+$conf_user_def['expack.ic2.fav_auto_rank_override'] = 0; // (0)
 $conf_user_rad['expack.ic2.fav_auto_rank_override'] = array('1' => 'する', '2' => 'ランク0だったらする', '3' => 'ランクが上がるならする', '0' => 'しない');
 
 // }}}

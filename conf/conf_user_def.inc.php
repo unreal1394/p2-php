@@ -211,7 +211,7 @@ $conf_user_def['strip_linebreaks'] = 0; // (0)
 $conf_user_rad['strip_linebreaks'] = array('1' => 'する', '0' => 'しない');
 
 // [[単語]]をWikipediaへのリンクにする（する:1, しない:0）
-$conf_user_def['link_wikipedia'] = 1; // (0)
+$conf_user_def['link_wikipedia'] = 0; // (0)
 $conf_user_rad['link_wikipedia'] = array('1' => 'する', '0' => 'しない');
 
 // 逆参照リストの表示
@@ -295,7 +295,7 @@ $conf_user_def['mobile.copy_divide_len'] = 0; // (0)
 $conf_user_rules['mobile.copy_divide_len'] = array('notIntExceptMinusToDef');
 
 // 携帯閲覧時、[[単語]]をWikipediaへのリンクにする（する:1, しない:0）
-$conf_user_def['mobile.link_wikipedia'] = 1; // (0)
+$conf_user_def['mobile.link_wikipedia'] = 0; // (0)
 $conf_user_rad['mobile.link_wikipedia'] = array('1' => 'する', '0' => 'しない');
 
 // 携帯閲覧時、逆参照リストの表示
