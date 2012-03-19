@@ -116,19 +116,9 @@ function p2_init()
     // file($filename, FILE_IGNORE_NEW_LINES) で CR/LF/CR+LF のいずれも行末として扱う
     ini_set('auto_detect_line_endings', 1);
 
-    // session.trans_sid有効時 や output_add_rewrite_var(),
-    // http_build_query() 等で生成・変更される
+    // output_add_rewrite_var(), http_build_query() 等で生成・変更される
     // URLのGETパラメータ区切り文字(列)を"&amp;"にする。（デフォルトは"&"）
     ini_set('arg_separator.output', '&amp;');
-
-    // セッションIDの 付加機能が有効となった場合に、セッションIDを含めるために書き換 えられるHTMLタグにimg=srcを追加
-    $temp_rewriter_tags = explode(',', ini_get('url_rewriter.tags'));
-    if (is_array($temp_rewriter_tags)) {
-        if (!array_search('img=src', $temp_rewriter_tags)) {
-            $temp_rewriter_tags[] = 'img=src';
-            ini_set('url_rewriter.tags', implode(',', $temp_rewriter_tags));
-        }
-    }
 
     // Windows なら
     if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
