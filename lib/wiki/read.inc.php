@@ -20,5 +20,5 @@ if (!$_conf['ktai']) {
     }
 }
 // íuä∑ÉèÅ[Éh
-require_once P2_LIB_DIR . '/wiki/replacewordctl.class.php';
+require_once P2_LIB_DIR . '/wiki/ReplaceWordCtl.php';
 $GLOBALS['replaceWordCtl'] = new ReplaceWordCtl();
