@@ -340,7 +340,7 @@ $mode      = IC2_ParameterUtility::getValidValue('mode',      $_defaults['mode']
 $thumbtype = IC2_ParameterUtility::getValidValue('thumbtype', $_defaults['thumbtype'], 'intval');
 
 // サムネイル作成クラス
-$thumbsize = IC2_Thumbnailer::SIZE_PC;
+$thumbsize = $thumbtype;
 if (!empty($_SESSION['device_pixel_ratio'])) {
     $dpr = $_SESSION['device_pixel_ratio'];
     if ($dpr === 1.5) {
