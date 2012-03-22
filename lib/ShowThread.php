@@ -1521,7 +1521,7 @@ abstract class ShowThread
      */
     protected function _linkToWikipeidaCallback($matches)
     {
-        return '[[' . '[[' . $this->_linkToWikipeida($matches[1]) . ']]';
+        return '[[' . $this->_linkToWikipeida($matches[1]) . ']]';
     }
 
     // }}}
