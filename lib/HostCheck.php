@@ -11,13 +11,32 @@ class HostCheck
 
     /**
      * ローカルホスト?
+     *
+     * @param string $address
+     *
+     * @return bool
      */
     static public function isAddressLocal($address = null)
+    {
+        return self::isAddressLoopback($address);
+    }
+
+    // }}}
+    // {{{ isAddressLoopback()
+
+    /**
+     * ループバックアドレス?
+     *
+     * @param string $address
+     *
+     * @return bool
+     */
+    static public function isAddressLoopback($address = null)
     {
         if ($address === null) {
             $address = $_SERVER['REMOTE_ADDR'];
         }
-        if ($address == '127.0.0.1' || $address == '::1') {
+        if ($address === '127.0.0.1' || $address === '::1') {
             return true;
         } else {
             return false;
@@ -29,6 +48,11 @@ class HostCheck
 
     /**
      * IPv6形式のアドレスなら正規化して返し、そうでなければfalseを返す
+     *
+     * @param string $address
+     * @param bool $binary
+     *
+     * @return string
      */
     static public function normalizeIPv6Address($address, $binary = false)
     {
@@ -58,10 +82,10 @@ class HostCheck
                 }
                 $zeros = ':' . str_repeat('0:', 6 - $nsecs);
                 $pos = strpos($address, '::');
-                if ($pos == 0) {
+                if ($pos === 0) {
                     $zeros = '0' . $zeros;
                 }
-                if ($pos == strlen($address) - 2) {
+                if ($pos === strlen($address) - 2) {
                     $zeros .= '0';
                 }
                 $address = str_replace('::', $zeros, $address);
@@ -90,6 +114,11 @@ class HostCheck
      * プライベートアドレス?
      *
      * @see RFC1918
+     *
+     * @param string $address
+     * @param string $class
+     *
+     * @return bool
      */
     static public function isAddressPrivate($address = '', $class = 'ABC')
     {
@@ -112,7 +141,7 @@ class HostCheck
             if (stripos($class, $k) !== false) {
                 $rval = ip2long($v[0]);
                 $mask = ip2long($v[1]);
-                if (($lval & $mask) === ($rval & $mask)) {
+                if (($lval & $mask) === $rval) {
                     return true;
                 }
             }
