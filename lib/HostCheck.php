@@ -102,27 +102,19 @@ class HostCheck
             return false;
         }
 
-        if (stripos($class, 'A') !== false) {
-            $rval = ip2long('10.0.0.0');
-            $mask = ip2long('255.0.0.0');
-            if (($lval & $mask) === ($rval & $mask)) {
-                return true;
-            }
-        }
+        $classes = array(
+            'A' => array('10.0.0.0', '255.0.0.0'),
+            'B' => array('172.16.0.0','255.240.0.0'),
+            'C' => array('192.168.0.0', '255.255.0.0'),
+        );
 
-        if (stripos($class, 'B') !== false) {
-            $rval = ip2long('172.16.0.0');
-            $mask = ip2long('255.240.0.0');
-            if (($lval & $mask) === ($rval & $mask)) {
-                return true;
-            }
-        }
-
-        if (stripos($class, 'C') !== false) {
-            $rval = ip2long('192.168.0.0');
-            $mask = ip2long('255.255.0.0');
-            if (($lval & $mask) === ($rval & $mask)) {
-                return true;
+        foreach ($classes as $k => $v) {
+            if (stripos($class, $k) !== false) {
+                $rval = ip2long($v[0]);
+                $mask = ip2long($v[1]);
+                if (($lval & $mask) === ($rval & $mask)) {
+                    return true;
+                }
             }
         }
 
