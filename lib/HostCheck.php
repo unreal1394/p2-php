@@ -91,27 +91,42 @@ class HostCheck
      *
      * @see RFC1918
      */
-    static public function isAddressPrivate($address = '', $class = '')
+    static public function isAddressPrivate($address = '', $class = 'ABC')
     {
         if (!$address) {
             $address = $_SERVER['REMOTE_ADDR'];
         }
-        $class = ($class) ? strtoupper($class) : 'ABC';
-        $private = array();
-        $cache_id = 'private_';
-        if (strpos($class, 'A') !== false) {
-            $private[] = '10.0.0.0/8';
-            $cache_id .= 'a';
+
+        $lval = ip2long($address);
+        if ($lval === false) {
+            return false;
         }
-        if (strpos($class, 'B') !== false) {
-            $private[] = '172.16.0.0/12';
-            $cache_id .= 'b';
+
+        if (stripos($class, 'A') !== false) {
+            $rval = ip2long('10.0.0.0');
+            $mask = ip2long('255.0.0.0');
+            if (($lval & $mask) === ($rval & $mask)) {
+                return true;
+            }
         }
-        if (strpos($class, 'C') !== false) {
-            $private[] = '192.168.0.0/16';
-            $cache_id .= 'c';
+
+        if (stripos($class, 'B') !== false) {
+            $rval = ip2long('172.16.0.0');
+            $mask = ip2long('255.240.0.0');
+            if (($lval & $mask) === ($rval & $mask)) {
+                return true;
+            }
         }
-        return self::isAddressInBand($address, $private, null, $cache_id);
+
+        if (stripos($class, 'C') !== false) {
+            $rval = ip2long('192.168.0.0');
+            $mask = ip2long('255.255.0.0');
+            if (($lval & $mask) === ($rval & $mask)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // }}}
