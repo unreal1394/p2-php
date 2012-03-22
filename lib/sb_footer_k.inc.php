@@ -193,7 +193,9 @@ EOP;
 // {{{ お気にスレセット切替
 
 if ($aThreadList->spmode == 'fav' && $_conf['expack.misc.multi_favs']) {
-    $switchfavlist_ht = '<div>' . FavSetManager::makeFavSetSwitchForm('m_favlist_set', 'お気にスレ', NULL, NULL, FALSE, array('spmode' => 'fav')) . '</div>';
+    $switchfavlist_ht = '<div>' . FavSetManager::makeFavSetSwitchForm(
+        'm_favlist_set', 'お気にスレ', null, null, false, array('spmode' => 'fav')
+    ) . '</div>';
 } else {
     $switchfavlist_ht = '';
 }

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/P2KeyValueStore/Codec/Interface.php';
+require_once __DIR__ . '/P2KeyValueStore/Codec/Interface.php';
 
 // {{{ P2KeyValueStore
 
@@ -196,7 +196,7 @@ class P2KeyValueStore implements ArrayAccess, Countable, IteratorAggregate
         $this->_codec = $codec;
         $this->_tableName = $tableName;
         $this->_quotedTableName = '"' . str_replace('"', '""', $tableName) . '"';
-        $this->_sharedResult = new P2KeyValueStore_Result;
+        $this->_sharedResult = new P2KeyValueStore_Result();
 
         if (!array_key_exists($this->_pdoId, self::$_stmtCache)) {
             self::$_stmtCache[$this->_pdoId] = array();
@@ -982,7 +982,7 @@ class P2KeyValueStore implements ArrayAccess, Countable, IteratorAggregate
     static public function loadClass($name)
     {
         if (strncmp($name, 'P2KeyValueStore_', 16) === 0) {
-            include dirname(__FILE__) . '/' . str_replace('_', '/', $name) . '.php';
+            include __DIR__ . '/' . str_replace('_', '/', $name) . '.php';
         }
     }
 

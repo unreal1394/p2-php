@@ -209,12 +209,82 @@ abstract class ShowThread
      */
     private $_quote_check_depth;
 
-    public $_nanashiName = null;   // デフォルトの名前
+    /**
+     * デフォルトの名前
+     *
+     * @var string
+     */
+    protected $_nanashiName = null;
 
-    protected $_quote_from; // 被アンカーを集計した配列(範囲アンカー含む) // [被参照レス番 : [参照レス番, ...], ...)
-    protected $_quote_to;   // アンカーを集計した配列(範囲アンカー除く) // [レス番 : [参照先レス番, ...], ...)
+    /**
+     * 被アンカーを集計した配列(範囲アンカー含む) // [被参照レス番 : [参照レス番, ...], ...)
+     *
+     * @var array
+     */
+    protected $_quote_from = null;
 
-    private $_auto_fav_rank = false; // お気に自動ランク
+    /**
+     * アンカーを集計した配列(範囲アンカー除く) // [レス番 : [参照先レス番, ...], ...)
+     *
+     * @var array
+     */
+    protected $_quote_to = null;
+
+    /**
+     * お気に自動ランク
+     *
+     * @var bool
+     */
+    private $_auto_fav_rank = false;
+
+    /**
+     * リンクするサムネイルを生成するクラスのインスタンス
+     *
+     * @var IC2_Thumbnailer
+     */
+    public $thumbnailer;
+
+    /**
+     * インライン表示するサムネイルを生成するクラスのインスタンス
+     *
+     * @var IC2_Thumbnailer
+     */
+    public $inline_prvw;
+
+    /**
+     * インラインサムネイルのID属性接尾辞
+     *
+     * @var string
+     */
+    public $thumb_id_suffix;
+
+    /**
+     * 画像に付加するメモ
+     *
+     * @var string
+     */
+    public $img_memo;
+
+    /**
+     * 画像にメモを付けるためのクエリ文字列
+     *
+     * @var string
+     */
+    public $img_memo_query;
+
+    /**
+     * 画像解像度
+     *
+     * @var float
+     */
+    public $img_dpr = 1.0;
+
+    /**
+     * 画像解像度を指定するクエリ文字列
+     *
+     * @var string
+     */
+    public $img_dpr_query;
 
     // }}}
     // {{{ constructor
@@ -271,10 +341,10 @@ abstract class ShowThread
     // }}}
 
     /**
-     * @access  protected
+     * @param   void
      * @return  void
      */
-    function setBbsNonameName()
+    protected function setBbsNonameName()
     {
         $st = new SettingTxt($this->thread->host, $this->thread->bbs);
         $st->setSettingArray();
@@ -321,7 +391,7 @@ abstract class ShowThread
 
         // 表示レス範囲が指定されていなければ
         if (!$aThread->resrange) {
-            $error = '<p><b>p2 error: {$this->resrange} is FALSE at datToHtml()</b></p>';
+            $error = '<p><b>p2 error: {$this->resrange} is false at datToHtml()</b></p>';
             if ($capture) {
                 return $error;
             } else {
@@ -466,7 +536,7 @@ abstract class ShowThread
         // 表示レスが指定されていなければ
         $target = $aThread->resrange['start'];
         if (!$aThread->resrange || $target != $aThread->resrange['to']) {
-            $error = '<p><b>p2 error: {$this->resrange} is FALSE at datToHtml()</b></p>';
+            $error = '<p><b>p2 error: {$this->resrange} is false at datToHtml()</b></p>';
             if ($capture) {
                 return $error;
             } else {
@@ -801,18 +871,19 @@ abstract class ShowThread
 
         if (isset($ngaborns[$code]['data']) && is_array($ngaborns[$code]['data'])) {
             // +Wiki:BEあぼーん
-            /* preg_replace がエラーになるのでこのへんコメントアウト
             if ($code == 'aborn_be' || $code == 'ng_be') {
                 // プロフィールIDを抜き出す
-                if ($prof_id = preg_replace('/BE:(\d+)/', '$1')) {
-                    echo $prof_id;
-                    $resfield = P2UtilWiki::calcBeId($prof_id);
-                    if($resfield == 0) return false;
+                if (preg_match('/BE:(\\d+)/', $resfield, $matches)) {
+                    $beId = P2UtilWiki::calcBeId((int)$matches[1]);
+                    if ($beId === 0) {
+                        return false;
+                    }
+                    $resfield = (string)$beId;
                 } else {
                     return false;
                 }
             }
-             */
+
             $bbs = $this->thread->bbs;
             $title = $this->thread->ttitle_hc;
 
@@ -842,7 +913,7 @@ abstract class ShowThread
                         return $v['cond'];
                     }
                 // +Wiki:BEあぼーん(完全一致)
-                } else if ($code == 'aborn_be' || $code == 'ng_be') {
+                } elseif ($code == 'aborn_be' || $code == 'ng_be') {
                     if ($resfield == $v['word']) {
                         $this->ngAbornUpdate($code, $k);
                         //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('ngAbornCheck()');
@@ -921,7 +992,7 @@ abstract class ShowThread
      *
      * ハンドラは最初に追加されたものから順番に試行される
      * URLはハンドラの返り値（文字列）で置換される
-     * FALSEを帰した場合は次のハンドラに処理が委ねられる
+     * falseを帰した場合は次のハンドラに処理が委ねられる
      *
      * ユーザ定義URLハンドラの引数は
      *  1. string $url  URL
@@ -929,7 +1000,7 @@ abstract class ShowThread
      *  3. string $str  パターンにマッチした文字列、URLと同じことが多い
      *  4. object $aShowThread 呼び出し元のオブジェクト
      * である
-     * 常にFALSEを返し、内部で処理するだけの関数を登録してもよい
+     * 常にfalseを返し、内部で処理するだけの関数を登録してもよい
      *
      * @param   callback $function  コールバックメソッド
      * @return  void
@@ -1020,7 +1091,7 @@ abstract class ShowThread
         } elseif ($s['quote']) {
             return  preg_replace_callback(
                 self::getAnchorRegex('/(%prefix%)?(%a_range%)/'),
-                array($this, 'quoteResCallback'), $s['quote']);
+                array($this, '_quoteResCallback'), $s['quote']);
 
         // http or ftp のURL
         } elseif ($s['url']) {
@@ -1118,7 +1189,7 @@ abstract class ShowThread
     abstract public function idFilter($idstr, $id);
 
     // }}}
-    // {{{ idFilterCallback()
+    // {{{ _idFilterCallback()
 
     /**
      * IDフィルタリング変換
@@ -1126,25 +1197,27 @@ abstract class ShowThread
      * @param   array   $s  正規表現にマッチした要素の配列
      * @return  string
      */
-    final public function idFilterCallback(array $s)
+    protected function _idFilterCallback(array $s)
     {
         return $this->idFilter($s[0], $s[1]);
     }
 
     // }}}
+    // {{{ _quoteNameCallback()
 
     /**
-     * @access  protected
+     * @param   array $s
      * @return  string  HTML
      */
-    function quote_name_callback($s)
+    protected function _quoteNameCallback($s)
     {
         return preg_replace_callback(
             self::getAnchorRegex('/(%prefix%)?(%a_num%)/'),
-            array($this, 'quoteResCallback'), $s[0]
+            array($this, '_quoteResCallback'), $s[0]
         );
     }
 
+    // }}}
     // {{{ quoteRes()
 
     /**
@@ -1158,7 +1231,7 @@ abstract class ShowThread
     abstract public function quoteRes($full, $qsign, $appointed_num);
 
     // }}}
-    // {{{ quoteResCallback()
+    // {{{ _quoteResCallback()
 
     /**
      * 引用変換（単独）
@@ -1166,7 +1239,7 @@ abstract class ShowThread
      * @param   array   $s  正規表現にマッチした要素の配列
      * @return  string
      */
-    final public function quoteResCallback(array $s)
+    protected function _quoteResCallback(array $s)
     {
         return $this->quoteRes($s[0], $s[1], $s[2]);
     }
@@ -1185,7 +1258,7 @@ abstract class ShowThread
     abstract public function quoteResRange($full, $qsign, $appointed_num);
 
     // }}}
-    // {{{ quoteResRangeCallback()
+    // {{{ _quoteResRangeCallback()
 
     /**
      * 引用変換（範囲）
@@ -1193,7 +1266,7 @@ abstract class ShowThread
      * @param   array   $s  正規表現にマッチした要素の配列
      * @return  string
      */
-    final public function quoteResRangeCallback(array $s)
+    protected function _quoteResRangeCallback(array $s)
     {
         return $this->quoteResRange($s[0], $s[1], $s[2]);
     }
@@ -1204,16 +1277,24 @@ abstract class ShowThread
     /**
      * HTMLメッセージ中の引用レスの番号を再帰チェックする
      */
-    public function checkQuoteResNums($res_num, $name, $msg, $with_quotes=true, $with_backlinks=null, $cascade=true)
+    public function checkQuoteResNums($res_num, $name, $msg,
+                                      $with_quotes = true,
+                                      $with_backlinks = null,
+                                      $cascade = true)
     {
         global $_conf;
+
         $this->_quote_check_depth = 0;
-        if ($with_backlinks === null)
+
+        if ($with_backlinks === null) {
             $with_backlinks = ($_conf['backlink_list'] > 0 || $_conf['backlink_block'] > 0) ? true : false;
+        }
+
         if ($with_backlinks) {
             return $this->checkQuoteResNumsFromSummary(
                 $res_num == 0 ? 1 : $res_num, $with_quotes, $with_backlinks);
         }
+
         return $this->_checkQuoteResNums($res_num, $name, $msg);
     }
 
@@ -1223,7 +1304,7 @@ abstract class ShowThread
     /**
      * HTMLメッセージ中の引用レスの番号を再帰チェックする
      */
-    private function _checkQuoteResNums($res_num, $name, $msg)
+    protected function _checkQuoteResNums($res_num, $name, $msg)
     {
         // 再帰リミッタ
         if ($this->_quote_check_depth > 30) {
@@ -1343,16 +1424,19 @@ abstract class ShowThread
         if ($with_quotes) {
             $ret = array_merge($ret,
                 $this->_checkQuoteResNumsFromSummary(
-                    $res_num, $this->get_quote_to(), $with_quotes, $with_backlinks));
+                    $res_num, $this->getQuoteTo(), $with_quotes, $with_backlinks));
         }
         // 被参照レス
         if ($with_backlinks) {
             $ret = array_merge($ret,
                 $this->_checkQuoteResNumsFromSummary(
-                    $res_num, $this->get_quote_from(), $with_quotes, $with_backlinks));
+                    $res_num, $this->getQuoteFrom(), $with_quotes, $with_backlinks));
         }
         return $ret;
     }
+
+    // }}}
+    // {{{ _checkQuoteResNumsFromSummary()
 
     protected function _checkQuoteResNumsFromSummary($res_num, $quotes, $with_quotes, $with_backlinks)
     {
@@ -1375,14 +1459,14 @@ abstract class ShowThread
     // }}}
     // {{{ getQuoteResNumsName()
 
-    function getQuoteResNumsName($name)
+    public function getQuoteResNumsName($name)
     {
         if (strlen(trim($name)) == 0 || $name == $this->_nanashiName) {
             return false;
         }
 
         // トリップを除去
-        $name = preg_replace('/(◆.*)/', '', $name, 1);
+        $name = preg_replace('/◆.*/', '', $name, 1);
         $name = strip_tags($name);
 
         /*
@@ -1402,7 +1486,7 @@ abstract class ShowThread
     }
 
     // }}}
-    // {{{ wikipediaFilter()
+    // {{{ _wikipediaFilter()
 
     /**
      * [[語句]]があった時にWikipediaへ自動リンク
@@ -1413,21 +1497,35 @@ abstract class ShowThread
      * original code:
      *  http://akid.s17.xrea.com/p2puki/index.phtml?%A5%E6%A1%BC%A5%B6%A1%BC%A5%AB%A5%B9%A5%BF%A5%DE%A5%A4%A5%BA%28rep2%20Ver%201.7.0%A1%C1%29#led2c85d
      */
-    protected function wikipediaFilter($msg) {
-        $msg = mb_convert_encoding($msg, "UTF-8", "SJIS-win"); // SJISはうざいからUTF-8に変換するんだぜ？
-        $wikipedia = "http://ja.wikipedia.org/wiki/"; // WikipediaのURLなんだぜ？
-        $search = "/\[\[([^\[\]\n<>]+)\]\]+/"; // 目印となる正規表現なんだぜ？
-        preg_match_all($search, $msg, $matches); // [[語句]]を探すんだぜ？
-        foreach ($matches[1] as $value) { // リンクに変換するんだぜ？
-            $replaced = $this->link_wikipedia($value);
-            $msg = str_replace("[[$value]]", "[[$replaced]]", $msg); // 変換後の本文を戻すんだぜ？
+    protected function _wikipediaFilter($msg)
+    {
+        if (strpos($msg, '[[') === false) {
+            return $msg;
         }
-        $msg = mb_convert_encoding($msg, "SJIS-win", "UTF-8"); // UTF-8からSJISに戻すんだぜ？
-        return $msg;
+
+        $msg = preg_replace_callback('/\\[\\[([^\\[\\]\\n<>]+)\\]\\]+/u',
+                                     array($this, '_linkToWikipeidaCallback'),
+                                     mb_convert_encoding($msg, 'UTF-8', 'CP932'));
+
+        return mb_convert_encoding($msg, 'CP932', 'UTF-8');
     }
 
     // }}}
-    // {{{ link_wikipedia()
+    // {{{ _linkToWikipeidaCallback()
+
+    /**
+     * Wikipediaの語句をリンクに変換して返す.
+     *
+     * @param   array  $matches
+     * @return  string
+     */
+    protected function _linkToWikipeidaCallback($matches)
+    {
+        return '[[' . '[[' . $this->_linkToWikipeida($matches[1]) . ']]';
+    }
+
+    // }}}
+    // {{{ _linkToWikipeida()
 
     /**
      * Wikipediaの語句をリンクに変換して返す.
@@ -1435,21 +1533,26 @@ abstract class ShowThread
      * @param   string  $word   語句
      * @return  string
      */
-    abstract protected function link_wikipedia($word);
+    abstract protected function _linkToWikipeida($word);
 
-    // {{{ _make_quotes()
+    // }}}
+    // {{{ _makeQuotes()
 
     /**
      * レスデータを集計して$this->_quote_toと$this->_quote_fromに保存.
      */
-    protected function _make_quotes()
+    protected function _makeQuotes()
     {
         global $_conf;
+
         $this->_quote_to = array();
         $this->_quote_from = array();
-        if (!$this->thread->datlines) return;
 
-        foreach($this->thread->datlines as $num => $line) {
+        if (!$this->thread->datlines) {
+            return;
+        }
+
+        foreach ($this->thread->datlines as $num => $line) {
             list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($line);
 
            // NGあぼーんチェック
@@ -1457,8 +1560,9 @@ abstract class ShowThread
                 $date_id = str_replace($this->thread->idp[$i] . $id, 'ID:' . $id, $date_id);
             }
             $ng_type = $this->_ngAbornCheck($num + 1, strip_tags($name), $mail, $date_id, $id, $msg);
-            if ($ng_type == self::ABORN) {continue;}
-
+            if ($ng_type == self::ABORN) {
+                continue;
+            }
 
             // 名前
             if ($nmatches = $this->getQuoteResNumsName($name)) {
@@ -1485,7 +1589,9 @@ abstract class ShowThread
             // >>1のリンクをいったん外す
             // <a href="../test/read.cgi/accuse/1001506967/1" target="_blank">&gt;&gt;1</a>
             $msg = preg_replace('{<[Aa] .+?>(&gt;&gt;[1-9][\\d\\-]*)</[Aa]>}', '$1', $msg);
-            if (!preg_match_all(self::getAnchorRegex('/%full%/'), $msg, $out, PREG_PATTERN_ORDER)) continue;
+            if (!preg_match_all(self::getAnchorRegex('/%full%/'), $msg, $out, PREG_PATTERN_ORDER)) {
+                continue;
+            }
             foreach ($out[2] as $numberq) {
                 if (!preg_match_all(self::getAnchorRegex('/(?:%prefix%)?(%a_range%)/'), $numberq, $anchors, PREG_PATTERN_ORDER)) continue;
                 foreach ($anchors[1] as $anchor) {
@@ -1493,16 +1599,23 @@ abstract class ShowThread
                         $from = intval(mb_convert_kana($matches[1], 'n'));
                         $to = intval(mb_convert_kana($matches[2], 'n'));
                         if ($from < 1 || $to < 1 || $from > $to
-                            || ($to - $from + 1) > sizeof($this->thread->datlines))
-                                continue;
+                            || ($to - $from + 1) > sizeof($this->thread->datlines)) {
+                            continue;
+                        }
                         if ($_conf['backlink_list_range_anchor_limit'] != 0) {
-                            if ($to - $from >= $_conf['backlink_list_range_anchor_limit'])
+                            if ($to - $from >= $_conf['backlink_list_range_anchor_limit']) {
                                 continue;
+                            }
                         }
                         for ($i = $from; $i <= $to; $i++) {
-                            if ($i > sizeof($this->thread->datlines)) break;
+                            if ($i > sizeof($this->thread->datlines)) {
+                                break;
+                            }
                             if ($_conf['backlink_list_future_anchor'] == 0) {
-                                if ($i >= $num+1) {continue;}   // レス番号以降のアンカーは無視する
+                                // レス番号以降のアンカーは無視する
+                                if ($i >= $num + 1) {
+                                    continue;
+                                }
                             }
                             if (!array_key_exists($i, $this->_quote_from) || $this->_quote_from[$i] === null) {
                                 $this->_quote_from[$i] = array();
@@ -1511,7 +1624,7 @@ abstract class ShowThread
                                 $this->_quote_from[$i][] = $num + 1;
                             }
                         }
-                    } else if (preg_match(self::getAnchorRegex('/(%a_num%)/'), $anchor, $matches)) {
+                    } elseif (preg_match(self::getAnchorRegex('/(%a_num%)/'), $anchor, $matches)) {
                         $quote_num = intval(mb_convert_kana($matches[1], 'n'));
                         if (!array_key_exists($num + 1, $this->_quote_to) || $this->_quote_to[$num + 1] === null) {
                             $this->_quote_to[$num + 1] = array();
@@ -1521,7 +1634,10 @@ abstract class ShowThread
                         }
 
                         if ($_conf['backlink_list_future_anchor'] == 0) {
-                            if ($quote_num >= $num+1) {continue;}   // レス番号以降のアンカーは無視する
+                            // レス番号以降のアンカーは無視する
+                            if ($quote_num >= $num + 1) {
+                                continue;
+                            }
                         }
                         if (!array_key_exists($quote_num, $this->_quote_from) || $this->_quote_from[$quote_num] === null) {
                             $this->_quote_from[$quote_num] = array();
@@ -1536,39 +1652,39 @@ abstract class ShowThread
     }
 
     // }}}
-    // {{{ _get_quote_from()
+    // {{{ getQuoteFrom()
 
     /**
      * 被レスリストを返す.
      *
      * @return  array
      */
-    public function get_quote_from()
+    public function getQuoteFrom()
     {
         if ($this->_quote_from === null) {
-            $this->_make_quotes();  // 被レスデータ集計
+            $this->_makeQuotes();  // 被レスデータ集計
         }
         return $this->_quote_from;
     }
 
     // }}}
-    // {{{ _get_quote_to()
+    // {{{ getQuoteTo()
 
     /**
      * レスリストを返す.
      *
      * @return  array
      */
-    public function get_quote_to()
+    public function getQuoteTo()
     {
         if ($this->_quote_to === null) {
-            $this->_make_quotes();  // レスデータ集計
+            $this->_makeQuotes();  // レスデータ集計
         }
         return $this->_quote_to;
     }
 
     // }}}
-    // {{{ _quoteback_list_html()
+    // {{{ _quotebackListHtml()
 
     /**
      * 被レスリストをHTMLで整形して返す.
@@ -1578,67 +1694,86 @@ abstract class ShowThread
      * @param   bool    $popup  横形式でのポップアップ処理(true:ポップアップする、false:挿入する)
      * @return  string
      */
-    protected function quoteback_list_html($resnum, $type,$popup=true)
+    protected function _quotebackListHtml($resnum, $type, $popup=true)
     {
-        $quote_from = $this->get_quote_from();
+        $quote_from = $this->getQuoteFrom();
         if (!array_key_exists($resnum, $quote_from)) return $ret;
 
         $anchors = $quote_from[$resnum];
         sort($anchors);
 
         if ($type == 1) {
-            return $this->_quoteback_vertical_list_html($anchors, $resnum);
-        } else if ($type == 2) {
-            return $this->_quoteback_horizontal_list_html($anchors,$resnum);
-        } else if ($type == 3) {
-            return $this->_quoteback_res_data($anchors, $resnum);
+            return $this->_quotebackVerticalListHtml($anchors, $resnum);
+        } elseif ($type == 2) {
+            return $this->_quotebackHorizontalListHtml($anchors, $resnum);
+        } elseif ($type == 3) {
+            return $this->_quotebackResData($anchors, $resnum);
         }
     }
-    protected function _quoteback_vertical_list_html($anchors, $resnum)
+
+    // }}}
+    // {{{ _quotebackVerticalListHtml()
+
+    protected function _quotebackVerticalListHtml($anchors, $resnum)
     {
         $ret = '<div class="v_reslist"><ul>';
         $anchor_cnt = 1;
-        foreach($anchors as $anchor) {
-            if ($anchor_cnt > 1) $ret .= '<li>│</li>';
+        foreach ($anchors as $anchor) {
+            if ($anchor_cnt > 1) {
+                $ret .= '<li>│</li>';
+            }
             if ($anchor_cnt < count($anchors)) {
                 $ret .= '<li>├';
             } else {
                 $ret .= '<li>└';
             }
-            $ret .= $anchor == $resnum ? $anchor
-                : $this->quoteRes($anchor, '', $anchor, true);
+            $ret .= ($anchor == $resnum)
+                 ? $anchor
+                 : $this->quoteRes($anchor, '', $anchor, true);
             $anchor_cnt++;
         }
         $ret .= '</ul></div>';
         return $ret;
     }
-    protected function _quoteback_horizontal_list_html($anchors, $resnum)
-    {
-        $ret="";
-        $ret.= '<div class="reslist">';
-        $count=0;
 
-        foreach($anchors as $idx=>$anchor) {
-            if ($anchor == $resnum) continue;
-            $anchor_link= $this->quoteRes('>>'.$anchor, '>>', $anchor);
-            $qres_id = ($this->_matome ? "t{$this->_matome}" : "" ) ."qr{$anchor}";
-            $ret.='<div class="reslist_inner" >';
-            $ret.=sprintf('<div>【参照レス：%s】</div>',$anchor_link);
-            $ret.='</div>';
+    // }}}
+    // {{{ _quotebackHorizontalListHtml()
+
+    protected function _quotebackHorizontalListHtml($anchors, $resnum)
+    {
+        $ret = '<div class="reslist">';
+        $count = 0;
+
+        foreach ($anchors as $idx => $anchor) {
+            if ($anchor == $resnum) {
+                continue;
+            }
+            $anchor_link= $this->quoteRes('>>' . $anchor, '>>', $anchor);
+            $qres_id = ($this->_matome ? "t{$this->_matome}" : '') ."qr{$anchor}";
+            $ret .= '<div class="reslist_inner">';
+            $ret .= sprintf('<div>【参照レス：%s】</div>',$anchor_link);
+            $ret .= '</div>';
             $count++;
         }
-        $ret.='</div>';
+        $ret .= '</div>';
+
         return $ret;
     }
-    protected function _quoteback_res_data($anchors, $resnum)
+
+    // }}}
+    // {{{ _quotebackResData()
+
+    protected function _quotebackResData($anchors, $resnum)
     {
         $ret = array();
-        foreach($anchors as $idx=>$anchor) {
-            if ($anchor == $resnum) continue;
-            $ret[]=($this->_matome ? "t{$this->_matome}" : "" ) ."qr{$anchor}";
+        foreach ($anchors as $idx => $anchor) {
+            if ($anchor == $resnum) {
+                continue;
+            }
+            $ret[] = ($this->_matome ? "t{$this->_matome}" : '') ."qr{$anchor}";
         }
 
-        return join('/',$ret);
+        return join('/', $ret);
     }
 
     // }}}
@@ -1653,18 +1788,28 @@ abstract class ShowThread
     {
         $ret = '';
         $elines = $this->thread->datochi_residuums;
-        if (!count($elines)) return $ret;
+        if (!count($elines)) {
+            return $ret;
+        }
 
         $this->thread->onthefly = true;
         $ret = "<div><span class=\"onthefly\">on the fly</span></div>\n";
         $ret .= "<div class=\"thread\">\n";
+
         foreach($elines as $num => $line) {
             $res = $this->transRes($line, $num);
-            $ret .= is_array($res) ? $res['body'] . $res['q'] : $res;
+            if (is_array($res)) {
+                $ret .= $res['body'] . $res['q'];
+            } else {
+                $ret .= $res;
+            }
         }
+
         $ret .= "</div>\n";
+
         return $ret;
     }
+
     // }}}
     // {{{ getAutoFavRanks()
 
@@ -1675,21 +1820,29 @@ abstract class ShowThread
      */
     public function getAutoFavRank()
     {
-        if ($this->_auto_fav_rank !== false) return $this->_auto_fav_rank;
         global $_conf;
+
+        if ($this->_auto_fav_rank !== false) {
+            return $this->_auto_fav_rank;
+        }
 
         $ranks = explode(',', strtr($_conf['expack.ic2.fav_auto_rank_setting'], ' ', ''));
         $ret = null;
         if ($_conf['expack.misc.multi_favs']) {
             $idx = 0;
-            if (!is_array($this->thread->favs)) return null;
+            if (!is_array($this->thread->favs)) {
+                return null;
+            }
             foreach ($this->thread->favs as $fav) {
                 if ($fav) {
                     $rank = $ranks[$idx];
                     if (is_numeric($rank)) {
                         $rank = intval($rank);
-                        $ret = $ret === null ? $rank
-                            : ($ret < $rank ? $rank : $ret);
+                        if ($ret === null) {
+                            $ret = $rank;
+                        } else {
+                            $ret = max($ret, $rank);
+                        }
                     }
                 }
                 $idx++;
@@ -1699,7 +1852,9 @@ abstract class ShowThread
                 $ret = intval($ranks[0]);
             }
         }
-        return $this->_auto_fav_rank = $ret;
+        $this->_auto_fav_rank = $ret;
+
+        return $ret;
     }
 
     // }}}

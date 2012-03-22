@@ -80,8 +80,8 @@ EOP;
 
 // +Wiki:sambaタイマー
 if ($_conf['wiki.samba_timer']) {
-    require_once P2_LIB_DIR . '/wiki/samba.class.php';
-    $samba = &new samba;
+    require_once P2_LIB_DIR . '/wiki/Samba.php';
+    $samba = new Samba();
     $htm['samba'] .= $samba->createTimer($samba->getSamba($host, $bbs));
 }
 
@@ -93,7 +93,7 @@ if ((!$_conf['ktai'] && $_conf['expack.editor.savedraft'] != 0) ||
 <input id="post_draft_button" type="button" value="下書き保存" onclick="DraftKakiko.saveDraftForm(this.form)">
 <span id="post_draft_msg" class="autosave-info"></span>
 EOP;
-} else if ($_conf['ktai'] && $_conf['expack.editor.mobile.savedraft']) {
+} elseif ($_conf['ktai'] && $_conf['expack.editor.mobile.savedraft']) {
     $savedraft = <<<EOP
 <input type="submit" name="savedraft" value="下書保存">
 EOP;

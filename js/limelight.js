@@ -1018,6 +1018,7 @@ Limelight.prototype = {
 	fillScale: 0,
 	fitToWidthScale: 0,
 	fitToHeightScale: 0,
+	origScale: 1,
 	scale: 0,
 	rotation: 0,
 	diagonalLength: 0,
@@ -1087,6 +1088,10 @@ Limelight.prototype.init = function(options) {
 		'indicator': false,
 		'standalone': false
 	};
+
+	if (typeof window.devicePixelRatio === 'number') {
+		this.origScale = 1 / window.devicePixelRatio;
+	}
 
 	if (options) {
 		for (name in options) {
@@ -1231,7 +1236,7 @@ Limelight.prototype.initButtonEventHandlers = function() {
 
 	this.toolbar.origButton.attachEvent('click', function(event) {
 		Limelight.dom.stopEvent(event);
-		self.scaleTo(1);
+		self.scaleTo(self.origScale);
 		self.setLastClicked(self.toolbar.origButton);
 		return false;
 	});
@@ -2227,7 +2232,7 @@ Limelight.prototype.onTouchEnd = function(event) {
 			this.scaleTo(this.fillScale);
 			this.setLastClicked(toolbar.fillButton);
 		} else if (toolbar.origButton.isTargetOf(event)) {
-			this.scaleTo(1);
+			this.scaleTo(this.origScale);
 			this.setLastClicked(toolbar.origButton);
 		} else {
 			this.focus();

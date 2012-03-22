@@ -4,7 +4,7 @@
  */
 
 // +Wiki
-require_once P2_LIB_DIR . '/wiki/datpluginctl.class.php';
+require_once P2_LIB_DIR . '/wiki/DatPluginCtl.php';
 
 // {{{ ThreadRead
 
@@ -185,7 +185,7 @@ class ThreadRead extends Thread
         $request .= "Referer: http://{$purl['host']}/{$this->bbs}/\r\n";
 
         if ($this->modified) {
-            $request .= "If-Modified-Since: ".$this->modified."\r\n";
+            $request .= "If-Modified-Since: {$this->modified}\r\n";
         }
 
         // Basic認証用のヘッダ
@@ -206,17 +206,20 @@ class ThreadRead extends Thread
         }
         stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
 
-        $wr = "";
         fputs($fp, $request);
+
+        $body = '';
+        $code = null;
         $start_here = false;
+
         while (!p2_stream_eof($fp, $timed_out)) {
 
             if ($start_here) {
 
-                if ($code == "200" || $code == "206") {
+                if ($code == '200' || $code == '206') {
 
                     while (!p2_stream_eof($fp, $timed_out)) {
-                        $wr .= fread($fp, 4096);
+                        $body .= fread($fp, 4096);
                     }
 
                     if ($timed_out) {
@@ -228,20 +231,20 @@ class ThreadRead extends Thread
 
                     // 末尾の改行であぼーんチェック
                     if (!$zero_read) {
-                        if (substr($wr, 0, 1) != "\n") {
+                        if (substr($body, 0, 1) != "\n") {
                             //echo "あぼーん検出";
                             fclose($fp);
-                            unset($this->onbytes);
-                            unset($this->modified);
+                            $this->onbytes = 0;
+                            $this->modified = null;
                             return $this->_downloadDat2ch(0); // あぼーん検出。全部取り直し。
                         }
-                        $wr = substr($wr, 1);
+                        $body = substr($body, 1);
                     }
                     FileCtl::make_datafile($this->keydat, $_conf['dat_perm']);
 
                     $file_append = ($zero_read) ? 0 : FILE_APPEND;
 
-                    if (FileCtl::file_write_contents($this->keydat, $wr, $file_append) === false) {
+                    if (FileCtl::file_write_contents($this->keydat, $body, $file_append) === false) {
                         p2die('cannot write file.');
                     }
 
@@ -251,8 +254,8 @@ class ThreadRead extends Thread
                         $this->getDatBytesFromLocalDat(); // $aThread->length をset
                         if ($this->onbytes != $this->length) {
                             fclose($fp);
-                            unset($this->onbytes);
-                            unset($this->modified);
+                            $this->onbytes = 0;
+                            $this->modified = null;
                             P2Util::pushInfoHtml("<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>");
                             //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
                             return $this->_downloadDat2ch(0); //datサイズは不正。全部取り直し。
@@ -270,19 +273,19 @@ class ThreadRead extends Thread
                 // スレッドがないと判断
                 } else {
                     fclose($fp);
-                    return $this->_downloadDat2chNotFound();
+                    return $this->_downloadDat2chNotFound($code);
                 }
 
             } else {
-                $l = fgets($fp, 32800);
+                $l = rtrim(fgets($fp, 32800), "\r\n");
                 // ex) HTTP/1.1 304 Not Modified
-                if (preg_match("/^HTTP\/1\.\d (\d+) (.+)\r\n/", $l, $matches)) {
+                if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@i', $l, $matches)) {
                     $code = $matches[1];
 
-                    if ($code == "200" || $code == "206") { // Partial Content
+                    if ($code == '200' || $code == '206') { // Partial Content
                         ;
 
-                    } elseif ($code == "302") { // Found
+                    } elseif ($code == '302') { // Found
 
                         // ホストの移転を追跡
                         $new_host = BbsMap::getCurrentHost($this->host, $this->bbs);
@@ -296,41 +299,41 @@ class ThreadRead extends Thread
                             return $this->_downloadDat2chNotFound($code);
                         }
 
-                    } elseif ($code == "304") { // Not Modified
+                    } elseif ($code == '304') { // Not Modified
                         fclose($fp);
                         $this->isonline = true;
-                        return "304 Not Modified";
+                        return '304 Not Modified';
 
-                    } elseif ($code == "416") { // Requested Range Not Satisfiable
+                    } elseif ($code == '416') { // Requested Range Not Satisfiable
                         //echo "あぼーん検出";
                         fclose($fp);
-                        unset($this->onbytes);
-                        unset($this->modified);
+                        $this->onbytes = 0;
+                        $this->modified = null;
                         return $this->_downloadDat2ch(0); // あぼーん検出。全部取り直し。
 
                     } else {
                         fclose($fp);
-                        return $this->_downloadDat2chNotFound();
+                        return $this->_downloadDat2chNotFound($code);
                     }
                 }
 
                 if ($zero_read) {
-                    if (preg_match("/^Content-Length: ([0-9]+)/", $l, $matches)) {
-                        $this->onbytes = $matches[1];
+                    if (preg_match('/^Content-Length: ([0-9]+)/i', $l, $matches)) {
+                        $this->onbytes = intval($matches[1]);
                     }
                 } else {
 
-                    if (preg_match("/^Content-Range: bytes ([^\/]+)\/([0-9]+)/", $l, $matches)) {
-                        $this->onbytes = $matches[2];
+                    if (preg_match('@^Content-Range: bytes ([^/]+)/([0-9]+)@i', $l, $matches)) {
+                        $this->onbytes = intval($matches[2]);
                     }
 
                 }
 
-                if (preg_match("/^Last-Modified: (.+)\r\n/", $l, $matches)) {
-                    //echo $matches[1]."<br>"; //debug
+                if (preg_match('/^Last-Modified: (.+)/i', $l, $matches)) {
+                    //echo $matches[1] . '<br />'; //debug
                     $this->modified = $matches[1];
 
-                } elseif ($l == "\r\n") {
+                } elseif ($l === '') {
                     $start_here = true;
                 }
             }
@@ -435,13 +438,18 @@ class ThreadRead extends Thread
         stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
 
         fputs($fp, $request);
+
         $body = '';
+        $code = null;
+        $chunked = false;
+        $is_gzip = false;
         $start_here = false;
+
         while (!p2_stream_eof($fp, $timed_out)) {
 
             if ($start_here) {
 
-                if ($code == "200") {
+                if ($code == '200') {
 
                     while (!p2_stream_eof($fp, $timed_out)) {
                         $body .= fread($fp, 4096);
@@ -455,7 +463,7 @@ class ThreadRead extends Thread
                     }
 
                     // gzip圧縮なら
-                    if ($isGzip) {
+                    if ($is_gzip) {
                         $body = self::_decodeGzip($body, $url);
                         if ($body === null) {
                             //$this->diedat = true;
@@ -499,35 +507,31 @@ class ThreadRead extends Thread
 
             // ヘッダの処理
             } else {
-                $l = fgets($fp,128000);
-                //echo $l."<br>";// for debug
+                $l = rtrim(fgets($fp, 128000), "\r\n");
+                //echo $l.'<br>';// for debug
                 // ex) HTTP/1.1 304 Not Modified
-                if (preg_match("/^HTTP\/1\.\d (\d+) (.+)\r\n/", $l, $matches)) {
+                if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@', $l, $matches)) {
                     $code = $matches[1];
 
-                    if ($code == "200") {
+                    if ($code == '200') {
                         ;
-                    } elseif ($code == "304") {
+                    } elseif ($code == '304') {
                         fclose($fp);
                         //$this->isonline = true;
-                        return "304 Not Modified";
+                        return '304 Not Modified';
                     } else {
                         fclose($fp);
                         return $this->_downloadDat2chMaruNotFound();
                     }
 
-                } elseif (preg_match("/^Content-Encoding: (x-)?gzip/", $l, $matches)) {
-                    $isGzip = true;
-                } elseif (preg_match("/^Last-Modified: (.+)\r\n/", $l, $matches)) {
-                    $lastmodified = $matches[1];
-                } elseif (preg_match("/^Content-Length: ([0-9]+)/", $l, $matches)) {
-                    $onbytes = $matches[1];
-                } elseif (preg_match("/^Transfer-Encoding: (.+)\r\n/", $l, $matches)) { // Transfer-Encoding: chunked
+                } elseif (preg_match('/^Content-Encoding: (?:x-)?gzip/i', $l)) {
+                    $is_gzip = true;
+                } elseif (preg_match('/^Transfer-Encoding: (.+)/i', $l, $matches)) { // Transfer-Encoding: chunked
                     $t_enco = $matches[1];
-                    if ($t_enco == "chunked") {
+                    if ($t_enco == 'chunked') {
                         $chunked = true;
                     }
-                } elseif ($l == "\r\n") {
+                } elseif ($l === '') {
                     $start_here = true;
                 }
             }
@@ -620,13 +624,17 @@ class ThreadRead extends Thread
         stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
 
         fputs($fp, $request);
-        $body = "";
+
+        $body = '';
+        $code = null;
+        $is_gzip = false;
         $start_here = false;
+
         while (!p2_stream_eof($fp, $timed_out)) {
 
             if ($start_here) {
 
-                if ($code == "200") {
+                if ($code == '200') {
 
                     while (!p2_stream_eof($fp, $timed_out)) {
                         $body .= fread($fp, 4096);
@@ -639,7 +647,7 @@ class ThreadRead extends Thread
                         return false;
                     }
 
-                    if ($isGzip) {
+                    if ($is_gzip) {
                         $body = self::_decodeGzip($body, $url);
                         if ($body === null) {
                             $this->diedat = true;
@@ -661,28 +669,24 @@ class ThreadRead extends Thread
                 }
 
             } else {
-                $l = fgets($fp,128000);
-                if (preg_match("/^HTTP\/1\.\d (\d+) (.+)\r\n/", $l, $matches)) { // ex) HTTP/1.1 304 Not Modified
+                $l = rtrim(fgets($fp, 128000), "\r\n");
+                if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@', $l, $matches)) { // ex) HTTP/1.1 304 Not Modified
                     $code = $matches[1];
 
-                    if ($code == "200") {
+                    if ($code == '200') {
                         ;
-                    } elseif ($code == "304") {
+                    } elseif ($code == '304') {
                         fclose($fp);
                         //$this->isonline = true;
-                        return "304 Not Modified";
+                        return '304 Not Modified';
                     } else {
                         fclose($fp);
                         return $this->_downloadDat2chKakoNotFound($uri, $ext);
                     }
 
-                } elseif (preg_match("/^Content-Encoding: (x-)?gzip/", $l, $matches)) {
-                    $isGzip = true;
-                } elseif (preg_match("/^Last-Modified: (.+)\r\n/", $l, $matches)) {
-                    $lastmodified = $matches[1];
-                } elseif (preg_match("/^Content-Length: ([0-9]+)/", $l, $matches)) {
-                    $onbytes = $matches[1];
-                } elseif ($l == "\r\n") {
+                } elseif (preg_match('/^Content-Encoding: (?:x-)?gzip/i', $l)) {
+                    $is_gzip = true;
+                } elseif ($l === '') {
                     $start_here = true;
                 }
             }
@@ -743,7 +747,7 @@ class ThreadRead extends Thread
                 if (preg_match('/このスレッドは過去ログ倉庫に格.{1,2}されています/', $body203)) {
                     $reason = 'datochi';
                     $this->setDatochiResiduums();
-                } else if (preg_match('{http://[^/]+/[^/]+/kako/\d+(/\d+)?/(\d+)\.html}', $body203, $matches)) {
+                } elseif (preg_match('{http://[^/]+/[^/]+/kako/\\d+(/\\d+)?/(\\d+)\\.html}', $body203, $matches)) {
                     $reason = 'kakohtml';
                 }
             }
@@ -779,8 +783,8 @@ class ThreadRead extends Thread
         // }}}
         // {{{ 取得したHTML（$read_response_html）を解析して、原因を見つける
 
-        $dat_response_status = "";
-        $dat_response_msg = "";
+        $dat_response_status = '';
+        $dat_response_msg = '';
 
         $kakosoko_match = "/このスレッドは過去ログ倉庫に格.{1,2}されています/";
 
@@ -796,7 +800,7 @@ class ThreadRead extends Thread
         //
         // <title>がこのスレッドは過去ログ倉庫に
         //
-        if ($reason == 'datochi' or preg_match($kakosoko_match, $read_response_html, $matches)) {
+        if ($reason === 'datochi' || preg_match($kakosoko_match, $read_response_html, $matches)) {
             $dat_response_status = "このスレッドは過去ログ倉庫に格納されています。";
             //if (file_exists($_conf['idpw2ch_php']) || file_exists($_conf['sid2ch_php'])) {
                 $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
@@ -806,10 +810,10 @@ class ThreadRead extends Thread
 
             // +Wiki
             if ($_GET['plugin']) {
-                $datplugin = &new DatPluginCtl;
-                $datplugin->load();
-                foreach ($datplugin->data as $v){
-                    if(preg_match('{'. $v['match'] . '}', $read_url)) {
+                $datPlugin = new DatPluginCtl();
+                $datPlugin->load();
+                foreach ($datPlugin->getData() as $v){
+                    if (preg_match('{'. $v['match'] . '}', $read_url)) {
                         $replace = @preg_replace('{'. $v['match'] . '}', $v['replace'], $read_url);
                         $code = P2UtilWiki::getResponseCode($replace);
                         if($code == 200) {
@@ -846,10 +850,10 @@ EOP;
         //
         // <title>がそんな板orスレッドないです。or error 3939
         //
-        } elseif ($reason == 'kakohtml' or preg_match($naidesu_match, $read_response_html, $matches) || preg_match($error3939_match, $read_response_html, $matches)) {
+        } elseif ($reason === 'kakohtml' or preg_match($naidesu_match, $read_response_html, $matches) || preg_match($error3939_match, $read_response_html, $matches)) {
 
-            if ($reason == 'kakohtml' or preg_match($kakohtml_match, $read_response_html, $matches)) {
-                if ($reason == 'kakohtml') {
+            if ($reason === 'kakohtml' or preg_match($kakohtml_match, $read_response_html, $matches)) {
+                if ($reason === 'kakohtml') {
                     preg_match('{/([^/]+/kako/\d+(/\d+)?/(\d+)).html}', $this->getdat_error_body, $matches);
                 }
                 $dat_response_status = "隊長! 過去ログ倉庫で、html化されたスレッドを発見しました。";
@@ -907,7 +911,7 @@ EOP;
 
         // ローカルdatから取得
         if (is_readable($this->keydat)) {
-            $fd = fopen($this->keydat, "rb");
+            $fd = fopen($this->keydat, 'rb');
             $first_line = fgets($fd, 32800);
             fclose ($fd);
 
@@ -920,8 +924,8 @@ EOP;
             if (strpos($first_datline, '<>') !== false) {
                 $datline_sepa = "<>";
             } else {
-                $datline_sepa = ",";
-                $this->dat_type = "2ch_old";
+                $datline_sepa = ',';
+                $this->dat_type = '2ch_old';
             }
             $d = explode($datline_sepa, $first_datline);
             $this->setTtitle($d[4]);
@@ -976,12 +980,15 @@ EOP;
             stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
 
             fputs($fp, $request);
+
+            $code = null;
             $start_here = false;
+
             while (!p2_stream_eof($fp, $timed_out)) {
 
                 if ($start_here) {
 
-                    if ($code == "200") {
+                    if ($code == '200') {
                         $first_line = fgets($fp, 32800);
                         break;
                     } else {
@@ -989,21 +996,19 @@ EOP;
                         return $this->previewOneNotFound($code);
                     }
                 } else {
-                    $l = fgets($fp,32800);
+                    $l = rtrim(fgets($fp, 32800), "\r\n");
                     //echo $l."<br>";// for debug
-                    if (preg_match("/^HTTP\/1\.\d (\d+) (.+)\r\n/", $l, $matches)) { // ex) HTTP/1.1 304 Not Modified
+                    if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@i', $l, $matches)) { // ex) HTTP/1.1 304 Not Modified
                         $code = $matches[1];
 
-                        if ($code == "200") {
+                        if ($code == '200') {
                             ;
                         } else {
                             fclose($fp);
                             return $this->previewOneNotFound($code);
                         }
 
-                    } elseif (preg_match("/^Content-Length: ([0-9]+)/", $l, $matches)) {
-                        $onbytes = $matches[1];
-                    } elseif ($l == "\r\n") {
+                    } elseif ($l === '') {
                         $start_here = true;
                     }
                 }
@@ -1019,10 +1024,10 @@ EOP;
             $first_datline = rtrim($first_line);
 
             if (strpos($first_datline, '<>') !== false) {
-                $datline_sepa = "<>";
+                $datline_sepa = '<>';
             } else {
-                $datline_sepa = ",";
-                $this->dat_type = "2ch_old";
+                $datline_sepa = ',';
+                $this->dat_type = '2ch_old';
             }
             $d = explode($datline_sepa, $first_datline);
             $this->setTtitle($d[4]);
@@ -1113,7 +1118,7 @@ EOP;
         // 範囲指定がなければ
         if (sizeof($n) == 1) {
             // l指定があれば
-            if (substr($n[0], 0, 1) == "l") {
+            if (substr($n[0], 0, 1) === 'l') {
                 $ln = intval(substr($n[0], 1));
                 if ($_conf['ktai']) {
                     if ($ln > $_conf['mobile.rnum_range']) {
@@ -1126,7 +1131,7 @@ EOP;
                 }
                 $to = $this->rescount;
             // all指定なら
-            } elseif ($this->ls == "all") {
+            } elseif ($this->ls === 'all') {
                 $start = 1;
                 $to = $this->rescount;
 
@@ -1185,7 +1190,7 @@ EOP;
 
             // スレの表示範囲丁度でリミットを消化した場合
             } elseif ($limit_to == $to) {
-                $GLOBALS['limit_to_eq_to'] = TRUE;
+                $GLOBALS['limit_to_eq_to'] = true;
             }
 
             // 次のリミットは、今回のスレの表示範囲分を減らした数
@@ -1241,7 +1246,7 @@ EOP;
                 }
 
                 if (strpos($this->datlines[0], '<>') === false) {
-                    $this->dat_type = "2ch_old";
+                    $this->dat_type = '2ch_old';
                 }
             }
         } else {
@@ -1299,7 +1304,7 @@ EOP;
     {
         $aline = rtrim($aline);
 
-        if ($this->dat_type == "2ch_old") {
+        if ($this->dat_type === '2ch_old') {
             $parts = explode(',', $aline);
         } else {
             $parts = explode('<>', $aline);
@@ -1729,20 +1734,24 @@ EOF;
      *
      * @return boolean  正常に終了した場合はtrue
      */
-    private function setDatochiResiduums() {
+    private function setDatochiResiduums()
+    {
         $this->datochi_residuums = array();
-        if (!$this->getdat_error_body || strlen($this->getdat_error_body) == 0)
+        if (!$this->getdat_error_body || strlen($this->getdat_error_body) === 0) {
             return false;
+        }
 
         $lines = explode("\n", $this->getdat_error_body);
-        if (count($lines) < 3) return false;
+        if (count($lines) < 3) {
+            return false;
+        }
         $first_line = $lines[0];
         $first_datline = rtrim($first_line);
         if (strpos($first_datline, '<>') !== false) {
-            $datline_sepa = "<>";
+            $datline_sepa = '<>';
         } else {
-            $datline_sepa = ",";
-            $this->dat_type = "2ch_old";
+            $datline_sepa = ',';
+            $this->dat_type = '2ch_old';
         }
         $d = explode($datline_sepa, $first_datline);
         $this->setTtitle($d[4]);
@@ -1750,12 +1759,18 @@ EOF;
         $this->datochi_residuums[1] = $first_line;
 
         $second_line = $lines[1];
-        if (strpos($second_line, '<>') == false) return false;
+        if (strpos($second_line, '<>') === false) {
+            return false;
+        }
         $d = explode('<>', $second_line);
-        if (count($d) < 1) return false;
+        if (count($d) < 1) {
+            return false;
+        }
         list($lastn, $size) = explode(',', $d[0]);
         $lastn = intval(trim($lastn));
-        if (!$lastn) return false;
+        if (!$lastn) {
+            return false;
+        }
 
         $this->datochi_residuums[$lastn] = $lines[2];
         return true;

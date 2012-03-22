@@ -10,9 +10,9 @@ $_login->authorize(); // ユーザ認証
 //================================================================
 // 変数
 //================================================================
-if (isset($_POST['login2chID']))   { $login2chID = $_POST['login2chID']; }
-if (isset($_POST['login2chPW']))   { $login2chPW = $_POST['login2chPW']; }
-if (isset($_POST['autoLogin2ch'])) { $autoLogin2ch = $_POST['autoLogin2ch']; }
+$login2chID = null;
+$login2chPW = null;
+$autoLogin2ch = false;
 
 //===============================================================
 // ログインなら、IDとPWを登録保存して、ログインする
@@ -20,9 +20,9 @@ if (isset($_POST['autoLogin2ch'])) { $autoLogin2ch = $_POST['autoLogin2ch']; }
 if (isset($_POST['login2chID']) && isset($_POST['login2chPW'])) {
 
     if (isset($_POST['autoLogin2ch'])) {
-        $autoLogin2ch = $_POST['autoLogin2ch'];
+        $autoLogin2ch = ($_POST['autoLogin2ch'] === '1') ? true : false;
     } else {
-        $autoLogin2ch = 0;
+        $autoLogin2ch = false;
     }
 
     P2Util::saveIdPw2ch($_POST['login2chID'], $_POST['login2chPW'], $autoLogin2ch);
@@ -32,9 +32,7 @@ if (isset($_POST['login2chID']) && isset($_POST['login2chPW'])) {
 }
 
 // （フォーム入力用に）ID, PW設定を読み込む
-if ($array = P2Util::readIdPw2ch()) {
-    list($login2chID, $login2chPW, $autoLogin2ch) = $array;
-}
+list($login2chID, $login2chPW, $autoLogin2ch) = P2Util::readIdPw2ch();
 
 //==============================================================
 // 2chログイン処理
@@ -151,7 +149,9 @@ EOFORM;
 }
 
 if ($autoLogin2ch) {
-    $autoLogin2ch_checked = " checked=\"true\"";
+    $autoLogin2ch_checked = ' checked="checked"';
+} else {
+    $autoLogin2ch_checked = '';
 }
 
 $tora3_url = "http://2ch.tora3.net/";

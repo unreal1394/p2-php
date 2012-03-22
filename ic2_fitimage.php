@@ -21,7 +21,7 @@ $url = $_GET['url'];
 $info_key_type = 'url';
 $info_key_value = $url;
 
-$icdb = new IC2_DataObject_Images;
+$icdb = new IC2_DataObject_Images();
 $thumbnailer = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_DEFAULT);
 if (preg_match('/^' . preg_quote($thumbnailer->sourcedir, '/') . '/', $url) && file_exists($url)) {
     $info = getimagesize($url);

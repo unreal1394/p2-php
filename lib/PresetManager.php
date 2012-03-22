@@ -380,7 +380,7 @@ class PresetManager
      */
     private function _createNode($name = null, $value = null, $depth = 0)
     {
-        $node = new stdClass;
+        $node = new stdClass();
         $node->name = $name;
         $node->value = $value;
         $node->depth = $depth;

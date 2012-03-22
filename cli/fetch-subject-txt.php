@@ -18,7 +18,7 @@ define('P2_CLI_RUN', 1);
 define('P2_FETCH_SUBJECT_TXT_DEBUG', 0);
 define('P2_FETCH_SUBJECT_TXT_DEBUG_OUTPUT_FILE', '/tmp/p2_fetch_subject_txt.log');
 
-require dirname(__FILE__) . '/../conf/conf.inc.php';
+require __DIR__ . '/../conf/conf.inc.php';
 require_once 'Console/Getopt.php';
 
 P2HttpExt::activate();
@@ -26,7 +26,7 @@ P2HttpExt::activate();
 // }}}
 // {{{ コマンドライン引数を取得
 
-$getopt = new Console_Getopt;
+$getopt = new Console_Getopt();
 $args = $getopt->readPHPArgv();
 if (PEAR::isError($args)) {
     fwrite(STDERR, $args->getMessage() . PHP_EOL);

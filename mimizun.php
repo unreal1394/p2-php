@@ -13,29 +13,29 @@ include_once './conf/conf.inc.php';
 
 $_login->authorize(); //ユーザ認証
 
-require_once './plugin/mimizun/mimizun.class.php';
+require_once P2_PLUGIN_DIR . '/mimizun/Mimizun.php';
 
-$mimizun = new mimizun();
+$mimizun = new Mimizun();
 $mimizun->host = $_GET['host'];
 $mimizun->bbs  = $_GET['bbs'];
 
 // 画像を表示する場合
 if ($_GET['img']) {
-    if ($mimizun->isEnable()) {
+    if ($mimizun->isEnabled()) {
         header("Content-Type: image/png");
-        readfile('./plugin/mimizun/mimizun.png');
+        readfile(P2_PLUGIN_DIR . '/mimizun/mimizun.png');
     } else {
         header("Content-Type: image/gif");
         readfile('./img/spacer.gif');
     }
     exit;
 } else {
-    if ($mimizun->isEnable()) {
-        $id = '';
-        if ($_GET['id']) {
+    if ($mimizun->isEnabled()) {
+        $id = null;
+        if (!empty($_GET['id'])) {
             $id = $_GET['id'];
-        } else if ($_GET['key'] && $_GET['resnum']) {
-            $aThread = new ThreadRead;
+        } elseif (!empty($_GET['key']) && !empty($_GET['resnum'])) {
+            $aThread = new ThreadRead();
             $aThread->setThreadPathInfo($_GET['host'], $_GET['bbs'], $_GET['key']);
             $aThread->readDat();
             $resnum = $_GET['resnum'];

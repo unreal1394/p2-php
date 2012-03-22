@@ -32,7 +32,7 @@ class Thread
     public $bbs;        // ex)mac // idxline[11]
     public $itaj;       // 板名 ex)新・mac
 
-    public $datochiok;  // DAT落ち取得権限があればTRUE(1) // idxline[12]
+    public $datochiok;  // DAT落ち取得権限があればtrue(1) // idxline[12]
 
     public $torder;     // スレッド新しい順番号
     public $unum;       // 未読（新着レス）数
@@ -408,11 +408,11 @@ class Thread
             }
 
             //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('getThreadInfoFromSubjectTxtLine()');
-            return TRUE;
+            return true;
         }
 
         //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('getThreadInfoFromSubjectTxtLine()');
-        return FALSE;
+        return false;
     }
 
     // }}}

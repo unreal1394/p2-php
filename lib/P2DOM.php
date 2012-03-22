@@ -38,7 +38,7 @@ class P2DOM
 
         try {
             $this->_conversionFailed = false;
-            $document = new DOMDocument;
+            $document = new DOMDocument();
             $document->loadHTML($html);
 
             // 代替エンコーディングを指定して再読み込み
@@ -51,7 +51,7 @@ class P2DOM
                                         "<meta http-equiv=\"Content-Type\" content=\"text/html; charset={$charset}\">",
                                         preg_replace('/<head[^<>]*>/i', '$0<rep2:charset>', $orig_html));
                     $this->_conversionFailed = false;
-                    $document = new DOMDocument;
+                    $document = new DOMDocument();
                     $document->loadHTML($html);
                     if (!$this->_conversionFailed) {
                         break;

@@ -19,17 +19,17 @@ $default_key = !empty($_REQUEST['key']) ? p2h($_REQUEST['key']) : 'auto';
 // アップロードされたファイルの処理
 //================================================================
 if (!empty($_POST['host']) && !empty($_POST['bbs']) && !empty($_POST['key']) && isset($_FILES['dat_file'])) {
-    $is_error = FALSE;
+    $is_error = false;
 
     // アップロード成功のとき
     if ($_FILES['dat_file']['error'] == UPLOAD_ERR_OK) {
         // 値の検証
         if ($_POST['MAX_FILE_SIZE'] != $max_size) {
-            $is_error = TRUE;
+            $is_error = true;
             P2Util::pushInfoHtml('<p>Warning: フォームの MAX_FILE_SIZE の値が改ざんされています。</p>');
         }
         if (!preg_match('/^[1-9][0-9]+\.dat$/', $_FILES['dat_file']['name'])) {
-            $is_error = TRUE;
+            $is_error = true;
             P2Util::pushInfoHtml('<p>Error: アップロードされたdatのファイル名が変です。</p>');
         }
         $host = $_POST['host'];
@@ -39,18 +39,18 @@ if (!empty($_POST['host']) && !empty($_POST['bbs']) && !empty($_POST['key']) && 
         /*} elseif (preg_match('/^[1-9][0-9]+$/', $_POST['key'])) {
             $key = $_POST['key'];
             if ($key != preg_replace('/\.(dat|html?)$/', '', $_FILES['dat_file']['name'])) {
-                $is_error = TRUE;
+                $is_error = true;
                 P2Util::pushInfoHtml('<p>Error: アップロードされたdatのファイル名とスレッドキーがマッチしません。</p>');
             }
         } else {
-            $is_error = TRUE;
+            $is_error = true;
             P2Util::pushInfoHtml('<p>Error: スレッドキーの指定が変です。</p>');
         }*/
         $dat_path = P2Util::datDirOfHostBbs($host, $bbs) . $key . '.dat';
 
     // アップロード失敗のとき
     } else {
-        $is_error = TRUE;
+        $is_error = true;
         // エラーメッセージは http://jp.php.net/manual/ja/features.file-upload.errors.php からコピペ
         switch ($_FILES['dat_file']['error']) {
             case UPLOAD_ERR_INI_SIZE:

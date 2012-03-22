@@ -45,8 +45,12 @@ class ShowThreadPc extends ShowThread
             'plugin_link2chSubject',
         );
         // +Wiki
-        if (isset($GLOBALS['linkplugin']))      $this->_url_handlers[] = 'plugin_linkPlugin';
-        if (isset($GLOBALS['replaceimageurl'])) $this->_url_handlers[] = 'plugin_replaceImageURL';
+        if (isset($GLOBALS['linkPluginCtl'])) {
+            $this->_url_handlers[] = 'plugin_linkPlugin';
+        }
+        if (isset($GLOBALS['replaceImageUrlCtl'])) {
+            $this->_url_handlers[] = 'plugin_replaceImageUrl';
+        }
         if (P2_IMAGECACHE_AVAILABLE == 2) {
             $this->_url_handlers[] = 'plugin_imageCache2';
         } elseif ($_conf['preview_thumbnail']) {
@@ -62,20 +66,20 @@ class ShowThreadPc extends ShowThread
 
         // imepitaのURLを加工してImageCache2させるプラグインを登録
         if (P2_IMAGECACHE_AVAILABLE == 2) {
-            $this->addURLHandler(array($this, 'plugin_imepita_to_imageCache2'));
+            $this->addURLHandler(array($this, 'plugin_imepitaToImageCache2'));
         }
 
         // サムネイル表示制限数を設定
         if (!isset($GLOBALS['pre_thumb_unlimited']) || !isset($GLOBALS['pre_thumb_limit'])) {
             if (isset($_conf['pre_thumb_limit']) && $_conf['pre_thumb_limit'] > 0) {
                 $GLOBALS['pre_thumb_limit'] = $_conf['pre_thumb_limit'];
-                $GLOBALS['pre_thumb_unlimited'] = FALSE;
+                $GLOBALS['pre_thumb_unlimited'] = false;
             } else {
-                $GLOBALS['pre_thumb_limit'] = NULL; // ヌル値だとisset()はFALSEを返す
-                $GLOBALS['pre_thumb_unlimited'] = TRUE;
+                $GLOBALS['pre_thumb_limit'] = null; // ヌル値だとisset()はfalseを返す
+                $GLOBALS['pre_thumb_unlimited'] = true;
             }
         }
-        $GLOBALS['pre_thumb_ignore_limit'] = FALSE;
+        $GLOBALS['pre_thumb_ignore_limit'] = false;
 
         // アクティブモナー初期化
         if (P2_ACTIVEMONA_AVAILABLE) {
@@ -125,12 +129,12 @@ class ShowThreadPc extends ShowThread
         }
 
         // +Wiki:置換ワード
-        global $replaceword;
-        if (isset($replaceword)) {
-            $name    = $replaceword->replace('name', $this->thread, $ares, $i);
-            $mail    = $replaceword->replace('mail', $this->thread, $ares, $i);
-            $date_id = $replaceword->replace('date', $this->thread, $ares, $i);
-            $msg     = $replaceword->replace('msg',  $this->thread, $ares, $i);
+        if (isset($GLOBALS['replaceWordCtl'])) {
+            $replaceWordCtl = $GLOBALS['replaceWordCtl'];
+            $name    = $replaceWordCtl->replace('name', $this->thread, $ares, $i);
+            $mail    = $replaceWordCtl->replace('mail', $this->thread, $ares, $i);
+            $date_id = $replaceWordCtl->replace('date', $this->thread, $ares, $i);
+            $msg     = $replaceWordCtl->replace('msg',  $this->thread, $ares, $i);
         }
 
         $tores = '';
@@ -303,13 +307,13 @@ EOP;
 
         // 被レスリスト(縦形式)
         if ($_conf['backlink_list'] == 1 || $_conf['backlink_list'] > 2) {
-            $tores .= $this->quoteback_list_html($i, 1);
+            $tores .= $this->_quotebackListHtml($i, 1);
         }
 
         $tores .= "<div id=\"{$msg_id}\" class=\"{$msg_class}\">{$msg}</div>\n"; // 内容
         // 被レス展開用ブロック
         if ($_conf['backlink_block'] > 0) {
-            $backlinks = $this->backlink_comment($i);
+            $backlinks = $this->_getBacklinkComment($i);
             if (strlen($backlinks)) {
                 $tores .= '<div class="resblock"><img src="img/btn_plus.gif" width="15" height="15" align="left"></div>';
                 $tores .= $backlinks;
@@ -317,11 +321,11 @@ EOP;
         }
         // 被レスリスト(横形式)
         if ($_conf['backlink_list'] == 2 || $_conf['backlink_list'] > 2) {
-            $tores .= $this->quoteback_list_html($i, 2,false);
+            $tores .= $this->_quotebackListHtml($i, 2, false);
         }
         $tores .= "</div>\n";
 
-//        $tores .= $rpop; // レスポップアップ用引用
+//      $tores .= $rpop; // レスポップアップ用引用
         /*if ($_conf['expack.am.enabled'] == 2) {
             $tores .= <<<EOJS
 <script type="text/javascript">
@@ -461,26 +465,29 @@ EOJS;
 
         // 被レスリスト(縦形式)
         if ($_conf['backlink_list'] == 1 || $_conf['backlink_list'] > 2) {
-            $tores .= $this->quoteback_list_html($i, 1);
+            $tores .= $this->_quotebackListHtml($i, 1);
         }
 
         $tores .= "<div id=\"{$qmsg_id}\" class=\"{$msg_class}\">{$msg}</div>\n"; // 内容
         // 被レスリスト(横形式)
         if ($_conf['backlink_list'] == 2 || $_conf['backlink_list'] > 2) {
-            $tores .= $this->quoteback_list_html($i, 2);
+            $tores .= $this->_quotebackListHtml($i, 2);
         }
 
         // 被参照ブロック用データ
         if ($_conf['backlink_block'] > 0) {
-            $tores .= $this->backlink_comment($i);
+            $tores .= $this->_getBacklinkComment($i);
         }
 
         return $tores;
     }
 
-    public function backlink_comment($i)
+    // }}}
+    // {{{ _getBacklinkComment()
+
+    protected function _getBacklinkComment($i)
     {
-        $backlinks = $this->quoteback_list_html($i, 3);
+        $backlinks = $this->_quotebackListHtml($i, 3);
         if (strlen($backlinks)) {
             return '<!-- backlinks:' . $backlinks . ' -->';
         }
@@ -513,7 +520,7 @@ EOJS;
             if (strlen($name) && $name != $this->_nanashiName) {
                 $name = preg_replace_callback(
                     self::getAnchorRegex('/(?:^|%prefix%)(%nums%)/'),
-                    array($this, 'quote_name_callback'), $name
+                    array($this, '_quoteNameCallback'), $name
                 );
             }
         }
@@ -570,7 +577,7 @@ EOJS;
 
         // 新着レスの画像は表示制限を無視する設定なら
         if ($mynum > $this->thread->readnum && $_conf['expack.ic2.newres_ignore_limit']) {
-            $pre_thumb_ignore_limit = TRUE;
+            $pre_thumb_ignore_limit = true;
         }
 
         // 文末の改行と連続する改行を除去
@@ -582,8 +589,8 @@ EOJS;
         $msg = $this->transLink($msg);
 
         // Wikipedia記法への自動リンク
-        if ($_conf['link_wikipedia']) {
-            $msg = $this->wikipediaFilter($msg);
+        if ($_conf['_linkToWikipeida']) {
+            $msg = $this->_wikipediaFilter($msg);
         }
 
         return $msg;
@@ -601,7 +608,11 @@ EOJS;
     protected function _abornedRes($res_id)
     {
         global $_conf;
-        if ($_conf['ngaborn_purge_aborn']) return '';
+
+        if ($_conf['ngaborn_purge_aborn']) {
+            return '';
+        }
+
         return <<<EOP
 <div id="{$res_id}" class="res aborned">
 <div class="res-header">&nbsp;</div>
@@ -645,12 +656,14 @@ EOP;
         }
 
         if ($_conf['coloredid.enable'] > 0 && preg_match("|^ID:[ ]?[0-9A-Za-z/.+]{8,11}|",$idstr)) {
-            if ($this->_ids_for_render === null) $this->_ids_for_render = array();
+            if ($this->_ids_for_render === null) {
+                $this->_ids_for_render = array();
+            }
             $this->_ids_for_render[substr($id, 0, 8)] = $this->thread->idcount[$id];
             if ($_conf['coloredid.click'] > 0) {
-                $num_ht = '<a href="javascript:void(0);" class="' . ShowThreadPc::cssClassedId($id) . '" onClick="idCol.click(\'' . substr($id, 0, 8) . '\', event); return false;" onDblClick="this.onclick(event); return false;">' . $num_ht . '</a>';
+                $num_ht = '<a href="javascript:void(0);" class="' . self::cssClassedId($id) . '" onClick="idCol.click(\'' . substr($id, 0, 8) . '\', event); return false;" onDblClick="this.onclick(event); return false;">' . $num_ht . '</a>';
             }
-            $idstr = $this->coloredIdStr(
+            $idstr = $this->_coloredIdStr(
                 $idstr, $id, $_conf['coloredid.click'] > 0 ? true : false);
         }
 
@@ -677,17 +690,21 @@ EOP;
     }
 
     // }}}
-    // {{{ link_wikipedia()
+    // {{{ _linkToWikipeida()
 
     /**
      * @see ShowThread
      */
-    function link_wikipedia($word) {
+    protected function _linkToWikipeida($word)
+    {
         global $_conf;
+
         $link = 'http://ja.wikipedia.org/wiki/' . rawurlencode($word);
-        return  '<a href="' . ($_conf['through_ime'] ?
-            P2Util::throughIme($link) : $link) .
-            "\"{$_conf['ext_win_target_at']}>{$word}</a>";
+        if ($_conf['through_ime']) {
+            $link = P2Util::throughIme($link);
+        }
+
+        return "<a href=\"{$link}\"{$_conf['ext_win_target_at']}>{$word}</a>";
     }
 
     // }}}
@@ -699,6 +716,7 @@ EOP;
      * @param   string  $full           >>1-100
      * @param   string  $qsign          >>
      * @param   string  $appointed_num    1-100
+     * @param   bool    $anchor_jump
      * @return  string
      */
     public function quoteRes($full, $qsign, $appointed_num, $anchor_jump = false)
@@ -706,11 +724,11 @@ EOP;
         global $_conf;
 
         $appointed_num = mb_convert_kana($appointed_num, 'n');   // 全角数字を半角数字に変換
-        if (preg_match("/\D/",$appointed_num)) {
-            $appointed_num = preg_replace('/\D+/', '-', $appointed_num);
+        if (preg_match('/\\D/', $appointed_num)) {
+            $appointed_num = preg_replace('/\\D+/', '-', $appointed_num);
             return $this->quoteResRange($full, $qsign, $appointed_num);
         }
-        if (preg_match("/^0/", $appointed_num)) {
+        if (preg_match('/^0/', $appointed_num)) {
             return $full;
         }
 
@@ -836,7 +854,7 @@ EOP;
         // リンクの属性にHTMLポップアップ用のイベントハンドラを加える
         $pop_attr = $attr;
         if ($_conf['iframe_popup_event'] == 1) {
-            $pop_attr .= " onClick=\"stophide=true; showHtmlPopUp('{$pop_url}',event,0" . ($marker ? ' ,this' : '') . "); return false;\"";
+            $pop_attr .= " onclick=\"stophide=true; showHtmlPopUp('{$pop_url}',event,0" . ($marker ? ' ,this' : '') . "); return false;\"";
         } else {
             $pop_attr .= " onmouseover=\"showHtmlPopUp('{$pop_url}',event,{$_conf['iframe_popup_delay']}" . ($marker ? ' ,this' : '') . ")\"";
         }
@@ -850,6 +868,7 @@ EOP;
             $mode = 3;
         } elseif ($mode == 3 && is_null($pop_str)) {
             global $skin, $STYLE;
+
             $custom_pop_img = "skin/{$skin}/pop.png";
             if (file_exists($custom_pop_img)) {
                 $pop_img = p2h($custom_pop_img);
@@ -894,21 +913,24 @@ EOP;
     }
 
     // }}}
-    // {{{ coloredIdStr()
+    // {{{ _coloredIdStr()
 
     /**
      * Merged from http://jiyuwiki.com/index.php?cmd=read&page=rep2%A4%C7%A3%C9%A3%C4%A4%CE%C7%D8%B7%CA%BF%A7%CA%D1%B9%B9&alias%5B%5D=pukiwiki%B4%D8%CF%A2
      *
-     * @access  private
      * @return  string
      */
-    function coloredIdStr($idstr, $id, $classed = false)
+    protected function _coloredIdStr($idstr, $id, $classed = false)
     {
         global $_conf;
 
         if (!(isset($this->thread->idcount[$id])
-                && $this->thread->idcount[$id] > 1)) return $idstr;
-        if ($classed) return $this->_coloredIdStrClassed($idstr, $id);
+                && $this->thread->idcount[$id] > 1)) {
+            return $idstr;
+        }
+        if ($classed) {
+            return $this->_coloredIdStrClassed($idstr, $id);
+        }
 
         switch ($_conf['coloredid.rate.type']) {
         case 1:
@@ -923,6 +945,7 @@ EOP;
         default:
             return $idstr;
         }
+
         if ($rate > 1 && $this->thread->idcount[$id] >= $rate) {
             switch ($_conf['coloredid.coloring.type']) {
             case 0:
@@ -935,17 +958,20 @@ EOP;
                 return $idstr;
             }
         }
+
         return $idstr;
     }
 
     // }}}
     // {{{ _coloredIdStrClassed()
 
-    function _coloredIdStrClassed($idstr, $id) {
+    private function _coloredIdStrClassed($idstr, $id)
+    {
         $ret = array();
-        foreach ($arr = explode(':', $idstr) as $i => $str) {
+        $arr = explode(':', $idstr);
+        foreach ($arr as $i => $str) {
             if ($i == 0 || $i == 1) {
-                $ret[] = '<span class="' . ShowThreadPc::cssClassedId($id)
+                $ret[] = '<span class="' . self::cssClassedId($id)
                     . ($i == 0 ? '-l' : '-b') . '">' . $str . '</span>';
             } else {
                 $ret[] = $str;
@@ -960,12 +986,16 @@ EOP;
     /**
      * IDカラー オリジナル着色用
      */
-    function _coloredIdStr0($idstr, $id) {
+    private function _coloredIdStr0($idstr, $id)
+    {
+        if (!function_exists('coloredIdStyle0')) {
+            require P2_LIB_DIR . '/color/coloredIdStyle0.inc.php';
+        }
+
         if (isset($this->idstyles[$id])) {
             $colored = $this->idstyles[$id];
         } else {
-            require_once P2_LIB_DIR . '/ColoredIDStr0.php';
-            $colored = coloredIdStyle($id, $this->thread->idcount[$id]);
+            $colored = coloredIdStyle0($id, $this->thread->idcount[$id]);
             $this->idstyles[$id] = $colored;
         }
         $ret = array();
@@ -985,16 +1015,20 @@ EOP;
     /**
      * IDカラー thermon版用
      */
-    function _coloredIdStr1($idstr, $id) {
-        require_once P2_LIB_DIR . '/ColoredIDStr.php';
-        $colored = coloredIdStyle($idstr,$id,$this->thread->idcount[$id]);
-        $idstr2=preg_split('/:/',$idstr,2); // コロンでID文字列を分割
-        $ret=array_shift($idstr2).':';
-        if ($colored[1]) {
-                    $idstr2[1]=substr($idstr2[0],4);
-                    $idstr2[0]=substr($idstr2[0],0,4);
+    private function _coloredIdStr1($idstr, $id)
+    {
+        if (!function_exists('coloredIdStyle')) {
+            require P2_LIB_DIR . '/color/coloredIdStyle.inc.php';
         }
-        foreach ($idstr2 as $i=>$str) {
+
+        $colored = coloredIdStyle($idstr, $id, $this->thread->idcount[$id]);
+        $idstr2 = preg_split('/:/',$idstr,2); // コロンでID文字列を分割
+        $ret = array_shift($idstr2).':';
+        if ($colored[1]) {
+            $idstr2[1] = substr($idstr2[0], 4);
+            $idstr2[0] = substr($idstr2[0], 0, 4);
+        }
+        foreach ($idstr2 as $i => $str) {
             if ($colored[$i]) {
                 $ret .= "<span style=\"{$colored[$i]}\">{$str}</span>";
             } else {
@@ -1010,7 +1044,8 @@ EOP;
     /**
      * IDカラーに使用するCSSクラス名をID文字列から算出して返す.
      */
-    static public function cssClassedId($id) {
+    static public function cssClassedId($id)
+    {
         return 'idcss-' . bin2hex(
             base64_decode(str_replace('.', '+', substr($id, 0, 8))));
     }
@@ -1063,7 +1098,7 @@ EOP;
         if (isset($done[$this->asyncObjName])) {
             return;
         }
-        $done[$this->asyncObjName] = TRUE;
+        $done[$this->asyncObjName] = true;
 
         $code = <<<EOJS
 <script type="text/javascript">
@@ -1159,8 +1194,8 @@ EOJS;
     // }}}
     // {{{ transLinkDo()から呼び出されるURL書き換えメソッド
     /**
-     * これらのメソッドは引数が処理対象パターンに合致しないとFALSEを返し、
-     * transLinkDo()はFALSEが返ってくると$_url_handlersに登録されている次の関数/メソッドに処理させようとする。
+     * これらのメソッドは引数が処理対象パターンに合致しないとfalseを返し、
+     * transLinkDo()はfalseが返ってくると$_url_handlersに登録されている次の関数/メソッドに処理させようとする。
      */
     // {{{ plugin_linkURL()
 
@@ -1236,7 +1271,7 @@ EOJS;
 
             return $link;
         }
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -1258,7 +1293,7 @@ EOJS;
             $subject_url = "{$_conf['subject_php']}?host={$m[1]}&amp;bbs={$m[2]}";
             return "<a href=\"{$url}\" target=\"subject\">{$str}</a> [<a href=\"{$subject_url}\" target=\"subject\">板をp2で開く</a>]";
         }
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -1340,7 +1375,7 @@ EOP;
 EOP;
             }
         }
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -1388,7 +1423,7 @@ EOP;
 EOP;
             }
         }
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -1459,11 +1494,13 @@ EOP;
      * @return  string|false
      */
     public function plugin_imageCache2($url, $purl, $str,
-        $force = false, $referer = null)
+                                       $force = false,
+                                       $referer = null)
     {
+        static $serial = 0;
+
         global $_conf;
         global $pre_thumb_unlimited, $pre_thumb_ignore_limit, $pre_thumb_limit;
-        static $serial = 0;
 
         if (P2Util::isUrlWikipediaJa($url)) {
             return false;
@@ -1480,7 +1517,7 @@ EOP;
                 ($referer ? '&amp;ref=' . rawurlencode($referer) : '');
             $img_id = null;
 
-            $icdb = new IC2_DataObject_Images;
+            $icdb = new IC2_DataObject_Images();
 
             // r=0:リンク;r=1:リダイレクト;r=2:PHPで表示
             // t=0:オリジナル;t=1:PC用サムネイル;t=2:携帯用サムネイル;t=3:中間イメージ
@@ -1490,7 +1527,9 @@ EOP;
             $rank = null;
             if ($_conf['expack.ic2.fav_auto_rank']) {
                 $rank = $this->getAutoFavRank();
-                if ($rank !== null) $thumb_url .= '&rank=' . $rank;
+                if ($rank !== null) {
+                    $thumb_url .= '&rank=' . $rank;
+                }
             }
 
             // DBに画像情報が登録されていたとき
@@ -1521,7 +1560,7 @@ EOP;
                     $thumb_url = $_thumb_url;
                     // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新
                     if (!is_null($this->img_memo) && strpos($icdb->memo, $this->img_memo) === false){
-                        $update = new IC2_DataObject_Images;
+                        $update = new IC2_DataObject_Images();
                         if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                             $update->memo = $this->img_memo . ' ' . $icdb->memo;
                         } else {
@@ -1535,12 +1574,12 @@ EOP;
                     if ($rank !== null &&
                             self::isAutoFavRankOverride($icdb->rank, $rank)) {
                         if ($update === null) {
-                            $update = new IC2_DataObject_Images;
+                            $update = new IC2_DataObject_Images();
                             $update->whereAddQuoted('uri', '=', $url);
                         }
                         $update->rank = $rank;
-
                     }
+
                     if ($update !== null) {
                         $update->update();
                     }
@@ -1563,7 +1602,6 @@ EOP;
                 }
 
                 $cached = false;
-
 
                 $orig_img_url   = $img_url;
                 $orig_thumb_url = $thumb_url;
@@ -1620,22 +1658,29 @@ EOP;
         return false;
     }
 
+    // }}}
+    // {{{ plugin_replaceImageUrl()
+
     /**
      * 置換画像URL+ImageCache2
      */
-    function plugin_replaceImageURL($url, $purl, $str)
+    public function plugin_replaceImageUrl($url, $purl, $str)
     {
-        global $_conf;
-        global $pre_thumb_unlimited, $pre_thumb_ignore_limit, $pre_thumb_limit;
         static $serial = 0;
 
-        // +Wiki
-        global $replaceimageurl;
-        $url = $purl[0];
-        $replaced = $replaceimageurl->replaceImageURL($url);
-        if (!$replaced[0]) return FALSE;
+        global $_conf;
+        global $pre_thumb_unlimited, $pre_thumb_ignore_limit, $pre_thumb_limit;
 
-        foreach($replaced as $v) {
+        // +Wiki
+        global $replaceImageUrlCtl;
+
+        $url = $purl[0];
+        $replaced = $replaceImageUrlCtl->replaceImageUrl($url);
+        if (!$replaced[0]) {
+            return false;
+        }
+
+        foreach ($replaced as $v) {
             $url_en = rawurlencode($v['url']);
             $url_ht = p2h($v['url']);
             $ref_en = $v['referer'] ? '&amp;ref=' . rawurlencode($v['referer']) : '';
@@ -1645,7 +1690,7 @@ EOP;
             $thumb_id = 'thumbs' . $serial . $this->thumb_id_suffix;
             $tmp_thumb = './img/ic_load.png';
 
-            $icdb = new IC2_DataObject_Images;
+            $icdb = new IC2_DataObject_Images();
 
             // r=0:リンク;r=1:リダイレクト;r=2:PHPで表示
             // t=0:オリジナル;t=1:PC用サムネイル;t=2:携帯用サムネイル;t=3:中間イメージ
@@ -1688,7 +1733,7 @@ EOP;
                     $thumb_url = $_thumb_url;
                     // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新
                     if (!is_null($this->img_memo) && strpos($icdb->memo, $this->img_memo) === false){
-                        $update = new IC2_DataObject_Images;
+                        $update = new IC2_DataObject_Images();
                         if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                             $update->memo = $this->img_memo . ' ' . $icdb->memo;
                         } else {
@@ -1702,12 +1747,12 @@ EOP;
                     if ($rank !== null &&
                             self::isAutoFavRankOverride($icdb->rank, $rank)) {
                         if ($update === null) {
-                            $update = new IC2_DataObject_Images;
+                            $update = new IC2_DataObject_Images();
                             $update->whereAddQuoted('uri', '=', $v['url']);
                         }
                         $update->rank = $rank;
-
                     }
+
                     if ($update !== null) {
                         $update->update();
                     }
@@ -1731,7 +1776,6 @@ EOP;
                 }
 
                 $cached = false;
-
 
                 $orig_img_url   = $img_url;
                 $orig_thumb_url = $thumb_url;
@@ -1783,14 +1827,13 @@ EOP;
     /**
      * +Wiki:リンクプラグイン
      */
-    function plugin_linkPlugin($url, $purl, $str)
+    public function plugin_linkPlugin($url, $purl, $str)
     {
-        global $linkplugin;
-        return $linkplugin->replaceLinkToHTML($url, $str);
+        return $GLOBALS['linkPluginCtl']->replaceLinkToHTML($url, $str);
     }
 
     // }}}
-    // {{{ plugin_imepita_to_imageCache2()
+    // {{{ plugin_imepitaToImageCache2()
 
     /**
      * imepitaのURLを加工してImageCache2させるプラグイン
@@ -1800,7 +1843,7 @@ EOP;
      * @param   string $str
      * @return  string|false
      */
-    public function plugin_imepita_to_imageCache2($url, $purl, $str)
+    public function plugin_imepitaToImageCache2($url, $purl, $str)
     {
         if (preg_match('{^https?://imepita\.jp/(?:image/)?(\d{8}/\d{6})}i',
                 $purl[0], $m) && empty($purl['query'])) {
@@ -1814,15 +1857,23 @@ EOP;
 
     // }}}
     // }}}
+    // {{{ getQuotebacksJson()
 
-    public function get_quotebacks_json() {
+    public function getQuotebacksJson()
+    {
         $ret = array();
-        foreach ($this->get_quote_from() as $resnum => $quote_from) {
-            if (!$quote_from) continue;
-            if ($resnum != 1 && ($resnum < $this->thread->resrange['start'] || $resnum > $this->thread->resrange['to'])) continue;
+        foreach ($this->getQuoteFrom() as $resnum => $quote_from) {
+            if (!$quote_from) {
+                continue;
+            }
+            if ($resnum != 1 && ($resnum < $this->thread->resrange['start'] || $resnum > $this->thread->resrange['to'])) {
+                continue;
+            }
             $tmp = array();
             foreach ($quote_from as $quote) {
-                if ($quote != 1 && ($quote < $this->thread->resrange['start'] || $quote > $this->thread->resrange['to'])) continue;
+                if ($quote != 1 && ($quote < $this->thread->resrange['start'] || $quote > $this->thread->resrange['to'])) {
+                    continue;
+                }
                 $tmp[] = $quote;
             }
             if ($tmp) $ret[] = "{$resnum}:[" . join(',', $tmp) . "]";
@@ -1830,12 +1881,17 @@ EOP;
         return '{' . join(',', $ret) . '}';
     }
 
-    public function getResColorJs() {
+    // }}}
+    // {{{ getResColorJs()
+
+    public function getResColorJs()
+    {
         global $_conf, $STYLE;
+
         $fontstyle_bold = empty($STYLE['fontstyle_bold']) ? 'normal' : $STYLE['fontstyle_bold'];
         $fontweight_bold = empty($STYLE['fontweight_bold']) ? 'normal' : $STYLE['fontweight_bold'];
         $fontfamily_bold = $STYLE['fontfamily_bold'];
-        $backlinks = $this->get_quotebacks_json();
+        $backlinks = $this->getQuotebacksJson();
         $colors = array();
         $backlink_colors = join(',',
             array_map(create_function('$x', 'return "\'{$x}\'";'),
@@ -1856,7 +1912,11 @@ rescolObjs.push((function() {
 EOJS;
     }
 
-    public function get_ids_for_render_json() {
+    // }}}
+    // {{{ getIdsForRenderJson()
+
+    public function getIdsForRenderJson()
+    {
         $ret = array();
         if ($this->_ids_for_render) {
             foreach ($this->_ids_for_render as $id => $count) {
@@ -1866,13 +1926,21 @@ EOJS;
         return '{' . join(',', $ret) . '}';
     }
 
-    public function getIdColorJs() {
-        global $_conf, $STYLE;
-        if ($_conf['coloredid.enable'] < 1 || $_conf['coloredid.click'] < 1)
-            return '';
-        if (count($this->thread->idcount) < 1) return;
+    // }}}
+    // {{{ getIdColorJs()
 
-        $idslist = $this->get_ids_for_render_json();
+    public function getIdColorJs()
+    {
+        global $_conf, $STYLE;
+
+        if ($_conf['coloredid.enable'] < 1 || $_conf['coloredid.click'] < 1) {
+            return '';
+        }
+        if (count($this->thread->idcount) < 1) {
+            return '';
+        }
+
+        $idslist = $this->getIdsForRenderJson();
 
         $rate = $_conf['coloredid.rate.times'];
         $tops = $this->getIdCountRank(10);
@@ -1925,29 +1993,62 @@ idCol.setupSPM('{$this->spmObjName}');
 EOJS;
     }
 
-    public function getIdCountAverage() {
-        if ($this->_idcount_average !== null) return $this->_idcount_average;
-        $sum = 0; $param = 0;
+    // }}}
+    // {{{ getIdCountAverage()
+
+    public function getIdCountAverage()
+    {
+        if ($this->_idcount_average !== null) {
+            return $this->_idcount_average;
+        }
+
+        $sum = 0;
+        $param = 0;
+
         foreach ($this->thread->idcount as $count) {
             if ($count > 1) {
                 $sum += $count;
                 $param++;
             }
         }
-        return $this->_idcount_average = $param < 1 ? 0 : ceil($sum / $param);
+
+        $result = ($param < 1) ? 0 : intval(ceil($sum / $param));
+        $this->_idcount_average = $result;
+
+        return $result;
     }
 
-    public function getIdCountRank($rank) {
-        if ($this->_idcount_tops !== null) return $this->_idcount_tops;
-        $ranking = array();
-        foreach ($this->thread->idcount as $count) {
-            if ($count > 1) $ranking[] = $count;
+    // }}}
+    // {{{ getIdCountRank()
+
+    public function getIdCountRank($rank)
+    {
+        if ($this->_idcount_tops !== null) {
+            return $this->_idcount_tops;
         }
-        if (count($ranking) == 0) return 0;
+
+        $ranking = array();
+
+        foreach ($this->thread->idcount as $count) {
+            if ($count > 1) {
+                $ranking[] = $count;
+            }
+        }
+
+        if (count($ranking) == 0) {
+            return 0;
+        }
+
         rsort($ranking);
-        $result = count($ranking) >= $rank ? $ranking[$rank - 1] : $ranking[count($ranking) - 1];
-        return $this->_idcount_tops = $result;
+        $rcount = count($ranking);
+
+        $result = ($rcount >= $rank) ? $ranking[$rank - 1] : $ranking[$rcount  - 1];
+        $this->_idcount_tops = $result;
+
+        return $result;
     }
+
+    // }}}
 }
 
 // }}}

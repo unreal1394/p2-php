@@ -4,7 +4,6 @@ replaceLinkToHTML(url, src) メイン関数
 save(array)                 データを保存
 load()                      データを読み込んで返す(自動的に実行される)
 clear()                     データを削除
-autoLoad()                  loadされていなければ実行
 
 基本構造
 データの登録方法
@@ -15,42 +14,37 @@ autoLoad()                  loadされていなければ実行
 word    ignorecase  regex     bbs lasttime    hits
 */
 
-require_once P2_LIB_DIR . '/FileCtl.php';
+require_once __DIR__ . '/WikiPluginCtlBase.php';
 
 class NgThreadCtl
 {
-    var $filename = "p2_aborn_thread.txt";
-    var $data = array();
-    var $hits = 0;
-    var $isLoaded = false;
-    var $date = 'Y/m/d G:i';
+    const DATE_FORMAT = 'Y/m/d G:i';
+
+    protected $filename = 'p2_aborn_thread.txt';
+    protected $data = array();
+    public $hits = 0;
 
     /*
     データをクリア
     */
-    function clear() {
+    public function clear()
+    {
         global $_conf;
+
         $path = $_conf['pref_dir'] . '/' . $this->filename;
 
         return @unlink($path);
     }
 
     /*
-    自動的に読み込む
-    */
-    function autoLoad() {
-        if (!$this->isLoaded) $this->load();
-    }
-
-    /*
     データを読み込んで返す
      */
-    function load()
+    public function load()
     {
         global $_conf;
 
         $lines = array();
-        $path = $_conf['pref_dir'].'/'.$this->filename;
+        $path = $_conf['pref_dir'] . '/' . $this->filename;
         if ($lines = @file($path)) {
             foreach ($lines as $l) {
                 $lar = explode("\t", trim($l));
@@ -68,11 +62,9 @@ class NgThreadCtl
 
                 $this->data[] = $ar;
             }
-
         }
-        $this->isLoaded = TRUE;
-        return $this->data;
 
+        return $this->data;
     }
 
     /*
@@ -80,24 +72,26 @@ class NgThreadCtl
     引数が指定されてる⇒そのデータで保存
     $this->dataがない⇒保存しない
     */
-    function save($data)
+    public function save($data)
     {
         global $_conf;
 
         if ($data) {
-            $new_data = TRUE;
+            $new_data = true;
             $this->data = $data;
-        } else if (!$this->isLoaded) {
+        } elseif (!$this->isLoaded) {
             return;
         } else {
-            $new_data = FALSE;
+            $new_data = false;
         }
         // HITした時のみ更新する
         if ($this->hits > 0 || $new_data) {
             $cont = '';
 
             foreach ($this->data as $v) {
-                if ($v['del']) continue;
+                if ($v['del']) {
+                    continue;
+                }
 
                 // 必要ならここで古いデータはスキップ（削除）する
                 if (!empty($v['lasttime']) && $_conf['ngaborn_daylimit']) {
@@ -114,7 +108,9 @@ class NgThreadCtl
                 $a['hits'] = $v['hits'];
 
                 // lasttimeが設定されていなかったら現在時間を設定(本来なら登録時にするべき)
-                if (empty($v['lasttime'])) $v['lasttime'] = date($this->date);
+                if (empty($v['lasttime'])) {
+                    $v['lasttime'] = date(self::DATE_FORMAT);
+                }
 
                 $cont .= implode("\t", $v) . "\n";
             }
@@ -125,12 +121,11 @@ class NgThreadCtl
 
     /*
     あぼーんチェック
-    あぼーん対象⇒TRUE
+    あぼーん対象⇒true
     */
-    function check($aThread)
+    public function check($aThread)
     {
-
-        $this->autoLoad();
+        $this->setup();
 
         if ($aThreadList->spmode != "taborn" && isset($this->data) && is_array($this->data)) {
             foreach ($this->data as $k => $v) {
@@ -147,39 +142,39 @@ class NgThreadCtl
                     }
                     if (preg_match('{' . $v['word'] . '}i', $aThread->ttitle_hc)) {
                         $this->update($k);
-                        return TRUE;
+                        return true;
                     }
                 // 大文字小文字を無視
                 } elseif (!empty($v['ignorecase'])) {
                     if(stristr($aThread->ttitle_hc,$v['word'])){
                         $this->update($k);
-                        return TRUE;
+                        return true;
                     }
                 // 単純に文字列が含まれるかどうかをチェック
-                }else {
+                } else {
                     if (strstr($aThread->ttitle_hc,$v['word'])) {
                         $this->update($k);
-                        return TRUE;
+                        return true;
                     }
                 }
             }
         }
 
-        return FALSE;
+        return false;
     }
 
     /*
     そのデータのあぼーん情報を更新
     */
-    function update($k) {
+    public function update($k)
+    {
         $this->hits++;
         if (isset($this->data[$k])) {
-            $v =& $this->data[$k];
-            $v['lasttime'] = date($this->date); // HIT時間を更新
+            $this->data[$k]['lasttime'] = date(self::DATE_FORMAT); // HIT時間を更新
             if (empty($v['hits'])) {
-                $v['hits'] = 1; // 初HIT
+                $this->data[$k]['hits'] = 1; // 初HIT
             } else {
-                $v['hits']++; // HIT回数を更新
+                $this->data[$k]['hits']++; // HIT回数を更新
             }
         }
     }

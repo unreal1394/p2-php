@@ -77,7 +77,7 @@ foreach ($threads as $o => $t) {
     $new = '';
     $turl = sprintf('%s?host=%s&amp;bbs=%s&amp;key=%d', $_conf['read_php'], $t->host, $t->bbs, $t->tkey);
     $burl = sprintf('%s?host=%s&amp;bbs=%s&amp;itaj_en=%s&amp;word=%s', $_conf['subject_php'], $t->host, $t->bbs, UrlSafeBase64::encode($t->ita), $htm['query_en']);
-    $aThread = new Thread;
+    $aThread = new Thread();
     $aThread->setThreadPathInfo($t->host, $t->bbs, $t->tkey);
     if ($aThread->getThreadInfoFromIdx() && $aThread->isKitoku()) {
         $rnum = max($t->resnum, $aThread->readnum);

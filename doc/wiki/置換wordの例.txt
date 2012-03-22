@@ -22,6 +22,6 @@ Match=(\d\d:\d\d):\d\d(?:\.\d\d)?
 Replce=$1
 
 外部スクリプト(プラグイン)で実現できるもの
-必死チェッカーをポップアップで表示(plugin/hissi/readme.txt)
-みみずんID検索をポップアップで表示(plugin/mimizun/readme.txt)
-IDストーカーをポップアップで表示(plugin/stalker/readme.txt)
+必死チェッカーをポップアップで表示(lib/plugins/hissi/readme.txt)
+みみずんID検索をポップアップで表示(lib/plugins/mimizun/readme.txt)
+IDストーカーをポップアップで表示(lib/plugins/stalker/readme.txt)

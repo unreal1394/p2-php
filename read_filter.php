@@ -19,7 +19,7 @@ function _read_filter_setup()
     $resnum = (int)$_GET['resnum'];
     $field  = $_GET['field'];
 
-    $aThread = new ThreadRead;
+    $aThread = new ThreadRead();
     $aThread->setThreadPathInfo($host, $bbs, $key);
     $aThread->readDat($aThread->keydat);
 

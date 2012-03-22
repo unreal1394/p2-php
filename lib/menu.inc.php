@@ -26,6 +26,7 @@ if (isset($_GET['word'])) {
 }
 $hd = array('word' => '');
 $GLOBALS['ita_mikke'] = array('num' => 0);
+$msg_ht = '';
 
 // 板検索
 if (isset($word) && strlen($word) > 0) {
@@ -237,7 +238,7 @@ EOP;
 if ($_conf['expack.misc.multi_favs']) {
     $favlist_onchange = "openFavList('{$_conf['subject_php']}', this.options[this.selectedIndex].value, window.top.subject);";
     echo "<br>\n";
-    echo FavSetManager::makeFavSetSwitchElem('m_favlist_set', 'お気にスレ', FALSE, $favlist_onchange);
+    echo FavSetManager::makeFavSetSwitchElem('m_favlist_set', 'お気にスレ', false, $favlist_onchange);
 }
 echo <<<EOP
     <div class="itas" id="c_spacial">

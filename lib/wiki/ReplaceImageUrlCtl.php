@@ -4,42 +4,38 @@ ReplaceImageURL(url)        メイン関数
 save(array)                 データを保存
 load()                      データを読み込んで返す(自動的に実行される)
 clear()                     データを削除
-autoLoad()                  loadされていなければ実行
 */
 
-require_once P2_LIB_DIR . '/FileCtl.php';
+require_once __DIR__ . '/WikiPluginCtlBase.php';
 
-class ReplaceImageURLCtl
+class ReplaceImageUrlCtl extends WikiPluginCtlBase
 {
-    var $filename = "p2_replace_imageurl.txt";
-    var $data = array();
-    var $isLoaded = false;
+    protected $filename = 'p2_replace_imageurl.txt';
+    protected $data = array();
 
     // replaceの結果を外部ファイルにキャッシュする
     // とりあえず外部リクエストの発生する$EXTRACT入りの場合のみ対象
     // 500系のエラーだった場合は、キャッシュしない
-    var $cacheFilename = "p2_replace_imageurl_cache.txt";
-    var $cacheData = array();
-    var $cacheIsLoaded = false;
+    protected $cacheFilename = 'p2_replace_imageurl_cache.txt';
+    protected $cacheData = array();
+    protected $cacheIsLoaded = false;
 
     // 全エラーをキャッシュして無視する(永続化はしないので今回リクエストのみ）
-    var $extractErrors = array();
-    // 全replaceImageURLをキャッシュする(永続化はしないので今回リクエストのみ）
-    var $onlineCache = array();
+    protected $extractErrors = array();
+    // 全replaceImageUrlをキャッシュする(永続化はしないので今回リクエストのみ）
+    protected $onlineCache = array();
 
-    function clear() {
+    public function clear()
+    {
         global $_conf;
+
         $path = $_conf['pref_dir'] . '/' . $this->filename;
 
         return @unlink($path);
     }
 
-    function autoLoad() {
-        if (!$this->isLoaded) $this->load();
-        if (!$this->cacheIsLoaded) $this->load_cache();
-    }
-
-    function load() {
+    public function load()
+    {
         global $_conf;
 
         $lines = array();
@@ -72,7 +68,7 @@ class ReplaceImageURLCtl
                 $this->data[] = $ar;
             }
         }
-        $this->isLoaded = true;
+
         return $this->data;
     }
 
@@ -82,7 +78,7 @@ class ReplaceImageURLCtl
      * $data[$i]['replace']     Replace
      * $data[$i]['del']         削除
      */
-    function save($data)
+    public function save($data)
     {
         global $_conf;
 
@@ -107,7 +103,8 @@ class ReplaceImageURLCtl
     }
 
 
-    function load_cache() {
+    public function load_cache()
+    {
         global $_conf;
         $lines = array();
         $path = $_conf['pref_dir'].'/'.$this->cacheFilename;
@@ -123,7 +120,8 @@ class ReplaceImageURLCtl
         return $this->cacheData;
     }
 
-    function storeCache($key, $data) {
+    public function storeCache($key, $data)
+    {
         global $_conf;
 
         if ($this->cacheData[$key]) {
@@ -132,7 +130,7 @@ class ReplaceImageURLCtl
             $body = '';
             foreach ($this->cacheData as $_k => $_v) {
                 $body .= implode("\t", array($_k,
-                    serialize(ReplaceImageURLCtl::sanitizeForCache($_v)))
+                    serialize(self::sanitizeForCache($_v)))
                 ) . "\n";
             }
             return FileCtl::file_write_contents($_conf['pref_dir'] . '/'
@@ -143,17 +141,18 @@ class ReplaceImageURLCtl
             return FileCtl::file_write_contents(
                 $_conf['pref_dir'] . '/' . $this->cacheFilename,
                 implode("\t", array($key,
-                    serialize(ReplaceImageURLCtl::sanitizeForCache($data)))
+                    serialize(self::sanitizeForCache($data)))
                 ) . "\n",
                 FILE_APPEND
             );
         }
     }
 
-    static function sanitizeForCache($data) {
+    public static function sanitizeForCache($data)
+    {
         if (is_array($data)) {
-            foreach(array_keys($data) as $k) {
-                $data[$k] = ReplaceImageURLCtl::sanitizeForCache($data[$k]);
+            foreach (array_keys($data) as $k) {
+                $data[$k] = self::sanitizeForCache($data[$k]);
             }
             return $data;
         } else {
@@ -162,17 +161,19 @@ class ReplaceImageURLCtl
     }
 
     /**
-     * replaceImageURL
+     * replaceImageUrl
      * リンクプラグインを実行
      * return array
      *      $ret[$i]['url']     $i番目のURL
      *      $ret[$i]['referer'] $i番目のリファラ
      */
-    function replaceImageURL($url) {
+    public function replaceImageUrl($url)
+    {
         global $_conf;
         // http://janestyle.s11.xrea.com/help/first/ImageViewURLReplace.html
-        $this->autoLoad();
-        $src = FALSE;
+
+        $this->setup();
+        $src = false;
 
         if (array_key_exists($url, $this->onlineCache)) {
             return $this->onlineCache[$url];
@@ -234,13 +235,16 @@ class ReplaceImageURLCtl
         return $this->_reply($url, $return);
     }
 
-    function _reply($url, $data) {
+    protected function _reply($url, $data)
+    {
         $this->onlineCache[$url] = $data;
         return $data;
     }
 
-    function extractPage($url, $match, $replace, $referer, $source, $ident=null) {
+    public function extractPage($url, $match, $replace, $referer, $source, $ident=null)
+    {
         global $_conf;
+
         $ret = array();
 
         $source =  @preg_replace ('{'.$match.'}', $source, $url);
@@ -329,7 +333,8 @@ class ReplaceImageURLCtl
         return $ret;
     }
 
-    function _checkLost($url, $data) {
+    protected function _checkLost($url, $data)
+    {
         if (count($data) == 0 && $this->cacheData[$url] &&
                 $this->cacheData[$url]['data'] &&
                 count($this->cacheData[$url]['data']) > 0) {
@@ -350,12 +355,12 @@ class ReplaceImageURLCtl
      * ファイル名に規則的にセッション文字列が付く、
      * などの場合でも同じ画像を取りにいかないようにしたいため.
      */
-    static function _identByCacheData($data, $cache, $identRegex) {
+    protected static function _identByCacheData($data, $cache, $identRegex)
+    {
         $ret = $data;
         foreach ($ret as &$d) {
             $ident_match = array();
-            if (!preg_match('{^'.$identRegex.'}', $d['url'], $ident_match))
-            {
+            if (!preg_match('{^'.$identRegex.'}', $d['url'], $ident_match)) {
                 continue;
             }
 
@@ -373,7 +378,9 @@ class ReplaceImageURLCtl
 
                 // マッチした後方参照があるならそれだけ比較したいので
                 // マッチ全体[0]を塗りつぶし
-                if (count($ident_cache_match) > 1) $ident_cache_match[0] = '';
+                if (count($ident_cache_match) > 1) {
+                    $ident_cache_match[0] = '';
+                }
 
                 if ($ident_match === $ident_cache_match) {
                     // キャッシュデータを使用する

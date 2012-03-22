@@ -73,7 +73,7 @@ EOP;
         // ‚¨‹C‚É”ÂØ‚è‘Ö‚¦
         if ($_conf['expack.misc.multi_favs']) {
             echo "<br>\n";
-            echo FavSetManager::makeFavSetSwitchElem('m_favita_set', '‚¨‹C‚É”Â', TRUE, "replaceMenuItem('c_favita', 'm_favita_set', this.options[this.selectedIndex].value);");
+            echo FavSetManager::makeFavSetSwitchElem('m_favita_set', '‚¨‹C‚É”Â', true, "replaceMenuItem('c_favita', 'm_favita_set', this.options[this.selectedIndex].value);");
         }
 
         if ($_conf['expack.misc.multi_favs']) {

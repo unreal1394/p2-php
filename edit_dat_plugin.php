@@ -4,13 +4,12 @@
 */
 
 include_once './conf/conf.inc.php';
-require_once P2_LIB_DIR . '/FileCtl.php';
-require_once P2_LIB_DIR . '/wiki/datpluginctl.class.php';
+require_once P2_LIB_DIR . '/wiki/DatPluginCtl.php';
  
 $_login->authorize(); // ユーザ認証
 
 if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
-    if (!isset($_POST['csrfid']) or $_POST['csrfid'] != P2Util::getCsrfId()) {
+    if (!isset($_POST['csrfid']) || $_POST['csrfid'] != P2Util::getCsrfId()) {
         die('p2 error: 不正なポストです');
     }
 }
@@ -19,25 +18,25 @@ if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
 // 前処理
 //=====================================================================
 
-$datplugin = new DatPluginCtl;
+$datPluginCtl = new DatPluginCtl();
 
 // [保存]ボタン
 if (!empty($_POST['submit_save'])) {
-    if ($datplugin->save($_POST['dat']) !== FALSE) {
-        $_info_msg_ht .= "<p>○設定を更新保存しました</p>";
+    if ($datPluginCtl->save($_POST['dat']) !== false) {
+        $_info_msg_ht .= '<p>○設定を更新保存しました</p>';
     } else {
-        $_info_msg_ht .= "<p>×設定を更新保存できませんでした</p>";
+        $_info_msg_ht .= '<p>×設定を更新保存できませんでした</p>';
     }
 // [リストを空にする]ボタン
 } elseif (!empty($_POST['submit_default'])) {
-    if ($datplugin->clear()) {
-        $_info_msg_ht .= "<p>○リストを空にしました</p>";
+    if ($datPluginCtl->clear()) {
+        $_info_msg_ht .= '<p>○リストを空にしました</p>';
     } else {
-        $_info_msg_ht .= "<p>×リストを空にできませんでした</p>";
+        $_info_msg_ht .= '<p>×リストを空にできませんでした</p>';
     }
 }
 // リスト読み込み
-$formdata = $datplugin->load();
+$formdata = $datPluginCtl->load();
 
 //=====================================================================
 // プリント設定

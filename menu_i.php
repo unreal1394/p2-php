@@ -53,7 +53,7 @@ if (isset($_POST['word'])) {
     <title>rep2</title>
     <link rel="stylesheet" type="text/css" href="iui/iui.css?<?php echo $_conf['p2_version_id']; ?>" />
     <link rel="stylesheet" type="text/css" href="css/menu_i.css?<?php echo $_conf['p2_version_id']; ?>" />
-    <link rel="apple-touch-icon" type="image/png" href="img/touch-icon/p2-serif.png" />
+    <?php echo $_conf['touch_icon_ht']; ?>
     <script type="text/javascript" src="iui/iui.js?<?php echo $_conf['p2_version_id']; ?>"></script>
     <script type="text/javascript" src="js/json2.js?<?php echo $_conf['p2_version_id']; ?>"></script>
 <?php if (UA::isAndroidWebKit()) { ?>

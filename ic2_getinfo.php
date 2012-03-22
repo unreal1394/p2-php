@@ -34,7 +34,7 @@ require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
 // }}}
 // {{{ execute
 
-$icdb = new IC2_DataObject_Images;
+$icdb = new IC2_DataObject_Images();
 if (isset($_GET['id'])) {
     $icdb->whereAdd(sprintf('id=%d', (int)$_GET['id']));
 } elseif (isset($_GET['url'])) {

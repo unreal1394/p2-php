@@ -274,7 +274,7 @@ if ((basename($_SERVER['SCRIPT_NAME']) == 'post_form.php' || !empty($_GET['inyou
     $q_resnum = $_GET['resnum'];
     $hd['MESSAGE'] = "&gt;&gt;" . $q_resnum . "\r\n";
     if (!empty($_GET['inyou'])) {
-        $aThread = new ThreadRead;
+        $aThread = new ThreadRead();
         $aThread->setThreadPathInfo($host, $bbs, $key);
         $aThread->readDat($aThread->keydat);
         $q_resar = $aThread->explodeDatLine($aThread->datlines[$q_resnum-1]);

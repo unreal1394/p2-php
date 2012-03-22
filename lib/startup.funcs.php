@@ -16,12 +16,12 @@ function p2_check_environment($check_recommended)
 
     $php_version = phpversion();
 
-    if (version_compare($php_version, '5.3.0-dev', '>=')) {
+    if (version_compare($php_version, '5.4.0-dev', '>=')) {
+        $required_version = $p2_required_version_5_4;
+        $recommended_version = $p2_recommended_version_5_4;
+    } else {
         $required_version = $p2_required_version_5_3;
         $recommended_version = $p2_recommended_version_5_3;
-    } else {
-        $required_version = $p2_required_version_5_2;
-        $recommended_version = $p2_recommended_version_5_2;
     }
 
     // PHPのバージョン
@@ -42,20 +42,6 @@ function p2_check_environment($check_recommended)
             p2die("{$directive} が On です。",
                   "php.ini で {$directive} を Off にしてください。");
         }
-    }
-
-    // eAccelerator
-    if (extension_loaded('eaccelerator') &&
-        version_compare(EACCELERATOR_VERSION, '0.9.5.2', '<'))
-    {
-        $err = 'eAcceleratorを更新してください。';
-        $ev = EACCELERATOR_VERSION;
-        $msg = <<<EOP
-<p>PHP 5.2で例外を捕捉できない問題のあるeAccelerator ({$ev})がインストールされています。<br>
-eAcceleratorを無効にするか、この問題が修正されたeAccelerator 0.9.5.2以降を使用してください。<br>
-<a href="http://eaccelerator.net/">http://eaccelerator.net/</a></p>
-EOP;
-        p2die($err, $msg, true);
     }
 
     // 推奨バージョン

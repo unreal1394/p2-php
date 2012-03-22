@@ -157,7 +157,7 @@ if ($showForm) {
 }
 
 // テンプレート変数
-$view = new stdClass;
+$view = new stdClass();
 $view->php_self = $_SERVER['SCRIPT_NAME'];
 $view->STYLE    = $STYLE;
 $view->skin     = $skin_en;
@@ -291,7 +291,7 @@ function ic2_register_uploaded_file($file)
     }
 
     // 既存の画像か検索
-    $search1 = new IC2_DataObject_Images;
+    $search1 = new IC2_DataObject_Images();
     $search1->whereAddQuoted('size', '=', $file['size']);
     $search1->whereAddQuoted('md5',  '=', $file['md5']);
     $search1->whereAddQuoted('mime', '=', $file['mime']);
@@ -300,9 +300,9 @@ function ic2_register_uploaded_file($file)
     $search1->whereAddQuoted('uri',  '=', $utf8_path);
 
     // 全く同じ画像が登録されていたとき
-    if ($search1->find(TRUE)) {
+    if ($search1->find(true)) {
         $update = clone $search1;
-        $changed = FALSE;
+        $changed = false;
         if (strlen($f_memo) > 0 && strpos($search1->memo, $f_memo) === false){
             if (!is_null($search1->memo) && strlen($search1->memo) > 0) {
                 $update->memo = $f_memo . ' ' . $search1->memo;
@@ -310,11 +310,11 @@ function ic2_register_uploaded_file($file)
                 $update->memo = $f_memo;
             }
             $file['memo'] = mb_convert_encoding($update->memo, 'CP932', 'UTF-8');
-            $changed = TRUE;
+            $changed = true;
         }
         if ($search1->rank != $f_rank) {
             $update->rank = $f_rank;
-            $changed = TRUE;
+            $changed = true;
         }
         if ($changed) {
             $update->update();
@@ -326,7 +326,7 @@ function ic2_register_uploaded_file($file)
 
     } else {
 
-        $record = new IC2_DataObject_Images;
+        $record = new IC2_DataObject_Images();
         $record->uri    = $utf8_path;
         $record->host   = $f_host;
         $record->name   = $utf8_name;
@@ -342,7 +342,7 @@ function ic2_register_uploaded_file($file)
         }
 
         // 登録済みの画像で、URLが異なるとき
-        if ($search2->find(TRUE) && file_exists($file['img_src'])) {
+        if ($search2->find(true) && file_exists($file['img_src'])) {
             $record->insert();
             $file['message'] = '<a href="iv2.php?field=md5&amp;key=' . $file['md5'] . '" target="_blank">同じ画像が異なるURLで登録されていました。</a>';
 

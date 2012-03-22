@@ -4,12 +4,12 @@
  */
 
 // 必須バージョン
-$p2_required_version_5_2 = '5.2.8';
-$p2_required_version_5_3 = '5.3.0';
+$p2_required_version_5_3 = '5.3.8';
+$p2_required_version_5_4 = '5.4.0';
 
 // 推奨バージョン
-$p2_recommended_version_5_2 = '5.2.12';
-$p2_recommended_version_5_3 = '5.3.1';
+$p2_recommended_version_5_3 = '5.3.10';
+$p2_recommended_version_5_4 = '5.4.0';
 
 // 必須拡張モジュール
 $p2_required_extensions = array(

@@ -6,8 +6,8 @@ read.phpと同じディレクトリに以下のようにディレクトリ構造を作る。
 read.php (rep2に含まれています)
 img/spacer.gif (rep2に含まれています)
 mimizun.php
-plugin/mimizun/mimizun.png
-plugin/mimizun/mimizun.class.php
+lib/plugins/mimizun/mimizun.png
+lib/plugins/mimizun/Mimizun.php
 2.置換ワード
 置換ワードの日付に以下の項目を追加。
 Match=$

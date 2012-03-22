@@ -153,7 +153,7 @@ function p2_init()
     // }}}
     // {{{ ライブラリ類のパス設定
 
-    define('P2_CONF_DIR', dirname(__FILE__)); // __DIR__ @php-5.3
+    define('P2_CONF_DIR', __DIR__);
 
     define('P2_BASE_DIR', dirname(P2_CONF_DIR));
 
@@ -162,6 +162,9 @@ function p2_init()
 
     // おまけ的な機能を提供するするライブラリ
     define('P2EX_LIB_DIR', P2_BASE_DIR . '/lib/expack');
+
+    // プラグインライブラリ
+    define('P2_PLUGIN_DIR', P2_BASE_DIR . '/lib/plugins');
 
     // スタイルシート
     define('P2_STYLE_DIR', P2_BASE_DIR . '/style');
@@ -189,7 +192,7 @@ function p2_init()
     include P2_LIB_DIR . '/startup.funcs.php';
     spl_autoload_register('p2_load_class');
 
-    require_once P2_LIB_DIR . '/wiki/p2utilwiki.class.php';
+    require_once P2_LIB_DIR . '/wiki/P2UtilWiki.php';
 
     // 動作環境を確認 (要件を満たしているならコメントアウト可)
     p2_check_environment(__LINE__);

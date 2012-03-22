@@ -25,7 +25,7 @@ class JStyle implements ArrayAccess
     static public function singleton()
     {
         if (self::$_instance === null) {
-            self::$_instance = new JStyle;
+            self::$_instance = new JStyle();
         }
         return self::$_instance;
     }

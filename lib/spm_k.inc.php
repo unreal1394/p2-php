@@ -61,7 +61,7 @@ function kspform($aThread, $default = '', $params = null)
     $form .= sprintf($hidden, 'key', p2h($aThread->key));
     $form .= sprintf($hidden, 'rescount', $aThread->rescount);
     $form .= sprintf($hidden, 'offline', '1');
-    $form .= sprintf($hidden, 'ttitle_en', p2h(base64_encode($aThread->ttitle)));
+    $form .= sprintf($hidden, 'ttitle_en', UrlSafeBase64::encode($aThread->ttitle));
 
     // ’Ç‰Á‚Ì‰B‚µƒpƒ‰ƒ[ƒ^
     if (is_array($params)) {

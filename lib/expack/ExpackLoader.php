@@ -154,12 +154,28 @@ class ExpackLoader
     {
         global $_conf;
 
+        $dpr = 1.0;
+
         if (!$_conf['ktai']) {
             $aShowThread->thumb_id_suffix = '-' . strtr(microtime(), '. ', '--');
             $aShowThread->thumbnailer = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_PC);
         } else {
-            $aShowThread->inline_prvw = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_PC);
-            $aShowThread->thumbnailer = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_MOBILE);
+            $preview_size = IC2_Thumbnailer::SIZE_PC;
+            $thumb_size = IC2_Thumbnailer::SIZE_MOBILE;
+            if ($_conf['iphone'] && !empty($_SESSION['device_pixel_ratio'])) {
+                $dpr = $_SESSION['device_pixel_ratio'];
+                if ($dpr === 1.5) {
+                    $preview_size |= IC2_Thumbnailer::DPR_1_5;
+                    $thumb_size   |= IC2_Thumbnailer::DPR_1_5;
+                } elseif ($dpr === 2.0) {
+                    $preview_size |= IC2_Thumbnailer::DPR_2_0;
+                    $thumb_size   |= IC2_Thumbnailer::DPR_2_0;
+                } else {
+                    $dpr = 1.0;
+                }
+            }
+            $aShowThread->inline_prvw = new IC2_Thumbnailer($preview_size);
+            $aShowThread->thumbnailer = new IC2_Thumbnailer($thumb_size);
         }
 
         if ($aShowThread->thumbnailer->ini['General']['automemo']) {
@@ -169,6 +185,13 @@ class ExpackLoader
         } else {
             $aShowThread->img_memo = null;
             $aShowThread->img_memo_query = '';
+        }
+
+        $aShowThread->img_dpr = $dpr;
+        if ($dpr === 1.5 || $dpr === 2.0) {
+            $aShowThread->img_dpr_query = '&amp;d=' . $dpr;
+        } else {
+            $aShowThread->img_dpr_query = '';
         }
 
         self::loadClass('IC2_Switch', 'ic2/Switch.php');

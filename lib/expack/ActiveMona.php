@@ -97,7 +97,7 @@ class ActiveMona
      * @param string $id
      * @return string
      */
-    function getMona($id)
+    public function getMona($id)
     {
         return sprintf(self::MONA, $id);
     }
@@ -111,7 +111,7 @@ class ActiveMona
      * @param string $msg
      * @return bool
      */
-    function detectAA($msg)
+    public function detectAA($msg)
     {
         if (substr_count($msg, $this->_lb) < $this->_ln) {
             return false;

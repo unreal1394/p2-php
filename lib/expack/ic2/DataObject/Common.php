@@ -111,7 +111,7 @@ class IC2_DataObject_Common extends DB_DataObject
             }
         }
         if (!count($order)) {
-            return FALSE;
+            return false;
         }
         return $this->orderBy(implode(', ', $order));
     }

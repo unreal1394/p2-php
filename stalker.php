@@ -13,29 +13,28 @@ include_once './conf/conf.inc.php';
 
 $_login->authorize(); //ユーザ認証
 
-require_once './plugin/stalker/stalker.class.php';
+require_once P2_PLUGIN_DIR . '/stalker/Stalker.php';
 
-$stalker = new stalker();
+$stalker = new Stalker();
 $stalker->host = $_GET['host'];
 $stalker->bbs  = $_GET['bbs'];
 // 画像を表示する場合
 if ($_GET['img']) {
-    if ($stalker->isEnable()) {
+    if ($stalker->isEnabled()) {
         header("Content-Type: image/png");
-        readfile('./plugin/stalker/stalker.png');
+        readfile(P2_PLUGIN_DIR . '/stalker/stalker.png');
     } else {
         header("Content-Type: image/gif");
         readfile('./img/spacer.gif');
     }
     exit;
 } else {
-    if ($stalker->isEnable()) {
-        $id = '';
-        if ($_GET['id']) {
+    if ($stalker->isEnabled()) {
+        $id = null;
+        if (!empty($_GET['id'])) {
             $id = $_GET['id'];
-        } else if ($_GET['key'] && $_GET['resnum']) {
-            $id = '';
-            $aThread = new ThreadRead;
+        } elseif (!empty($_GET['key']) && !empty($_GET['resnum'])) {
+            $aThread = new ThreadRead();
             $aThread->setThreadPathInfo($_GET['host'], $_GET['bbs'], $_GET['key']);
             $aThread->readDat();
             $resnum = $_GET['resnum'];

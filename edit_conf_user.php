@@ -10,7 +10,7 @@ $_login->authorize(); // ユーザ認証
 $csrfid = P2Util::getCsrfId(__FILE__);
 
 if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
-    if (!isset($_POST['csrfid']) or $_POST['csrfid'] != $csrfid) {
+    if (!isset($_POST['csrfid']) || $_POST['csrfid'] != $csrfid) {
         p2die('不正なポストです');
     }
 }

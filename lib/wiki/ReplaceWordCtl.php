@@ -4,48 +4,53 @@ ReplaceImageURL(url)        メイン関数
 save(array)                 データを保存
 load()                      データを読み込んで返す(自動的に実行される)
 clear()                     データを削除
-autoLoad()                  loadされていなければ実行
 */
-
-require_once P2_LIB_DIR . '/FileCtl.php';
 
 class ReplaceWordCtl
 {
-    var $data = array();
-    var $isLoaded = false;
+    protected $isLoaded = false;
+    protected $data = array();
+
+    public function setup()
+    {
+        if (!$this->isLoaded) {
+            $this->load();
+            $this->isLoaded = true;
+        }
+    }
 
     // ファイル名を返す
-    function filename($cont) {
+    public function filename($cont)
+    {
         return 'p2_replace_' . $cont . '.txt';
     }
 
     // ファイルを削除
-    function clear($cont) {
+    public function clear($cont)
+    {
         global $_conf;
+
         $path = $_conf['pref_dir'] . '/' . $this->filename($cont);
 
         return @unlink($path);
     }
 
-    // データを読み込んでいなければ読み込む
-    function autoLoad() {
-        if (!$this->isLoaded) $this->load();
-    }
-
     // 全てのデータを読み込む
-    function load() {
+    public function load()
+    {
         $this->loadFile('name');
         $this->loadFile('mail');
         $this->loadFile('date');
         $this->loadFile('msg');
 
-        $this->isLoaded = true;
         return $this->data;
     }
 
     // ファイルを読み込む
-    function loadFile($cont) {
+    public function loadFile($cont)
+    {
         global $_conf;
+
         $lines = array();
         $path = $_conf['pref_dir'].'/'.$this->filename($cont);
         if ($lines = @file($path)) {
@@ -72,7 +77,7 @@ class ReplaceWordCtl
     }
 
     // ファイルを保存
-    function save($data)
+    public function save($data)
     {
         global $_conf;
 
@@ -103,10 +108,11 @@ class ReplaceWordCtl
     $ares:レスの内容
     $i:レス番号
     */
-    function replace($cont, $aThread, $ares, $i) {
+    public function replace($cont, $aThread, $ares, $i)
+    {
         global $_conf;
 
-        $this->autoLoad();
+        $this->setup();
 
         $resar   = $aThread->explodeDatLine($ares);
         $name    = $resar[0];

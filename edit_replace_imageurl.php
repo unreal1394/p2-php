@@ -4,15 +4,14 @@
 */
 
 include_once './conf/conf.inc.php';
-require_once P2_LIB_DIR . '/FileCtl.php';
-require_once P2_LIB_DIR . '/wiki/replaceimageurlctl.class.php';
+require_once P2_LIB_DIR . '/wiki/ReplaceImageUrlCtl.php';
  
 $_login->authorize(); // ユーザ認証
 
 $csrfid = P2Util::getCsrfId(__FILE__);
 
 if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
-    if (!isset($_POST['csrfid']) or $_POST['csrfid'] != $csrfid) {
+    if (!isset($_POST['csrfid']) || $_POST['csrfid'] != $csrfid) {
         die('p2 error: 不正なポストです');
     }
 }
@@ -22,25 +21,25 @@ if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
 // 前処理
 //=====================================================================
 
-$replaceImageURL = &new ReplaceImageURLCtl;
+$replaceImageUrlCtl = new ReplaceImageUrlCtl();
 
 // [保存]ボタン
 if (!empty($_POST['submit_save'])) {
-    if ($replaceImageURL->save($_POST['dat']) !== FALSE) {
-        $_info_msg_ht .= "<p>○設定を更新保存しました</p>";
+    if ($replaceImageUrlCtl->save($_POST['dat']) !== false) {
+        $_info_msg_ht .= '<p>○設定を更新保存しました</p>';
     } else {
-        $_info_msg_ht .= "<p>×設定を更新保存できませんでした</p>";
+        $_info_msg_ht .= '<p>×設定を更新保存できませんでした</p>';
     }
 // [リストを空にする]ボタン
 } elseif (!empty($_POST['submit_default'])) {
     if ($this->clear()) {
-        $_info_msg_ht .= "<p>○リストを空にしました</p>";
+        $_info_msg_ht .= '<p>○リストを空にしました</p>';
     } else {
-        $_info_msg_ht .= "<p>×リストを空にできませんでした</p>";
+        $_info_msg_ht .= '<p>×リストを空にできませんでした</p>';
     }
 }
 // リスト読み込み
-$formdata = $replaceImageURL->load();
+$formdata = $replaceImageUrlCtl->load();
 
 //=====================================================================
 // プリント設定

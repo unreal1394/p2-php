@@ -4,29 +4,26 @@
 save(array)                 データを保存
 load()                      データを読み込んで返す(自動的に実行される)
 clear()                     データを削除
-autoLoad()                  loadされていなければ実行
 */
 
-require_once P2_LIB_DIR . '/FileCtl.php';
+require_once __DIR__ . '/WikiPluginCtlBase.php';
 
-class DatPluginCtl
+class DatPluginCtl extends WikiPluginCtlBase
 {
-    var $filename = "p2_plugin_dat.txt";
-    var $data = array();
-    var $isLoaded = false;
+    protected $filename = 'p2_plugin_dat.txt';
+    protected $data = array();
 
-    function clear() {
+    public function clear()
+    {
         global $_conf;
+
         $path = $_conf['pref_dir'] . '/' . $this->filename;
 
         return @unlink($path);
     }
 
-    function autoLoad() {
-        if (!$this->isLoaded) $this->load();
-    }
-
-    function load() {
+    public function load()
+    {
         global $_conf;
 
         $lines = array();
@@ -45,7 +42,7 @@ class DatPluginCtl
                 $this->data[] = $ar;
             }
         }
-        $this->isLoaded = true;
+
         return $this->data;
     }
 
@@ -55,8 +52,10 @@ class DatPluginCtl
      * $data[$i]['replace']     Replace
      * $data[$i]['del']         削除
      */
-    function save($data) {
+    public function save($data)
+    {
         global $_conf;
+
         $path = $_conf['pref_dir'] . '/' . $this->filename;
 
         $newdata = '';
@@ -74,4 +73,8 @@ class DatPluginCtl
         return FileCtl::file_write_contents($path, $newdata);
     }
 
+    public function getData()
+    {
+        return $this->data;
+    }
 }

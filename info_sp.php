@@ -62,7 +62,7 @@ if (preg_match('/^(aborn|ng)_/', $mode)) {
 
 if ($popup == 1 || $_conf['expack.spm.ngaborn_confirm'] == 0) {
     $_GET['popup'] = 2;
-    $aThread = new ThreadRead;
+    $aThread = new ThreadRead();
     $aThread->setThreadPathInfo($host, $bbs, $key);
     $aThread->readDat($aThread->keydat);
     $resar = $aThread->explodeDatLine($aThread->datlines[$resnum-1]);
@@ -74,7 +74,7 @@ if ($popup == 1 || $_conf['expack.spm.ngaborn_confirm'] == 0) {
         $aborn_id = '';
     }
     // +Wiki:BEあぼーん
-    $aborn_be = preg_match('/BE:(\d+)/', $resar[2], $idar) ? P2UtilWiki::calcBeId($idar[1]) : '';
+    $aborn_be = preg_match('/BE:(\\d+)/', $resar[2], $idar) ? P2UtilWiki::calcBeId($idar[1]) : '';
     if ($_conf['expack.spm.ngaborn_confirm'] == 0 && !isset($aborn_str)) {
         if ($mode == 'aborn_res') {
             $aborn_str = $host . '/' . $bbs . '/' . $key . '/' . $resnum;
@@ -151,7 +151,7 @@ switch ($mode) {
         $title_st = 'p2 - あぼーんワード登録：名前';
         if ($popup == 2) {
             $msg = 'あぼーんワード（名前）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($resar[0] != "") {
+        } elseif ($resar[0] != '') {
             $msg = 'あぼーんワード（名前）に <b>' . $resar[0] . '</b> を登録してよろしいですか？';
             $aborn_str_en = UrlSafeBase64::encode($resar[0]);
         }
@@ -161,7 +161,7 @@ switch ($mode) {
         $title_st = 'p2 - あぼーんワード登録：メール';
         if ($popup == 2) {
             $msg = 'あぼーんワード（メール）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($resar[1] != "") {
+        } elseif ($resar[1] != '') {
             $msg = 'あぼーんワード（メール）に <b>' . $resar[1] . '</b> を登録してよろしいですか？';
             $aborn_str_en = UrlSafeBase64::encode($resar[1]);
         }
@@ -180,7 +180,7 @@ switch ($mode) {
         $title_st = 'p2 - あぼーんワード登録：ID';
         if ($popup == 2) {
             $msg = 'あぼーんワード（ID）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($aborn_id != "") {
+        } elseif ($aborn_id != '') {
             $msg = 'あぼーんワード（ID）に <b>' . $aborn_id . '</b> を登録してよろしいですか？';
             $aborn_str_en = UrlSafeBase64::encode($aborn_id);
         }
@@ -190,7 +190,7 @@ switch ($mode) {
         $title_st = 'p2 - NGワード登録：名前';
         if ($popup == 2) {
             $msg = 'NGワード（名前）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($resar[0] != "") {
+        } elseif ($resar[0] != '') {
             $msg = 'NGワード（名前）に <b>' . $resar[0] . '</b> を登録してよろしいですか？';
             $aborn_str_en = UrlSafeBase64::encode($resar[0]);
         }
@@ -200,7 +200,7 @@ switch ($mode) {
         $title_st = 'p2 - NGワード登録：メール';
         if ($popup == 2) {
             $msg = 'NGワード（メール）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($resar[1] != "") {
+        } elseif ($resar[1] != '') {
             $msg = 'NGワード（メール）に <b>' . $resar[1] . '</b> を登録してよろしいですか？';
             $aborn_str_en = UrlSafeBase64::encode($resar[1]);
         }
@@ -219,7 +219,7 @@ switch ($mode) {
         $title_st = 'p2 - NGワード登録：ID';
         if ($popup == 2) {
             $msg = 'NGワード（ID）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($aborn_id != "") {
+        } elseif ($aborn_id != '') {
             $msg = 'NGワード（ID）に <b>' . $aborn_id . '</b> を登録してよろしいですか？';
             $aborn_str_en = UrlSafeBase64::encode($aborn_id);
         }
@@ -230,7 +230,7 @@ switch ($mode) {
         $title_st = 'p2 - あぼーんワード登録：BE';
         if ($popup == 2) {
             $msg = 'あぼーんワード（BE）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($aborn_id != "") {
+        } elseif ($aborn_id != '') {
             $msg = 'あぼーんワード（BE）に <b>' . $aborn_be . '</b> を登録してよろしいですか？';
             $aborn_str_en = base64_encode($aborn_be);
         }
@@ -240,7 +240,7 @@ switch ($mode) {
         $title_st = 'p2 - NGワード登録：BE';
         if ($popup == 2) {
             $msg = 'NGワード（BE）に <b>' . $aborn_str . '</b> を登録しました。';
-        } elseif ($aborn_id != "") {
+        } elseif ($aborn_id != '') {
             $msg = 'NGワード（BE）に <b>' . $aborn_be . '</b> を登録してよろしいですか？';
             $aborn_str_en = base64_encode($aborn_be);
         }
@@ -328,7 +328,7 @@ EOP;
 
 echo "<form action=\"info_sp.php\" method=\"get\" accept-charset=\"{$_conf['accept_charset']}\">\n";
 echo "<p>{$msg}</p>\n";
-if ($popup == 1 && $msg != "") {
+if ($popup == 1 && $msg != '') {
     foreach ($_GET as $idx => $value) {
         if ($idx == 'selected_string') {
             continue;
@@ -380,7 +380,7 @@ if (isset($edit_value)) {
     <input type="hidden" name="cols" value="{$cols}">
     <input type="submit" value="{$edit_value}">\n
 EOFORM;
-    if (!$_conf['ktai'] && $popup == 1 && $msg == "") {
+    if (!$_conf['ktai'] && $popup == 1 && $msg == '') {
         echo "\t<input type=\"button\" value=\"キャンセル\" onclick=\"window.close();\">\n";
     }
     echo "</form>\n";

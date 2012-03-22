@@ -23,7 +23,7 @@ function p2_fontconfig_detect_agent($ua = null)
             $version = (int)$matches[1];
             if ($version >= 500) {
                 return 'safari3';
-            } else if ($version >= 400) {
+            } elseif ($version >= 400) {
                 return 'safari2';
             } else {
                 return 'safari1';

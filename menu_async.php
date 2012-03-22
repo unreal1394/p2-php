@@ -22,7 +22,7 @@ header('Content-Type: text/html; charset=Shift_JIS');
 
 // お気に板
 if (isset($_GET['m_favita_set'])) {
-    $aShowBrdMenuPc = new ShowBrdMenuPc;
+    $aShowBrdMenuPc = new ShowBrdMenuPc();
     ob_start();
     $aShowBrdMenuPc->printFavIta();
     $menuItem = ob_get_clean();
@@ -76,7 +76,7 @@ function changeSkin($skin)
     }
 
     if (file_exists($newskin)) {
-        if (FileCtl::file_write_contents($_conf['expack.skin.setting_path'], $skin) !== FALSE) {
+        if (FileCtl::file_write_contents($_conf['expack.skin.setting_path'], $skin) !== false) {
             return $skin;
         } else {
             return "p2 error: {$_conf['expack.skin.setting_path']} にスキン設定を書き込めませんでした。";

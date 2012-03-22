@@ -145,7 +145,7 @@ foreach ($fontconfig_params as $pname) {
                     if ($value !== '' && !in_array($value, $fontconfig_weights)) {
                         $elements[$newElemName]->setOptions(array($value, $value));
                     }
-                } else if (strpos($pname, 'fontstyle') !== false) {
+                } elseif (strpos($pname, 'fontstyle') !== false) {
                     $option_values = $fontconfig_styles;
                     $option_labels = $fontconfig_styles;
                     array_unshift($option_values, '');
@@ -154,7 +154,7 @@ foreach ($fontconfig_params as $pname) {
                     if ($value !== '' && !in_array($value, $fontconfig_styles)) {
                         $elements[$newElemName]->setOptions(array($value, $value));
                     }
-                } else if (strpos($pname, 'fontsize') !== false) {
+                } elseif (strpos($pname, 'fontsize') !== false) {
                     $option_values = $fontconfig_sizes;
                     $option_labels = $fontconfig_sizes;
                     array_unshift($option_values, '');

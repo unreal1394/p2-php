@@ -27,7 +27,7 @@ class Login
         $login_user = $this->setdownLoginUser();
 
         // ユーザ名が指定されていなければ
-        if ($login_user == NULL) {
+        if ($login_user === null) {
 
             // ログイン失敗
             require_once P2_LIB_DIR . '/login_first.inc.php';
@@ -36,7 +36,7 @@ class Login
         }
 
         $this->setUser($login_user);
-        $this->pass_x = NULL;
+        $this->pass_x = null;
     }
 
     // }}}
@@ -59,7 +59,7 @@ class Login
      */
     public function setdownLoginUser()
     {
-        $login_user = NULL;
+        $login_user = null;
 
         // ユーザ名決定の優先順位に沿って
 

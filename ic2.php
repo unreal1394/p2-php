@@ -37,6 +37,7 @@ $uri      = isset($_REQUEST['uri'])   ? $_REQUEST['uri'] : (isset($_REQUEST['url
 $file     = isset($_REQUEST['file'])  ? $_REQUEST['file'] : null;
 $force    = !empty($_REQUEST['f']);   // 強制更新
 $thumb    = isset($_REQUEST['t'])     ? intval($_REQUEST['t']) : IC2_Thumbnailer::SIZE_SOURCE;  // サムネイルタイプ
+$dpr      = isset($_REQUEST['d'])     ? floatval($_REQUEST['d']) : 1.0; // device pixel ratio
 $redirect = isset($_REQUEST['r'])     ? intval($_REQUEST['r']) : 1;     // 表示方法
 $rank     = isset($_REQUEST['rank'])  ? intval($_REQUEST['rank']) : 0;  // レーティング
 $memo     = (isset($_REQUEST['memo']) && strlen($_REQUEST['memo']) > 0) ? $_REQUEST['memo'] : null; // メモ
@@ -98,6 +99,15 @@ if (!in_array($thumb, array(IC2_Thumbnailer::SIZE_SOURCE,
     $thumb = IC2_Thumbnailer::SIZE_DEFAULT;
 }
 
+if ($dpr === 1.5) {
+    $thumb_type = $thumb | IC2_Thumbnailer::DPR_1_5;
+} elseif ($dpr === 2.0) {
+    $thumb_type = $thumb | IC2_Thumbnailer::DPR_2_0;
+} else {
+    $thumb_type = $thumb;
+    $dpr = 1.0;
+}
+
 if ($rank < -1) {
     $rank = -1;
 } elseif ($rank > 5) {
@@ -108,7 +118,7 @@ if ($memo === '') {
     $memo = null;
 }
 
-$thumbnailer = new IC2_Thumbnailer($thumb);
+$thumbnailer = new IC2_Thumbnailer($thumb_type);
 
 // }}}
 // {{{ IC2TempFile
@@ -163,8 +173,11 @@ if ($doDL) {
 // {{{ search
 
 // 画像がキャッシュされているか確認
-$search = new IC2_DataObject_Images;
+$search = new IC2_DataObject_Images();
+$filepath = null;
+$mtime = -1;
 $retry = false;
+
 if ($memo !== null) {
     $memo = $search->uniform($memo, 'CP932');
 }
@@ -204,7 +217,7 @@ if ($result) {
         if (is_string($search->memo) && strlen($search->memo) > 0) {
             $memo .= ' ' . $search->memo;
         }
-        $update = new IC2_DataObject_Images;
+        $update = new IC2_DataObject_Images();
         $update->memo = $params['memo'] = $memo;
         $update->whereAddQuoted('uri', '=', $search->uri);
         $update->update();
@@ -213,7 +226,7 @@ if ($result) {
 
     // ランク変更
     if (isset($_REQUEST['rank'])) {
-        $update = new IC2_DataObject_Images;
+        $update = new IC2_DataObject_Images();
         $update->rank = $params['rank'] = $rank;
         $update->whereAddQuoted('size', '=', $search->size);
         $update->whereAddQuoted('md5',  '=', $search->md5);
@@ -228,7 +241,7 @@ if ($result) {
             $_size = $search->size;
             $_md5  = $search->md5;
             $_mime = $search->mime;
-            $time  = $search->time;
+            $mtime = $search->time;
         } else {
             ic2_finish($filepath, $thumb, $params, false);
         }
@@ -239,12 +252,10 @@ if ($result) {
         $_md5  = $search->md5;
         $_mime = $search->mime;
     }
-} else {
-    $filepath = '';
 }
 
 // 画像がブラックリストにあるか確認
-$blacklist = new IC2_DataObject_BlackList;
+$blacklist = new IC2_DataObject_BlackList();
 if ($blacklist->get($uri)) {
     switch ($blacklist->type) {
         case 0:
@@ -264,7 +275,7 @@ if ($blacklist->get($uri)) {
 
 // 画像がエラーログにあるか確認
 if (!$force && $ini['Getter']['checkerror']) {
-    $errlog = new IC2_DataObject_Errors;
+    $errlog = new IC2_DataObject_Errors();
     if ($errlog->get($uri)) {
         ic2_error($errlog->errcode, '', false);
     }
@@ -282,13 +293,13 @@ $ic2_ua = (!empty($_conf['expack.user_agent']))
     ? $_conf['expack.user_agent'] : $_SERVER['HTTP_USER_AGENT'];
 
 // キャッシュされていなければ、取得を試みる
-$client = new HTTP_Client;
+$client = new HTTP_Client();
 $client->setRequestParameter('timeout', $conn_timeout);
 $client->setRequestParameter('readTimeout', array($read_timeout, 0));
 $client->setMaxRedirects(3);
 $client->setDefaultHeader('User-Agent', $ic2_ua);
-if ($force && $time) {
-    $client->setDefaultHeader('If-Modified-Since', http_date($time));
+if ($mtime > 0) {
+    $client->setDefaultHeader('If-Modified-Since', http_date($mtime));
 }
 
 // プロキシ設定
@@ -333,71 +344,6 @@ if (is_string($referer)) {
 }
 
 // }}}
-// {{{ head
-
-$retry = 0;
-if ($ini['Getter']['omit_head'] == 0) { // HEAD省略
-
-// まずはHEADでチェック
-$client_h = clone $client;
-if ($ini['Getter']['retry_regex'] &&
-    strlen(trim($ini['Getter']['retry_regex'])) > 0 &&
-    intval($ini['Getter']['retry_max']) > 0 &&
-    preg_match($ini['Getter']['retry_regex'], $uri))
-{
-    do {
-        $code = $client_h->head($uri);
-        if ($code != 403) {
-            break;
-        }
-        $retry++;
-        sleep($ini['Getter']['retry_interval']);
-    } while ($retry < intval($ini['Getter']['retry_max']));
-} else {
-    $code = $client_h->head($uri);
-}
-if (PEAR::isError($code)) {
-    ic2_error('x02', $code->getMessage());
-}
-$head = $client_h->currentResponse();
-
-// 304 Not Modified のとき
-if ($filepath && $force && $time && $code == 304) {
-    ic2_finish($filepath, $thumb, $params, false);
-}
-
-// 200以外のときは失敗とみなす
-if ($code != 200) {
-    ic2_error($code);
-}
-
-// Content-Type検証
-if (isset($head['headers']['content-type'])) {
-    $conent_type = $head['headers']['content-type'];
-    if (!preg_match('{^image/}', $conent_type) && $conent_type != 'application/x-shockwave-flash') {
-        ic2_error('x02', "サポートされていないファイルタイプです。({$conent_type})");
-    }
-}
-
-// Content-Length検証
-if (isset($head['headers']['content-length'])) {
-    $conent_length = (int)$head['headers']['content-length'];
-    $maxsize = $ini['Source']['maxsize'];
-    if (preg_match('/(\d+\.?\d*)([KMG])/i', $maxsize, $m)) {
-        $maxsize = p2_si2int($m[1], $m[2]);
-    } else {
-        $maxsize = (int)$maxsize;
-    }
-    if (0 < $maxsize && $maxsize < $conent_length) {
-        ic2_error('x03', "ファイルサイズが大きすぎます。(file:{$conent_length}; max:{$maxsize};)");
-    }
-}
-
-unset($client_h, $code, $head);
-
-}   // HEAD省略 おわり
-
-// }}}
 // {{{ get
 
 // ダウンロード
@@ -406,22 +352,23 @@ if ($ini['Getter']['retry_regex'] &&
     intval($ini['Getter']['retry_max']) > 0 &&
     preg_match($ini['Getter']['retry_regex'], $uri))
 {
+    $retryCount = 0;
     do {
         $code = $client->get($uri);
         if ($code != 403) {
             break;
         }
-        $retry++;
+        $retryCount++;
         sleep($ini['Getter']['retry_interval']);
-    } while ($retry < intval($ini['Getter']['retry_max']));
+    } while ($retryCount < intval($ini['Getter']['retry_max']));
 } else {
     $code = $client->get($uri);
 }
 
 if (PEAR::isError($code)) {
     ic2_error('x02', $code->getMessage());
-} elseif ($filepath && $force && $time && $code == 304) {
-// 304 Not Modified のとき
+} elseif ($filepath && $mtime > 0 && $code == 304) {
+    // 304 Not Modified のとき
     ic2_finish($filepath, $thumb, $params, false);
 } elseif ($code != 200) {
     ic2_error($code);
@@ -454,7 +401,7 @@ if ($ini['Getter']['virusscan']) {
         $clamscan = 'clamscan';
     }
     if ($clamscan = ic2_findexec($clamscan, $searchpath)) {
-        $scan_command = $clamscan . ' --stdout ' . escapeshellarg(realpath($tmpfile)) . '; echo $?';
+        $scan_command = $clamscan . ' --stdout ' . escapeshellarg(realpath($tmpfile));
         $scan_result  = @exec($scan_command, $scan_stdout, $scan_result);
         if ($scan_result == 1) {
             $params = array(
@@ -497,7 +444,7 @@ $width  = $info[0];
 $height = $info[1];
 
 // 強制更新を試みたものの、更新されていなかったとき（レスポンスコードは200）
-if ($filepath && $force && $time && $size == $_size && $md5 == $_md5 && $mime == $_mime) {
+if ($filepath && $force && $mtime > 0 && $size == $_size && $md5 == $_md5 && $mime == $_mime) {
     ic2_finish($filepath, $thumb, $params, false);
 }
 
@@ -526,7 +473,7 @@ if (($force || !file_exists($newfile)) && !@rename($tmpfile, $newfile)) {
 @chmod($newfile, 0644);
 
 // データベースにファイル情報を記録する
-$record = new IC2_DataObject_Images;
+$record = new IC2_DataObject_Images();
 if ($retry && $size == $_size && $md5 == $_md5 && $mime == $_mime) {
     $record->time = time();
     if ($ini['General']['automemo'] && !is_null($memo)) {
@@ -573,7 +520,7 @@ function ic2_aborn($params, $infected = false)
     global $ini;
     extract($params);
 
-    $aborn = new IC2_DataObject_Images;
+    $aborn = new IC2_DataObject_Images();
     $aborn->uri = $uri;
     $aborn->host = $host;
     $aborn->name = $name;
@@ -599,7 +546,7 @@ function ic2_checkAbornedFile($tmpfile, $params)
     extract($params);
 
     // ブラックリスト検索
-    $bl_check = new IC2_DataObject_BlackList;
+    $bl_check = new IC2_DataObject_BlackList();
     $bl_check->whereAddQuoted('size', '=', $size);
     $bl_check->whereAddQuoted('md5',  '=', $md5);
     if ($bl_check->find(true)) {
@@ -624,7 +571,7 @@ function ic2_checkAbornedFile($tmpfile, $params)
     }
 
     // あぼーん画像検索
-    $check = new IC2_DataObject_Images;
+    $check = new IC2_DataObject_Images();
     $check->whereAddQuoted('size', '=', $size);
     $check->whereAddQuoted('md5',  '=', $md5);
     //$check->whereAddQuoted('mime', '=', $mime); // SizeとMD5で十分
@@ -698,7 +645,7 @@ function ic2_checkSizeOvered($tmpfile, $params)
 
 function ic2_display($path, $params)
 {
-    global $_conf, $ini, $thumb, $redirect, $id, $uri, $file, $thumbnailer;
+    global $_conf, $ini, $thumb, $dpr, $redirect, $id, $uri, $file, $thumbnailer;
 
     if (P2_OS_WINDOWS) {
         $path = str_replace('\\', '/', $path);
@@ -770,6 +717,7 @@ function ic2_display($path, $params)
                 'o' => sprintf('原寸 (%dx%d)', $params['width'], $params['height']),
                 's' => '作成',
                 't' => $thumb,
+                'd' => $dpr,
                 'u' => $img_p,
                 'v' => $img_o,
                 'x' => $_size[0],
@@ -978,7 +926,7 @@ function ic2_error($code, $optmsg = '', $write_log = true)
     }
 
     if ($write_log) {
-        $logger = new IC2_DataObject_Errors;
+        $logger = new IC2_DataObject_Errors();
         $logger->uri     = isset($uri) ? $uri : (isset($id) ? $id : $file);
         $logger->errcode = $code;
         $logger->errmsg  = mb_convert_encoding($message, 'UTF-8', 'CP932');

@@ -15,7 +15,7 @@ if (!isset($_GET['file'])) {
 //=========================================================
 // ïœêî
 //=========================================================
-$file = (isset($_GET['file'])) ? $_GET['file'] : NULL;
+$file = (isset($_GET['file'])) ? $_GET['file'] : null;
 $encode = "Shift_JIS";
 
 //=========================================================
@@ -93,7 +93,7 @@ EOHEADER;
     echo "</pre>";
     echo '</body></html>';
 
-    return TRUE;
+    return true;
 }
 
 // }}}

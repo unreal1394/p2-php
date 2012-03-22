@@ -182,7 +182,7 @@ function atom_to_rss($input, $stylesheet, $output)
         if (file_exists($output)) {
             unlink($output);
         }
-        return FALSE;
+        return false;
     }
     chmod($output, $_conf['expack.rss.setting_perm']);
 
@@ -203,7 +203,7 @@ function atom_to_rss($input, $stylesheet, $output)
         fclose($fp);
     }
 
-    return TRUE;
+    return true;
 }
 
 // }}}
@@ -234,12 +234,12 @@ function atom_to_rss_by_xslt($input, $stylesheet, $output)
  */
 function atom_to_rss_by_xsl($input, $stylesheet, $output)
 {
-    $xmlDoc = new DomDocument;
+    $xmlDoc = new DomDocument();
     if ($xmlDoc->load(realpath($input))) {
-        $xslDoc = new DomDocument;
+        $xslDoc = new DomDocument();
         $xslDoc->load(realpath($stylesheet));
 
-        $proc = new XSLTProcessor;
+        $proc = new XSLTProcessor();
         $proc->importStyleSheet($xslDoc);
 
         $rssDoc = $proc->transformToDoc($xmlDoc);

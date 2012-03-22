@@ -20,31 +20,33 @@ include_once './conf/conf.inc.php';
 
 $_login->authorize(); //ユーザ認証
 
-require_once './plugin/hissi/hissi.class.php';
+require_once P2_PLUGIN_DIR . '/hissi/Hissi.php';
 
-$hissi = new hissi();
+$hissi = new Hissi();
 $hissi->host = $_GET['host'];
 $hissi->bbs  = $_GET['bbs'];
 
 // 画像を表示する場合
 if ($_GET['img']) {
-    if ($hissi->isEnable()) {
-        header("Content-Type: image/png");
-        readfile('./plugin/hissi/hissi.png');
+    if ($hissi->isEnabled()) {
+        header('Content-Type: image/png');
+        readfile(P2_PLUGIN_DIR . '/hissi/hissi.png');
     } else {
-        header("Content-Type: image/gif");
+        header('Content-Type: image/gif');
         readfile('./img/spacer.gif');
     }
     exit;
 } else {
-    if ($hissi->isEnable()) {
-        $date = ''; $id = '';
-        if ($_GET['id'] && $_GET['date']) {
+    if ($hissi->isEnabled()) {
+        $date = null;
+        $id = null;
+        if (!empty($_GET['id']) && !empty($_GET['date'])) {
             $date = $_GET['date'];
             $id   = $_GET['id'];
-        } else if ($_GET['key'] && $_GET['resnum']) {
-            $id = ''; $date = '';
-            $aThread = new ThreadRead;
+        } elseif (!empty($_GET['key']) && !empty($_GET['resnum'])) {
+            $id = '';
+            $date = '';
+            $aThread = new ThreadRead();
             $aThread->setThreadPathInfo($_GET['host'], $_GET['bbs'], $_GET['key']);
             $aThread->readDat();
             $resnum = $_GET['resnum'];
@@ -72,5 +74,3 @@ if ($_GET['img']) {
         P2Util::printSimpleHtml('この板は対応していません。');
     }
 }
-
-

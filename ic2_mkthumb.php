@@ -28,6 +28,7 @@ require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
 $uri    = $_GET['u'];
 $type   = $_GET['v'];
 $thumb  = isset($_GET['t']) ? intval($_GET['t']) : 0;
+$dpr    = isset($_REQUEST['d']) ? floatval($_REQUEST['d']) : 1.0;
 $options = array();
 $options['quality'] = isset($_GET['q']) ? intval($_GET['q']) : null;
 $options['rotate']  = isset($_GET['r']) ? intval($_GET['r']) : 0;
@@ -53,14 +54,14 @@ $attachment = !empty($_GET['z']);
 // }}}
 // {{{ 画像を検索・サムネイルを作成
 
-$search = new IC2_DataObject_Images;
+$search = new IC2_DataObject_Images();
 
 switch ($type) {
     case 'id':
         $search->whereAddQuoted('id', '=', $uri);
         break;
     case 'file':
-        preg_match('/^([1-9][0-9]*)_([0-9a-f]{32})(?:\.(jpg|png|gif))?$/', $uri, $fdata);
+        preg_match('/^([1-9][0-9]*)_([0-9a-f]{32})(?:_x(15|20))?(?:\.(jpg|png|gif))?$/', $uri, $fdata);
         $search->whereAddQuoted('size', '=', $fdata[0]);
         $search->whereAddQuoted('md5', '=', $fdata[1]);
         break;
@@ -78,7 +79,14 @@ if ($search->find(true)) {
             ic2_mkthumb_success(basename($src), $search->mime, $src, true, $attachment);
         }
     } else {
-        $thumb = new IC2_Thumbnailer($thumb, $options);
+        if ($dpr === 1.5) {
+            $thumb_type = $thumb | IC2_Thumbnailer::DPR_1_5;
+        } elseif ($dpr === 2.0) {
+            $thumb_type = $thumb | IC2_Thumbnailer::DPR_2_0;
+        } else {
+            $thumb_type = $thumb;
+        }
+        $thumb = new IC2_Thumbnailer($thumb_type, $options);
         $result = $thumb->convert($search->size, $search->md5, $search->mime, $search->width, $search->height);
         if (PEAR::isError($result)) {
             ic2_mkthumb_error($result->getMessage());

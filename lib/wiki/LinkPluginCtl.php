@@ -4,33 +4,30 @@ replaceLinkToHTML(url, src) メイン関数
 save(array)                 データを保存
 load()                      データを読み込んで返す(自動的に実行される)
 clear()                     データを削除
-autoLoad()                  loadされていなければ実行
 */
 
-require_once P2_LIB_DIR . '/FileCtl.php';
+require_once __DIR__ . '/WikiPluginCtlBase.php';
 
-class LinkPluginCtl
+class LinkPluginCtl extends WikiPluginCtlBase
 {
-    var $filename = "p2_plugin_link.txt";
-    var $data = array();
-    var $isLoaded = false;
+    protected $filename = 'p2_plugin_link.txt';
+    protected $data = array();
 
-    function clear() {
+    public function clear()
+    {
         global $_conf;
+
         $path = $_conf['pref_dir'] . '/' . $this->filename;
 
         return @unlink($path);
     }
 
-    function autoLoad() {
-        if (!$this->isLoaded) $this->load();
-    }
-
-    function load() {
+    public function load()
+    {
         global $_conf;
 
         $lines = array();
-        $path = $_conf['pref_dir'].'/'.$this->filename;
+        $path = $_conf['pref_dir'] . '/' . $this->filename;
         if ($lines = @file($path)) {
             foreach ($lines as $l) {
                 $lar = explode("\t", trim($l));
@@ -46,7 +43,6 @@ class LinkPluginCtl
             }
         }
 
-        $this->isLoaded = true;
         return $this->data;
     }
 
@@ -55,8 +51,10 @@ class LinkPluginCtl
     $data[$i]['replace']     Replace
     $data[$i]['del']         削除
     */
-    function save($data) {
+    public function save($data)
+    {
         global $_conf;
+
         $path = $_conf['pref_dir'] . '/' . $this->filename;
 
         $newdata = '';
@@ -73,9 +71,11 @@ class LinkPluginCtl
         return FileCtl::file_write_contents($path, $newdata);
     }
 
-    function replaceLinkToHTML($url, $str) {
-        $this->autoLoad();
-        $src = FALSE;
+    public function replaceLinkToHTML($url, $str)
+    {
+        $this->setup();
+
+        $src = false;
         foreach ($this->data as $v) {
             if (preg_match('{'.$v['match'].'}', $url)) {
                 $src = @preg_replace ('{'.$v['match'].'}', $v['replace'], $url);

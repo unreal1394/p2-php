@@ -31,15 +31,15 @@ function rss_get_image($src_url, $memo='')
  */
 function rss_get_image_ic2($src_url, $memo='')
 {
-    static $thumbnailer = NULL;
-    static $thumbnailer_k = NULL;
+    static $thumbnailer = null;
+    static $thumbnailer_k = null;
 
     if (is_null($thumbnailer)) {
         $thumbnailer = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_PC);
         $thumbnailer_k = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_MOBILE);
     }
 
-    $icdb = new IC2_DataObject_Images;
+    $icdb = new IC2_DataObject_Images();
 
     if ($thumbnailer->ini['General']['automemo'] && $memo !== '') {
         $img_memo = $icdb->uniform($memo, 'CP932');
@@ -47,11 +47,11 @@ function rss_get_image_ic2($src_url, $memo='')
             $img_memo_query = '&amp;' . $_conf['detect_hint_q_utf8'];
             $img_memo_query .= '&amp;memo=' . rawurlencode($img_memo);
         } else {
-            $img_memo = NULL;
+            $img_memo = null;
             $img_memo_query = '';
         }
     } else {
-        $img_memo = NULL;
+        $img_memo = null;
         $img_memo_query = '';
     }
 
@@ -71,7 +71,7 @@ function rss_get_image_ic2($src_url, $memo='')
     $thumb_k_url = 'ic2.php?r=0&amp;t=2&amp;uri=' . $url_en;
     $thumb_k_url2 = 'ic2.php?r=0&amp;t=1&amp;id=';
     $thumb_k_size = '';
-    $src_exists = FALSE;
+    $src_exists = false;
 
     // DBに画像情報が登録されていたとき
     if ($icdb->get($src_url)) {
@@ -92,7 +92,7 @@ function rss_get_image_ic2($src_url, $memo='')
         if (file_exists($_img_url)) {
             $img_url = $_img_url;
             $img_size = "width=\"{$icdb->width}\" height=\"{$icdb->height}\"";
-            $src_exists = TRUE;
+            $src_exists = true;
         }
 
         // サムネイルが作成されていているときは画像を直接読み込む
@@ -101,7 +101,7 @@ function rss_get_image_ic2($src_url, $memo='')
             $thumb_url = $_thumb_url;
             // 自動タイトルメモ機能がONでタイトルが記録されていないときはDBを更新
             if (!is_null($img_memo) && strpos($icdb->memo, $img_memo) === false){
-                $update = new IC2_DataObject_Images;
+                $update = new IC2_DataObject_Images();
                 if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                     $update->memo = $img_memo . ' ' . $icdb->memo;
                 } else {

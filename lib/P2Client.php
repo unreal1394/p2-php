@@ -72,7 +72,7 @@ class P2Client
      *
      * @var array
      */
-    static private $_fallbackEncodings = array('Shift_JIS-2004', 'Windows-31J');
+    static private $_fallbackEncodings = array('Windows-31J', 'Shift_JIS-2004');
 
     /**
      * ŒöŽ®p2‚Ìƒ‹[ƒgURI
@@ -161,7 +161,7 @@ class P2Client
                 throw new Exception('Cannot restore the cookie manager.');
             }
         } else {
-            $cookieManager = new HTTP_Client_CookieManager;
+            $cookieManager = new HTTP_Client_CookieManager();
         }
 
         $this->_loginId = $loginId;

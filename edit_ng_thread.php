@@ -4,16 +4,17 @@
 */
 
 include_once './conf/conf.inc.php';
+require_once P2_LIB_DIR . '/wiki/NgThreadCtl.php';
 
 $_login->authorize(); // ユーザ認証
 
 if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
-    if (!isset($_POST['csrfid']) or $_POST['csrfid'] != P2Util::getCsrfId()) {
+    if (!isset($_POST['csrfid']) || $_POST['csrfid'] != P2Util::getCsrfId()) {
         die('p2 error: 不正なポストです');
     }
 }
-require_once P2_LIB_DIR . '/wiki/ngthreadctl.class.php';
-$ngaborns = &new NgThreadCtl;
+
+$ngThreadCtl = new NgThreadCtl();
 
 //=====================================================================
 // 前処理
@@ -23,27 +24,27 @@ $ngaborns = &new NgThreadCtl;
 
 if (!empty($_POST['submit_save'])) {
 
-    if ($ngaborns->save($POST['nga']) != FALSE) {
-        $_info_msg_ht .= "<p>○設定を更新保存しました</p>";
+    if ($ngThreadCtl->save($POST['nga']) != false) {
+        $_info_msg_ht .= '<p>○設定を更新保存しました</p>';
     } else {
-        $_info_msg_ht .= "<p>×設定を更新保存できませんでした</p>";
+        $_info_msg_ht .= '<p>×設定を更新保存できませんでした</p>';
     }
 
 // }}}
 // {{{ ■デフォルトに戻すボタンが押されていたら
 
 } elseif (!empty($_POST['submit_default'])) {
-    if ($ngaborns->clear()) {
-        $_info_msg_ht .= "<p>○リストを空にしました</p>";
+    if ($ngThreadCtl->clear()) {
+        $_info_msg_ht .= '<p>○リストを空にしました</p>';
     } else {
-        $_info_msg_ht .= "<p>×リストを空にできませんでした</p>";
+        $_info_msg_ht .= '<p>×リストを空にできませんでした</p>';
     }
 }
 
 // }}}
 // {{{ リスト読み込み
 
-$formdata = $ngaborns->load();
+$formdata = $ngThreadCtl->load();
 
 // }}}
 

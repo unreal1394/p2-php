@@ -192,7 +192,9 @@ if ($_conf['expack.misc.multi_favs'] && ($_GET['view'] == 'favita' || $_GET['vie
         $set_name = 'm_rss_set';
         $set_title = 'RSS';
     }
-    echo FavSetManager::makeFavSetSwitchForm($set_name, $set_title, NULL, NULL, FALSE, array('view' => $_GET['view']));
+    echo FavSetManager::makeFavSetSwitchForm($set_name, $set_title,
+                                             null, null, false,
+                                             array('view' => $_GET['view']));
 }
 
 //==============================================================

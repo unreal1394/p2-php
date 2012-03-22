@@ -75,12 +75,12 @@ class StrCtl
         $pattern = '(' . $pattern . ')(?![^<]*>)';
 
         if (P2_MBREGEX_AVAILABLE == 1) {
-            $result = @mb_eregi($pattern, $target);    // None|Error:FALSE
+            $result = @mb_eregi($pattern, $target);    // None|Error:false
         } else {
             // UTF-8‚É•ÏŠ·‚µ‚Ä‚©‚çˆ—‚·‚é
             $pattern_utf8 = '/' . mb_convert_encoding($pattern, 'UTF-8', 'CP932') . '/iu';
             $target_utf8 = mb_convert_encoding($target, 'UTF-8', 'CP932');
-            $result = @preg_match($pattern_utf8, $target_utf8);    // None:0, Error:FALSE
+            $result = @preg_match($pattern_utf8, $target_utf8);    // None:0, Error:false
             //$result = mb_convert_encoding($result, 'CP932', 'UTF-8');
         }
 
@@ -109,7 +109,7 @@ class StrCtl
         $pattern = '(' . $pattern . ')(?![^<]*>)';
 
         if (P2_MBREGEX_AVAILABLE == 1) {
-            $result = @mb_eregi_replace($pattern, $marker, $target);    // Error:FALSE
+            $result = @mb_eregi_replace($pattern, $marker, $target);    // Error:false
         } else {
             // UTF-8‚É•ÏŠ·‚µ‚Ä‚©‚çˆ—‚·‚é
             $pattern_utf8 = '/' . mb_convert_encoding($pattern, 'UTF-8', 'CP932') . '/iu';
@@ -118,7 +118,7 @@ class StrCtl
             $result = mb_convert_encoding($result, 'CP932', 'UTF-8');
         }
 
-        if ($result === FALSE) {
+        if ($result === false) {
             return $target;
         }
         return $result;

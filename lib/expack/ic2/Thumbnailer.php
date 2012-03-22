@@ -16,6 +16,11 @@ class IC2_Thumbnailer
 
     const SIZE_DEFAULT  = 1;
 
+    const DPR_DEFAULT   = 0;
+    const DPR_1_5       = 0x150000;
+    const DPR_2_0       = 0x200000;
+    const DPR_MASK      = 0xff0000;
+
     // }}}
     // {{{ properties
 
@@ -41,7 +46,12 @@ class IC2_Thumbnailer
     public $dynamic;       // @var bool    動的生成するか否か（trueのとき結果をファイルに保存しない）
     public $intermd;       // @var string  動的生成に利用する中間イメージのパス（ソースから直接生成するときfalse）
     public $buf;           // @var string  動的生成した画像データ
-    // @var array $default_options,    動的生成時のオプション
+
+    /**
+     * 動的生成時のオプション
+     *
+     * @var array
+     */
     public $default_options = array(
         'quality' => null,
         'width'   => null,
@@ -50,8 +60,24 @@ class IC2_Thumbnailer
         'trim'    => false,
         'intermd' => false,
     );
-    // @var array $mimemap, MIMEタイプと拡張子の対応表
-    public $mimemap = array('image/jpeg' => '.jpg', 'image/png' => '.png', 'image/gif' => '.gif');
+
+    /**
+     * MIMEタイプと拡張子の対応表
+     *
+     * @var array
+     */
+    public $mimemap = array(
+        'image/jpeg' => '.jpg',
+        'image/png'  => '.png',
+        'image/gif'  => '.gif',
+    );
+
+    /**
+     * device pixel ratio定数のいずれか
+     *
+     * @var int
+     */
+    protected $dpr = self::DPR_DEFAULT;
 
     // }}}
     // {{{ constructor
@@ -78,13 +104,19 @@ class IC2_Thumbnailer
         $this->ini = ic2_loadconfig();
 
         // データベースに接続
-        $icdb = new IC2_DataObject_Images;
+        $icdb = new IC2_DataObject_Images();
         $this->db = $icdb->getDatabaseConnection();
         if (DB::isError($this->db)) {
             $this->error($this->db->getMessage());
         }
 
         // サムネイルモード判定
+        $dpr = $mode & self::DPR_MASK;
+        $mode = $mode & ~self::DPR_MASK;
+        if ($dpr !== self::DPR_1_5 && $dpr !== self::DPR_2_0) {
+            $dpr = self::DPR_DEFAULT;
+        }
+        $this->dpr = $dpr;
         switch ($mode) {
             case self::SIZE_SOURCE:
             case self::SIZE_PC:
@@ -255,7 +287,8 @@ class IC2_Thumbnailer
         // Epegでサムネイルを作成
         if ($mime == 'image/jpeg' && $this->epeg) {
             $dst = ($this->dynamic) ? '' : $thumb;
-            $result = epeg_thumbnail_create($src, $dst, $this->max_width, $this->max_height, $this->quality);
+            list($max_width, $max_height) = $this->getMaxImageSize();
+            $result = epeg_thumbnail_create($src, $dst, $max_width, $max_height, $this->quality);
             if ($result == false) {
                 $error = PEAR::raiseError("サムネイルを作成できませんでした。({$src} -&gt; {$dst})");
                 return $error;
@@ -337,8 +370,16 @@ class IC2_Thumbnailer
         $this->resize = false;
         $this->coord  = false;
 
+        // 最大サイズ補正
+        if ($return_array) {
+            list($max_width, $max_height) = $this->getMaxImageSize();
+        } else {
+            $max_width  = $this->max_width;
+            $max_height = $this->max_height;
+        }
+
         // ソースがサムネイルの最大サイズより小さいとき、ソースの大きさをそのまま返す
-        if ($width <= $this->max_width && $height <= $this->max_height) {
+        if ($width <= $max_width && $height <= $max_height) {
             // リサイズ・トリミングともに無効
             if ($return_array) {
                 return array((int)$t_width, (int)$t_height);
@@ -348,12 +389,12 @@ class IC2_Thumbnailer
         }
 
         // 縦横どちらに合わせるかを判定（最大サイズより横長 = 横幅に合わせる）
-        if (($width / $height) >= ($this->max_width / $this->max_height)) {
+        if (($width / $height) >= ($max_width / $max_height)) {
             // 横に合わせる
             $main = $width;
             $sub  = $height;
-            $max_main = $this->max_width;
-            $max_sub  = $this->max_height;
+            $max_main = $max_width;
+            $max_sub  = $max_height;
             $t_main = &$t_width;  // $t_mainと$t_subをサムネイルサイズの
             $t_sub  = &$t_height; // リファレンスにしているのが肝
             $c_main = 'x';
@@ -362,8 +403,8 @@ class IC2_Thumbnailer
             // 縦に合わせる
             $main = $height;
             $sub  = $width;
-            $max_main = $this->max_height;
-            $max_sub  = $this->max_width;
+            $max_main = $max_height;
+            $max_sub  = $max_width;
             $t_main = &$t_height;
             $t_sub  = &$t_width;
             $c_main = 'y';
@@ -439,6 +480,14 @@ class IC2_Thumbnailer
         }
 
         $basename = $size . '_' . $md5;
+        switch ($this->dpr) {
+            case self::DPR_1_5:
+                $basename .= '_x15';
+                break;
+            case self::DPR_2_0:
+                $basename .= '_x20';
+                break;
+        }
         if ($this->rotate) {
             $basename .= '_' . str_pad($this->rotate, 3, 0, STR_PAD_LEFT);
         }
@@ -482,7 +531,7 @@ class IC2_Thumbnailer
     public function dirID($size = null, $md5 = null, $mime = null)
     {
         if ($size && $md5 && $mime) {
-            $icdb = new IC2_DataObject_Images;
+            $icdb = new IC2_DataObject_Images();
             $icdb->whereAddQUoted('size', '=', $size);
             $icdb->whereAddQuoted('md5',  '=', $md5);
             $icdb->whereAddQUoted('mime', '=', $mime);
@@ -499,6 +548,30 @@ class IC2_Thumbnailer
             $nextid = 1;
         }
         return str_pad(ceil($nextid / 1000), 5, 0, STR_PAD_LEFT);
+    }
+
+    // }}}
+    // {{{ getImageMaxSize()
+
+    /**
+     * device pixel ratioを反映した最大画像サイズを得る
+     */
+    public function getMaxImageSize()
+    {
+        switch ($this->dpr) {
+            case self::DPR_1_5:
+                $w = intval(1.5 * $this->max_width);
+                $h = intval(1.5 * $this->max_height);
+                break;
+            case self::DPR_2_0:
+                $w = 2 * $this->max_width;
+                $h = 2 * $this->max_height;
+                break;
+            default:
+                $w = $this->max_width;
+                $h = $this->max_height;
+        }
+        return array($w, $h);
     }
 
     // }}}

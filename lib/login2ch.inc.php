@@ -249,11 +249,11 @@ function getAuth2chWithOpenSSL($login2chID, $login2chPW, $auth2ch_url, $x_2ch_ua
 {
     global $_conf;
 
-    $wap_ua = new WapUserAgent;
+    $wap_ua = new WapUserAgent();
     $wap_ua->setAgent($dolib2ch);
     $wap_ua->setTimeout($_conf['http_conn_timeout'], $_conf['http_read_timeout']);
 
-    $wap_req = new WapRequest;
+    $wap_req = new WapRequest();
     $wap_req->setMethod('POST');
     $wap_req->post['ID'] = $login2chID;
     $wap_req->post['PW'] = $login2chPW;
@@ -269,7 +269,7 @@ function getAuth2chWithOpenSSL($login2chID, $login2chPW, $auth2ch_url, $x_2ch_ua
 
     $wap_res = $wap_ua->request($wap_req);
 
-    //P2Util::pushInfoHtml(Var_Dump::display(array($wap_ua, $wap_req, $wap_res), TRUE));
+    //P2Util::pushInfoHtml(Var_Dump::display(array($wap_ua, $wap_req, $wap_res), true));
 
     if (!$wap_res || $wap_res->isError()) {
         return false;

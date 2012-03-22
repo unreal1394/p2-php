@@ -1,43 +1,48 @@
 <?php
 
-class P2UtilWiki {
-
+class P2UtilWiki
+{
     /**
      * +Wiki:プロフィールIDからBEIDを計算する
      *
      * @return integer|0 成功したらBEIDを返す。失敗したら0を返す。
      */
-    function calcBeId($prof_id) {
-        $found = false;
-        for ($y = 2; $y <= 9 && !$found; $y++) {
-            for ($x = 2; $x <= 9 && !$found; $x++) {
+    public static function calcBeId($prof_id)
+    {
+        for ($y = 2; $y <= 9; $y++) {
+            for ($x = 2; $x <= 9; $x++) {
                 $id = (($prof_id - $x*10.0 - $y)/100.0 + $x - $y - 5.0)/(3.0 * $x * $y);
-                if ($id == floor($id)) $found = true;
+                if ($id == floor($id)) {
+                    return $id;
+                }
             }
         }
-        return ($found ? $id : 0);
+        return 0;
     }
 
     /**
      * Wiki:そのURLにアクセスできるか確認する
      */
-    function isURLAccessible($url, $timeout = 7)
+    public static function isURLAccessible($url, $timeout = 7)
     {
-        $code = P2UtilWiki::getResponseCode($url);
+        $code = self::getResponseCode($url);
         return ($code == 200 || $code == 206) ? true : false;
     }
 
     /**
      * URLがイメピタならtrueを返す
      */
-    function isUrlImepita($url)
+    public static function isUrlImepita($url)
     {
         return preg_match('{^http://imepita\.jp/}', $url);
     }
 
-    function getResponseCode($url) {
-        require_once 'HTTP/Client.php';
-        $client = &new HTTP_Client;
+    public static function getResponseCode($url)
+    {
+        if (!class_exists('HTTP_Client;', false)) {
+            require 'HTTP/Client.php';
+        }
+        $client = new HTTP_Client();
         $client->setRequestParameter('timeout', $timeout);
         $client->setDefaultHeader('User-Agent', 'Monazilla/1.00');
         if (!empty($_conf['proxy_use'])) {
@@ -51,18 +56,20 @@ class P2UtilWiki {
      * Wiki:Last-Modifiedをチェックしてキャッシュする
      * time:チェックしない期間(unixtime)
      */
-    function cacheDownload($url, $path, $time = 0)
+    public static function cacheDownload($url, $path, $time = 0)
     {
         global $_conf;
+
         $filetime = @filemtime($path);
-        
+
         // キャッシュ有効期間ならチェックしない
-        if ($filetime > 0 && $filetime > time() - $time) return;
-        
+        if ($filetime > 0 && $filetime > time() - $time) {
+            return;
+        }
         if (!class_exists('HTTP_Request', false)) {
             require 'HTTP/Request.php';
         }
-        $req = & new HTTP_Request($url, array('timeout' => $_conf['fsockopen_time_limit']));
+        $req = new HTTP_Request($url, array('timeout' => $_conf['fsockopen_time_limit']));
         $req->setMethod('HEAD');
         $now = time();
         $req->sendRequest();

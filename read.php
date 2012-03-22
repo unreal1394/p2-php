@@ -204,7 +204,7 @@ if ($_conf['ktai']) {
     if ($resFilter && $resFilter->hasWord() && $aThread->rescount) {
         $GLOBALS['filter_hits'] = 0;
     } else {
-        $GLOBALS['filter_hits'] = NULL;
+        $GLOBALS['filter_hits'] = null;
     }
 
     $aShowThread = new ShowThreadK($aThread);
@@ -242,7 +242,7 @@ if ($_conf['ktai']) {
             } else {
                 $content = $aShowThread->getDatToHtml();
             }
-        } else if ($aThread->diedat && count($aThread->datochi_residuums) > 0) {
+        } elseif ($aThread->diedat && count($aThread->datochi_residuums) > 0) {
             $content = $aShowThread->getDatochiResiduums();
         }
 
@@ -323,31 +323,44 @@ if ($_conf['ktai']) {
 
         // ŠO•”ƒc[ƒ‹
         $pluswiki_js = '';
+
         if ($_conf['wiki.idsearch.spm.mimizun.enabled']) {
-            require_once './plugin/mimizun/mimizun.class.php';
-            $mimizun = new mimizun();
+            if (!class_exists('Mimizun', false)) {
+                require P2_PLUGIN_DIR . '/mimizun/Mimizun.php';
+            }
+            $mimizun = new Mimizun();
             $mimizun->host = $aThread->host;
             $mimizun->bbs  = $aThread->bbs;
-            if ($mimizun->isEnable())
+            if ($mimizun->isEnabled()) {
                 $pluswiki_js .= "WikiTools.addMimizun({$aShowThread->spmObjName});";
+            }
         }
+
         if ($_conf['wiki.idsearch.spm.hissi.enabled']) {
-            require_once './plugin/hissi/hissi.class.php';
-            $hissi = new hissi();
+            if (!class_exists('Hissi', false)) {
+                require P2_PLUGIN_DIR . '/hissi/Hissi.php';
+            }
+            $hissi = new Hissi();
             $hissi->host = $aThread->host;
             $hissi->bbs  = $aThread->bbs;
-            if ($hissi->isEnable())
+            if ($hissi->isEnabled()) {
                 $pluswiki_js .= "WikiTools.addHissi({$aShowThread->spmObjName});";
+            }
         }
+
         if ($_conf['wiki.idsearch.spm.stalker.enabled']) {
-            require_once './plugin/stalker/stalker.class.php';
-            $stalker = new stalker();
+            if (!class_exists('Stalker', false)) {
+                require P2_PLUGIN_DIR . '/stalker/Stalker.php';
+            }
+            $stalker = new Stalker();
             $stalker->host = $aThread->host;
             $stalker->bbs  = $aThread->bbs;
-            if ($stalker->isEnable())
+            if ($stalker->isEnabled()) {
                 $pluswiki_js .= "WikiTools.addStalker({$aShowThread->spmObjName});";
+            }
         }
-        if ($pluswiki_js) {
+
+        if ($pluswiki_js !== '') {
             echo <<<EOP
 <script type="text/javascript">
 //<![CDATA[
@@ -357,7 +370,7 @@ if ($_conf['ktai']) {
 EOP;
         }
 
-    } else if ($aThread->diedat && count($aThread->datochi_residuums) > 0) {
+    } elseif ($aThread->diedat && count($aThread->datochi_residuums) > 0) {
         require_once P2_LIB_DIR . '/ShowThreadPc.php';
         $aShowThread = new ShowThreadPc($aThread);
         echo $aShowThread->getDatochiResiduums();

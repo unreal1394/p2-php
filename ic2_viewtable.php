@@ -35,12 +35,12 @@ if (!isset($_REQUEST['table'])) {
 $mode = $_REQUEST['table'];
 switch ($mode) {
     case 'errlog':
-        $table = new IC2_DataObject_Errors;
+        $table = new IC2_DataObject_Errors();
         $table->orderBy('occured ASC');
         $title = 'エラーログ';
         break;
     case 'blacklist':
-        $table = new IC2_DataObject_BlackList;
+        $table = new IC2_DataObject_BlackList();
         $table->orderBy('uri ASC');
         $title = 'ブラックリスト';
         break;
@@ -92,11 +92,11 @@ $flexy->setData('extra_headers_x', $_conf['extra_headers_xht']);
 if ($table->find()) {
     switch ($mode) {
         case 'errlog':
-            $flexy->setData('data_renderer_errlog', TRUE);
+            $flexy->setData('data_renderer_errlog', true);
             $flexy->setData('data', ic2_dump_table_errlog($table));
             break;
         case 'blacklist':
-            $flexy->setData('data_renderer_blacklist', TRUE);
+            $flexy->setData('data_renderer_blacklist', true);
             $flexy->setData('data', ic2_dump_table_blacklist($table));
             break;
     }
@@ -117,7 +117,7 @@ function ic2_dump_table_errlog($dbdo)
 {
     $data = array();
     while ($dbdo->fetch()) {
-        $obj = new stdClass;
+        $obj = new stdClass();
         $obj->uri = $dbdo->uri;
         $obj->date = date('Y-m-d (D) H:i:s', $dbdo->occured);
         $obj->code = $dbdo->errcode;
@@ -137,7 +137,7 @@ function ic2_dump_table_blacklist($dbdo)
 {
     $data = array();
     while ($dbdo->fetch()) {
-        $obj = new stdClass;
+        $obj = new stdClass();
         $obj->uri = $dbdo->uri;
         switch ($dbdo->type) {
             case '0':

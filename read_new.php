@@ -574,31 +574,44 @@ EOP;
 
         // ŠO•”ƒc[ƒ‹
         $pluswiki_js = '';
+
         if ($_conf['wiki.idsearch.spm.mimizun.enabled']) {
-            require_once './plugin/mimizun/mimizun.class.php';
-            $mimizun = new mimizun();
+            if (!class_exists('Mimizun', false)) {
+                require P2_PLUGIN_DIR . '/mimizun/Mimizun.php';
+            }
+            $mimizun = new Mimizun();
             $mimizun->host = $aThread->host;
             $mimizun->bbs  = $aThread->bbs;
-            if ($mimizun->isEnable())
+            if ($mimizun->isEnabled()) {
                 $pluswiki_js .= "WikiTools.addMimizun({$aShowThread->spmObjName});";
+            }
         }
+
         if ($_conf['wiki.idsearch.spm.hissi.enabled']) {
-            require_once './plugin/hissi/hissi.class.php';
-            $hissi = new hissi();
+            if (!class_exists('Hissi', false)) {
+                require P2_PLUGIN_DIR . '/hissi/Hissi.php';
+            }
+            $hissi = new Hissi();
             $hissi->host = $aThread->host;
             $hissi->bbs  = $aThread->bbs;
-            if ($hissi->isEnable())
+            if ($hissi->isEnabled()) {
                 $pluswiki_js .= "WikiTools.addHissi({$aShowThread->spmObjName});";
+            }
         }
+
         if ($_conf['wiki.idsearch.spm.stalker.enabled']) {
-            require_once './plugin/stalker/stalker.class.php';
-            $stalker = new stalker();
+            if (!class_exists('Stalker', false)) {
+                require P2_PLUGIN_DIR . '/stalker/Stalker.php';
+            }
+            $stalker = new Stalker();
             $stalker->host = $aThread->host;
             $stalker->bbs  = $aThread->bbs;
-            if ($stalker->isEnable())
+            if ($stalker->isEnabled()) {
                 $pluswiki_js .= "WikiTools.addStalker({$aShowThread->spmObjName});";
+            }
         }
-        if ($pluswiki_js) {
+
+        if ($pluswiki_js !== '') {
             $read_header_ht .= <<<EOP
 <script type="text/javascript">
 //<![CDATA[

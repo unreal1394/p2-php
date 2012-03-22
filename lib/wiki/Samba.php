@@ -12,9 +12,9 @@ load()                      sambaリストを読み込む(自動的に実行される)
 getSambaTime($host, $bbs)   板のsambaを取得
 */
 
-class samba
+class Samba
 {
-    var $data = array();
+    protected $data = array();
     /* データ構造
     bbs=bbs名
     $data[bbs][bbs]    bbs名(saveで利用)
@@ -22,11 +22,13 @@ class samba
     $data[bbs][write]  書き込んだ時間(timer関数)
     $data[bbs][get]    sambaを取得した時間(timer)
     */
-    var $filename = 'p2_samba.txt';
-    var $isLoaded = false;
+    protected $filename = 'p2_samba.txt';
+    protected $isLoaded = false;
 
-    function load() {
+    public function load()
+    {
         global $_conf;
+
         $lines = array();
         $path = $_conf['pref_dir'].'/'.$this->filename;
         if ($lines = @file($path)) {
@@ -51,11 +53,12 @@ class samba
         return $array;
     }
 
-    function save() {
+    public function save()
+    {
         global $_conf;
-        
+
         $file = '';
-        foreach($this->data as $l) {
+        foreach ($this->data as $l) {
             $file .= "{$l['bbs']}\t{$l['samba']}\t{$l['write']}\t{$l['get']}\n";
         }
         $path = $_conf['pref_dir'].'/'.$this->filename;
@@ -64,8 +67,11 @@ class samba
         fclose($fh);
     }
 
-    function getSambaTime($host, $bbs) {
-        if (!P2Util::isHost2chs($host)) return false;
+    public function getSambaTime($host, $bbs)
+    {
+        if (!P2Util::isHost2chs($host)) {
+            return false;
+        }
         // sambaを取得
         $url = "http://{$host}/{$bbs}/index.html";
         $src = P2Util::getWebPage($url, $errmsg);
@@ -82,56 +88,74 @@ class samba
     /**
      * 書き込んだ時刻をセット
      */
-    function setWriteTime($host, $bbs) {
+    public function setWriteTime($host, $bbs)
+    {
         global $_conf;
 
-        if(!$this->isLoaded) $this->load();
+        if (!$this->isLoaded) {
+            $this->load();
+        }
         $this->data[$bbs]['write'] = time();
         // 最終取得からsamba_cache時間経過した場合
-        if((time() - $this->data[$bbs]['get']) > $_conf['samba_cache'] * 3600){
+        if ((time() - $this->data[$bbs]['get']) > $_conf['samba_cache'] * 3600) {
             $this->getSambaTime($host, $bbs);
         }
     }
 
     // 残り時間を取得
-    function getSamba($host, $bbs) {
-        if (!P2Util::isHost2chs($host)) return -1;
+    public function getSamba($host, $bbs)
+    {
+        if (!P2Util::isHost2chs($host)) {
+            return -1;
+        }
 
         // 読み込んでいなければ読み込む
-        if(!$this->isLoaded) $this->load();
+        if (!$this->isLoaded) {
+            $this->load();
+        }
         // 書き込んでいなければ残り0秒
-        if($this->data[$bbs]['write'] <= 0) return 0;
+        if ($this->data[$bbs]['write'] <= 0) {
+            return 0;
+        }
         // 規制0秒なら計算するまでもなく残り0秒
-        if($this->data[$bbs]['samba'] <= 0) return 0;
+        if ($this->data[$bbs]['samba'] <= 0) {
+            return 0;
+        }
         // 残り時間
         $time = $this->data[$bbs]['write'] + $this->data[$bbs]['samba'] - time();
-        return $time > 0 ? $time : 0;
+        return max(0, $time);
     }
 
     /*
     $time秒のsambaタイマーを生成
     */
-    function createTimer($time) {
+    public function createTimer($time)
+    {
         global $_conf;
+
         // getSambaのエラーなので生成できない
-        if ($time < 0)      return;
+        if ($time < 0) {
+            return;
+        }
         // 書き込める
-        if ($time == 0)     return '書き込めるかも';
+        if ($time == 0) {
+            return '書き込めるかも';
+        }
 
         // PC
         return <<<EOP
         <span id="sambaSecond">あと{$time}秒</span>
         <script type="text/JavaScript">
         <!--
-        intSecond = {$time};
-        timSamba = setInterval("sambaTimer()",1000);
-        function sambaTimer(){
+        var intSecond = {$time};
+        var timSamba = setInterval("sambaTimer()",1000);
+        function sambaTimer() {
             intSecond -= 1;
             if (intSecond <= 0){
                 clearInterval(timSamba);
                 sambaSecond.innerHTML = "書き込めるかも";
             } else {
-            sambaSecond.innerHTML = "あと" + intSecond + "秒";
+                sambaSecond.innerHTML = "あと" + intSecond + "秒";
             }
         }
         // -->

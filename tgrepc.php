@@ -340,7 +340,7 @@ exit;
 function tgrep_search($query)
 {
     global $_conf;
-    $client = new HTTP_Client;
+    $client = new HTTP_Client();
     $client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
     $code = $client->get($_conf['expack.tgrep_url'] . '?' . $query);
     if (PEAR::isError($code)) {

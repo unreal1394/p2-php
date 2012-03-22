@@ -129,7 +129,7 @@ if (!empty($_POST['newthread'])) {
     }
 }
 
-if ($_POST['savedraft']) {
+if (!empty($_POST['savedraft'])) {
     // 書き込みを一時的に保存
     $post_backup_key = PostDataStore::getKeyForBackup($host, $bbs, $key, !empty($_REQUEST['newthread']));
     PostDataStore::set($post_backup_key, $post_cache);
@@ -540,8 +540,8 @@ function postIt($host, $bbs, $key, $post)
 
         // +Wiki sambaタイマー
         if ($_conf['wiki.samba_timer']) {
-            require_once P2_LIB_DIR . '/wiki/samba.class.php';
-            $samba = &new samba;
+            require_once P2_LIB_DIR . '/wiki/Samba.php';
+            $samba = new Samba();
             $samba->setWriteTime($host, $bbs);
             $samba->save();
         }
@@ -619,25 +619,27 @@ function showPostMsg($isDone, $result_msg, $reload)
         $class_ttitle = '';
     }
     $ttitle_ht = "<b{$class_ttitle}>{$ttitle}</b>";
-    // 2005/03/01 aki: jigブラウザに対応するため、&amp; ではなく & で
-    // 2005/04/25 rsk: <script>タグ内もCDATAとして扱われるため、&amp;にしてはいけない
-    $location_noenc = str_replace('&amp;', '&', $location_ht);
-    if ($popup) {
-        $popup_ht = <<<EOJS
+
+    $popup_ht = '';
+    if ($isDone) {
+        // 2005/03/01 aki: jigブラウザに対応するため、&amp; ではなく & で
+        // 2005/04/25 rsk: <script>タグ内もCDATAとして扱われるため、&amp;にしてはいけない
+        $location_noenc = str_replace('&amp;', '&', $location_ht);
+        if ($popup) {
+            $popup_ht = <<<EOJS
 <script type="text/javascript">
 //<![CDATA[
-    opener.location.href="{$location_noenc}";
+    opener.location.href = "{$location_noenc}";
     var delay= 3*1000;
     setTimeout("window.close()", delay);
 //]]>
 </script>
 EOJS;
-
-    } else {
-        $popup_ht = '';
-        $_conf['extra_headers_ht'] .= <<<EOP
+        } else {
+            $_conf['extra_headers_ht'] .= <<<EOP
 <meta http-equiv="refresh" content="1;URL={$location_noenc}">
 EOP;
+        }
     }
 
     // プリント ==============

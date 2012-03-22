@@ -48,7 +48,7 @@ EOFORM;
 
 // RSS切替フォーム
 if ($_conf['expack.misc.multi_favs']) {
-    $switch_rss_form_ht = FavSetManager::makeFavSetSwitchForm('m_rss_set', 'RSS', NULL, NULL, !$_conf['ktai']);
+    $switch_rss_form_ht = FavSetManager::makeFavSetSwitchForm('m_rss_set', 'RSS', null, null, !$_conf['ktai']);
 } else {
     $switch_rss_form_ht = '';
 }
@@ -263,6 +263,7 @@ EOP;
 
 <input type="submit" value="元に戻す">
 <input type="submit" name="submit_setrss" value="変更を適用する" onclick="submitApply();">
+{$_conf['detect_hint_input_ht']}{$_conf['k_input_ht']}
 
 </div>
 </form>

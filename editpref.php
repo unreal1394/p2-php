@@ -654,7 +654,7 @@ function getFavSetListFormHtK($set_name, $set_title)
 /**
  * お気に入りセットリストを更新する
  *
- * @return  boolean 更新に成功したらTRUE, 失敗したらFALSE
+ * @return  boolean 更新に成功したらtrue, 失敗したらfalse
  */
 function updateFavSetList()
 {
@@ -687,12 +687,12 @@ function updateFavSetList()
     }
 
     $newdata = serialize($setlist_titles);
-    if (FileCtl::file_write_contents($_conf['expack.misc.favset_file'], $newdata) === FALSE) {
+    if (FileCtl::file_write_contents($_conf['expack.misc.favset_file'], $newdata) === false) {
         P2Util::pushInfoHtml("<p>p2 error: {$_conf['expack.misc.favset_file']} にお気に入りセット設定を書き込めませんでした。");
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 // }}}

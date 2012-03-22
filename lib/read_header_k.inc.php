@@ -156,7 +156,7 @@ if ($_conf['expack.ic2.enabled'] && $_conf['expack.ic2.thread_imagelink']) {
 //====================================================================
 // ŒŸõ‚Ì“Á•Ê‚Èˆ—
 //====================================================================
-if ($filter_hits !== NULL) {
+if ($filter_hits !== null) {
     include P2_LIB_DIR . '/read_filter_k.inc.php';
 }
 

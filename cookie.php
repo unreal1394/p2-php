@@ -13,12 +13,10 @@ $_login->authorize(); // ユーザ認証
 // 書き出し用変数
 
 $return_path = 'login.php';
-
-$next_url = <<<EOP
-{$return_path}?check_regist_cookie=1&amp;regist_cookie={$_REQUEST['regist_cookie']}{$_conf['k_at_a']}
-EOP;
-
-$next_url = str_replace('&amp;', '&', $next_url);
+$keep_login = isset($_REQUEST['keep_login']) ? $_REQUEST['keep_login'] : '';
+$keep_login = rawurlencode($keep_login);
+$next_url = "{$return_path}?check_keep_login=1&keep_login={$keep_login}";
+$next_url .= str_replace('&amp;', '&', $_conf['k_at_a']);
 
 header('Location: '.$next_url);
 exit;

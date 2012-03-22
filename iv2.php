@@ -175,7 +175,7 @@ if ($_conf['ktai']) {
 // {{{ prepare (DB & Cache)
 
 // DB_DataObjectを継承したDAO
-$icdb = new IC2_DataObject_Images;
+$icdb = new IC2_DataObject_Images();
 $db = $icdb->getDatabaseConnection();
 $db_class = strtolower(get_class($db));
 
@@ -340,7 +340,20 @@ $mode      = IC2_ParameterUtility::getValidValue('mode',      $_defaults['mode']
 $thumbtype = IC2_ParameterUtility::getValidValue('thumbtype', $_defaults['thumbtype'], 'intval');
 
 // サムネイル作成クラス
-$thumb = new IC2_Thumbnailer($thumbtype);
+$thumbsize = IC2_Thumbnailer::SIZE_PC;
+if (!empty($_SESSION['device_pixel_ratio'])) {
+    $dpr = $_SESSION['device_pixel_ratio'];
+    if ($dpr === 1.5) {
+        $thumbsize |= IC2_Thumbnailer::DPR_1_5;
+    } elseif ($dpr === 2.0) {
+        $thumbsize |= IC2_Thumbnailer::DPR_2_0;
+    } else {
+        $dpr = 1.0;
+    }
+} else {
+    $dpr = 1.0;
+}
+$thumb = new IC2_Thumbnailer($thumbsize);
 
 // 携帯用に調整
 if ($_conf['ktai']) {
@@ -842,6 +855,8 @@ if ($all == 0) {
                                          IC2_DatabaseManager::remove(array($img['id'], $to_blacklist)));
             $flexy->setData('toBlackList', $to_blacklist);
         } else {
+            // サムネイルのパスのみdevicePixelRatioが影響するので再取得
+            $add['thumb'] = $thumb->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
             if (!file_exists($add['thumb'])) {
                 // レンダリング時に自動でhtmlspecialchars()されるので&amp;にしない
                 $add['thumb'] = 'ic2.php?r=' . $r_type . "&t={$thumb->mode}";
@@ -849,6 +864,9 @@ if ($all == 0) {
                     $add['thumb'] .= '&id=' . $img['id'];
                 } else {
                     $add['thumb'] .= '&uri=' . rawurlencode($img['uri']);
+                }
+                if ($dpr === 1.5 || $dpr === 2.0) {
+                    $add['thumb'] .= '&d=' . $dpr;
                 }
             }
             if ($_conf['ktai']) {
@@ -859,6 +877,9 @@ if ($all == 0) {
                     $add['thumb_k'] .= '&uri=' . rawurlencode($img['uri']);
                 }
                 $add['thumb_k'] .= $k_backto;
+                if ($dpr === 1.5 || $dpr === 2.0) {
+                    $add['thumb_k'] .= '&d=' . $dpr;
+                }
             }
         }
         $item = array_merge($img, $add, $status);

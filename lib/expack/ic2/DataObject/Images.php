@@ -54,9 +54,9 @@ class IC2_DataObject_Images extends IC2_DataObject_Common
     // {{{ uniform()
 
     // 検索用に文字列をフォーマットする
-    public function uniform($str, $enc, $convert_case = true)
+    public function uniform($str, $enc, $to_lower = true)
     {
-        return self::staticUniform($str, $enc, $convert_case);
+        return self::staticUniform($str, $enc, $to_lower);
     }
 
     // }}}
@@ -65,7 +65,7 @@ class IC2_DataObject_Images extends IC2_DataObject_Common
     public function ic2_isError($url)
     {
         // ブラックリストをチェック
-        $blacklist = new IC2_DataObject_BlackList;
+        $blacklist = new IC2_DataObject_BlackList();
         if ($blacklist->get($url)) {
             switch ($blacklist->type) {
                 case 0:
@@ -81,13 +81,13 @@ class IC2_DataObject_Images extends IC2_DataObject_Common
 
         // エラーログをチェック
         if ($this->_ini['Getter']['checkerror']) {
-            $errlog = new IC2_DataObject_Errors;
+            $errlog = new IC2_DataObject_Errors();
             if ($errlog->get($url)) {
                 return $errlog->errcode;
             }
         }
 
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -96,30 +96,20 @@ class IC2_DataObject_Images extends IC2_DataObject_Common
     /**
      * 検索用に文字列をフォーマットする
      */
-    static public function staticUniform($str, $enc, $convert_case = true)
+    public static function staticUniform($str, $enc, $to_lower = true)
     {
-        // 内部エンコーディングを保存
-        $incode = mb_internal_encoding();
-
-        // 内部エンコーディングをUTF-8に
-        mb_internal_encoding('UTF-8');
-
-        // 文字列を検索用に変換
         if (!$enc) {
             $enc = mb_detect_encoding($str, 'CP932,UTF-8,CP51932,JIS');
         }
-        if ($enc != 'UTF-8') {
+        if (strcasecmp($enc, 'UTF-8') !== 0) {
             $str = mb_convert_encoding($str, 'UTF-8', $enc);
         }
-        $str = mb_convert_kana($str, 'KVas');
-        if ($convert_case !== false) $str = mb_convert_case($str, MB_CASE_LOWER);
-        $str = trim($str);
-        $str = preg_replace('/\s+/u', ' ', $str);
+        $str = mb_convert_kana($str, 'KVas', 'UTF-8');
+        if ($to_lower) {
+            $str = mb_strtolower($str, 'UTF-8');
+        }
 
-        // 内部エンコーディングを戻す
-        mb_internal_encoding($incode);
-
-        return $str;
+        return preg_replace('/\s+/u', ' ', trim($str));
     }
 
     // }}}

@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // ƒŒƒX“Ç‚İ‚İ
 if (empty($errors) && $_SERVER['REQUEST_METHOD'] != 'POST') {
-    $aThread = new ThreadRead;
+    $aThread = new ThreadRead();
     $aThread->setThreadPathInfo($host, $bbs, $key);
     if (!$aThread->readDat()) {
         $errors[] = 'dat‚ª“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B';

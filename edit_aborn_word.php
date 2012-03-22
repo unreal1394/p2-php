@@ -11,7 +11,7 @@ $filename = isset($_REQUEST['file']) ? $_REQUEST['file'] : '';
 
 $csrfid = P2Util::getCsrfId(__FILE__ . $filename);
 if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
-    if (!isset($_POST['csrfid']) or $_POST['csrfid'] != $csrfid) {
+    if (!isset($_POST['csrfid']) || $_POST['csrfid'] != $csrfid) {
         p2die('不正なポストです');
     }
 }
@@ -74,7 +74,7 @@ if (!empty($_POST['submit_save'])) {
         }
         $newdata .= $a_mode . $a_word . "\t" . $a_time . "\t" . $a_hits . "\n";
     }
-    if (FileCtl::file_write_contents($path, $newdata) !== FALSE) {
+    if (FileCtl::file_write_contents($path, $newdata) !== false) {
         P2Util::pushInfoHtml('<p>○設定を更新保存しました</p>');
     } else {
         P2Util::pushInfoHtml('<p>×設定を更新保存できませんでした</p>');

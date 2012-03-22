@@ -560,6 +560,68 @@ class P2Util
     }
 
     // }}}
+    // {{{ getKeyPath()
+
+    /**
+     * keyからファイルの保存パスをす
+     *
+     * @param string $base_dir
+     * @param string $key
+     * @param string $extension
+     * @return string
+     */
+    static public function getKeyPath($base_dir, $key, $extension = '')
+    {
+        $filename = $key . $extension;
+        $old_path = $base_dir . $filename;
+
+        if (preg_match('/^[0-9]+$/', $key)) {
+            $path = $base_dir . date('Ym', (int)$key) . DIRECTORY_SEPARATOR . $filename;
+            if (!file_exists($path) && file_exists($old_path)) {
+                FileCtl::mkdirFor($path);
+                rename($old_path, $path);
+            }
+            return $path;
+        }
+
+        return $old_path;
+     }
+
+    // }}}
+    // {{{ getDatPath()
+
+    /**
+     * host,bbs,keyからdatの保存パスを返す
+     *
+     * @param string $host
+     * @param string $bbs
+     * @param string $key
+     * @return string
+     * @see P2Util::datDirOfHostBbs(), P2Utill::getKeyPath()
+     */
+    static public function getDatPath($host, $bbs, $key)
+    {
+        return self::getKeyPath(self::datDirOfHostBbs($host, $bbs), $key, '.dat');
+    }
+
+    // }}}
+    // {{{ getIdxPath()
+
+    /**
+     * host,bbs,keyからidxの保存パスを返す
+     *
+     * @param string $host
+     * @param string $bbs
+     * @param string $key
+     * @return string
+     * @see P2Util::idxDirOfHostBbs(), P2Utill::getKeyPath()
+     */
+    static public function getIdxPath($host, $bbs, $key)
+    {
+        return self::getKeyPath(self::idxDirOfHostBbs($host, $bbs), $key, '.idx');
+    }
+
+    // }}}
     // {{{ pathForHost()
 
     /**
@@ -1206,18 +1268,19 @@ class P2Util
     /**
      * 2ch●ログインのIDとPASSと自動ログイン設定を保存する
      */
-    static public function saveIdPw2ch($login2chID, $login2chPW, $autoLogin2ch = '')
+    static public function saveIdPw2ch($login2chID, $login2chPW, $autoLogin2ch = false)
     {
         global $_conf;
 
         $md5_crypt_key = self::getAngoKey();
-        $crypted_login2chPW = MD5Crypt::encrypt($login2chPW, $md5_crypt_key, 32);
+        $login2chID_repr = var_export($login2chID, true);
+        $login2chPW_repr = var_export(MD5Crypt::encrypt($login2chPW, $md5_crypt_key, 32), true);
+        $autoLogin2ch_repr = $autoLogin2ch ? 'true' : 'false';
         $idpw2ch_cont = <<<EOP
 <?php
-\$rec_login2chID = '{$login2chID}';
-\$rec_login2chPW = '{$crypted_login2chPW}';
-\$rec_autoLogin2ch = '{$autoLogin2ch}';
-?>
+\$rec_login2chID = {$login2chID_repr};
+\$rec_login2chPW = {$login2chPW_repr};
+\$rec_autoLogin2ch = {$autoLogin2ch_repr};\n
 EOP;
         FileCtl::make_datafile($_conf['idpw2ch_php'], $_conf['pass_perm']);    // ファイルがなければ生成
         $fp = @fopen($_conf['idpw2ch_php'], 'wb');
@@ -1242,23 +1305,33 @@ EOP;
     {
         global $_conf;
 
-        if (!file_exists($_conf['idpw2ch_php'])) {
-            return false;
+        $login2chID = null;
+        $login2chPW = null;
+        $autoLogin2ch = false;
+
+        if (file_exists($_conf['idpw2ch_php'])) {
+            $rec_login2chID = null;
+            $rec_login2chPW = null;
+            $rec_autoLogin2ch = false;
+
+            include $_conf['idpw2ch_php'];
+
+            if (is_string($rec_login2chID)) {
+                $login2chID = $rec_login2chID;
+            }
+
+            // パスワードを復号化
+            if (is_string($login2chID) && is_string($rec_login2chPW)) {
+                $md5_crypt_key = self::getAngoKey();
+                $login2chPW = MD5Crypt::decrypt($rec_login2chPW, $md5_crypt_key, 32);
+            } else {
+                $login2chPW = null;
+            }
+
+            $autoLogin2ch = (bool)$rec_autoLogin2ch;
         }
 
-        $rec_login2chID = NULL;
-        $login2chPW = NULL;
-        $rec_autoLogin2ch = NULL;
-
-        include $_conf['idpw2ch_php'];
-
-        // パスを複合化
-        if (!is_null($rec_login2chPW)) {
-            $md5_crypt_key = self::getAngoKey();
-            $login2chPW = MD5Crypt::decrypt($rec_login2chPW, $md5_crypt_key, 32);
-        }
-
-        return array($rec_login2chID, $login2chPW, $rec_autoLogin2ch);
+        return array($login2chID, $login2chPW, $autoLogin2ch);
     }
 
     // }}}
@@ -1367,7 +1440,7 @@ ERR;
      * @param   integer  $lifeTime   ファイルの有効期限（秒）
      * @param   string   $prefix     対象ファイル名の接頭辞（オプション）
      * @param   string   $suffix     対象ファイル名の接尾辞（オプション）
-     * @param   boolean  $recurive   再帰的にガーベッジコレクションするか否か（デフォルトではFALSE）
+     * @param   boolean  $recurive   再帰的にガーベッジコレクションするか否か（デフォルトではfalse）
      * @return  array    削除に成功したファイルと失敗したファイルを別々に記録した二次元の配列
      */
     static public function garbageCollection($targetDir,
@@ -1454,7 +1527,7 @@ ERR;
      * 多次元配列を再帰的にテーブルに変換する
      *
      * ２ちゃんねるのsetting.txtをパースした配列用の条件分岐あり
-     * 普通にダンプするなら Var_Dump::display($value, TRUE) がお勧め
+     * 普通にダンプするなら Var_Dump::display($value, true) がお勧め
      * (バージョン1.0.0以降、Var_Dump::display() の第二引数が真のとき
      *  直接表示する代わりに、ダンプ結果が文字列として返る。)
      *
@@ -1479,11 +1552,11 @@ ERR;
                 if (is_array($value)) {
                     $table .= self::Info_Dump($value, $indent+1); //配列の場合は再帰呼び出しで展開
                 } elseif ($value === true) {
-                    $table .= '<i>TRUE</i>';
+                    $table .= '<i>true</i>';
                 } elseif ($value === false) {
-                    $table .= '<i>FALSE</i>';
+                    $table .= '<i>false</i>';
                 } elseif (is_null($value)) {
-                    $table .= '<i>NULL</i>';
+                    $table .= '<i>null</i>';
                 } elseif (is_scalar($value)) {
                     if ($value === '') { //例外:空文字列。0を含めないように型を考慮して比較
                         $table .= '<i>(no value)</i>';

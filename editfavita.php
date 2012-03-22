@@ -12,12 +12,12 @@ $_login->authorize(); // ユーザ認証
 //================================================================
 
 // お気に板の追加・削除、並び替え
-if (isset($_GET['setfavita']) or isset($_POST['setfavita']) or isset($_POST['submit_setfavita'])) {
+if (isset($_GET['setfavita']) || isset($_POST['setfavita']) || isset($_POST['submit_setfavita'])) {
     require_once P2_LIB_DIR . '/setfavita.inc.php';
     setFavIta();
 }
 // お気に板のホストを同期
-if (isset($_GET['syncfavita']) or isset($_POST['syncfavita'])) {
+if (isset($_GET['syncfavita']) || isset($_POST['syncfavita'])) {
     BbsMap::syncBrd($_conf['favita_brd']);
 }
 
@@ -50,7 +50,7 @@ EOFORM;
 
 // お気に板切替フォーム
 if ($_conf['expack.misc.multi_favs']) {
-    $switch_favita_form_ht = FavSetManager::makeFavSetSwitchForm('m_favita_set', 'お気に板', NULL, NULL, !$_conf['ktai']);
+    $switch_favita_form_ht = FavSetManager::makeFavSetSwitchForm('m_favita_set', 'お気に板', null, null, !$_conf['ktai']);
 } else {
     $switch_favita_form_ht = '';
 }

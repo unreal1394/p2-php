@@ -34,7 +34,7 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 //=================================================
 // レス読み込み
 //=================================================
-$aThread = new ThreadRead;
+$aThread = new ThreadRead();
 $aThread->setThreadPathInfo($host, $bbs, $key);
 if (file_exists($aThread->keydat)) {
     // スレッド情報

@@ -158,7 +158,7 @@ class WapUserAgent
         }
 
         if (!$purl = parse_url($req->url)) {
-            $res = new WapResponse;
+            $res = new WapResponse();
             $res->message = 'parse_url() failed';
             return $res;
         }
@@ -233,7 +233,7 @@ class WapUserAgent
             $request .= self::CRLF;
         }
 
-        $res = new WapResponse;
+        $res = new WapResponse();
 
         // WEBƒT[ƒo‚ÖÚ‘±
         if ($this->_timeout > 0) {

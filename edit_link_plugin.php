@@ -4,12 +4,12 @@
 */
 
 include_once './conf/conf.inc.php';
-require_once P2_LIB_DIR . '/FileCtl.php';
+require_once P2_LIB_DIR . '/wiki/LinkPluginCtl.php';
 
 $_login->authorize(); // ユーザ認証
 
 if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
-    if (!isset($_POST['csrfid']) or $_POST['csrfid'] != P2Util::getCsrfId()) {
+    if (!isset($_POST['csrfid']) || $_POST['csrfid'] != P2Util::getCsrfId()) {
         die('p2 error: 不正なポストです');
     }
 }
@@ -18,27 +18,26 @@ if (!empty($_POST['submit_save']) || !empty($_POST['submit_default'])) {
 // 前処理
 //=====================================================================
 
-require_once P2_LIB_DIR . '/wiki/linkpluginctl.class.php';
-$linkPlugin = &new LinkPluginCtl;
+$linkPluginCtl = new LinkPluginCtl();
 
 // [保存]ボタン
 if (!empty($_POST['submit_save'])) {
-    if ($linkPlugin->save($_POST['dat']) !== FALSE) {
-        $_info_msg_ht .= "<p>○設定を更新保存しました</p>";
+    if ($linkPluginCtl->save($_POST['dat']) !== false) {
+        $_info_msg_ht .= '<p>○設定を更新保存しました</p>';
     } else {
-        $_info_msg_ht .= "<p>×設定を更新保存できませんでした</p>";
+        $_info_msg_ht .= '<p>×設定を更新保存できませんでした</p>';
     }
 // [リストを空にする]ボタン
-} else if (!empty($_POST['submit_default'])) {
-    if (@$linkPlugin->clear()) {
-        $_info_msg_ht .= "<p>○リストを空にしました</p>";
+} elseif (!empty($_POST['submit_default'])) {
+    if (@$linkPluginCtl->clear()) {
+        $_info_msg_ht .= '<p>○リストを空にしました</p>';
     } else {
-        $_info_msg_ht .= "<p>×リストを空にできませんでした</p>";
+        $_info_msg_ht .= '<p>×リストを空にできませんでした</p>';
     }
 }
 
 // リスト読み込み
-$formdata = $linkPlugin->load();
+$formdata = $linkPluginCtl->load();
 
 //=====================================================================
 // プリント設定

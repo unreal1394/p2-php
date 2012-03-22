@@ -144,7 +144,7 @@ foreach ($threads as $o => $t) {
         $ourl = sprintf('http://%s/test/read.cgi/%s/%s/', $t->host, $t->bbs, $t->tkey);
     }
     $iurl = P2Util::throughIme($ourl);
-    $aThread = new Thread;
+    $aThread = new Thread();
     $aThread->setThreadPathInfo($t->host, $t->bbs, $t->tkey);
     if ($aThread->getThreadInfoFromIdx() && $aThread->isKitoku()) {
         $rnum = max($t->resnum, $aThread->readnum);

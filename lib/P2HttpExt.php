@@ -945,7 +945,7 @@ class P2HttpRequestPool
         // {{{ キューをセットアップ
 
         // キューおよびその他の変数を初期化
-        $queue = new P2HttpRequestQueue;
+        $queue = new P2HttpRequestQueue();
         $hosts = array();
         $time = time() - $_conf['sb_dl_interval'];
         $eucjp2sjis = null;
@@ -963,7 +963,7 @@ class P2HttpRequestPool
 
             if (P2Util::isHostJbbsShitaraba($host) || P2Util::isHostBe2chNet($host)) {
                 if ($eucjp2sjis === null) {
-                    $eucjp2sjis = new P2HttpCallback_SaveEucjpAsSjis;
+                    $eucjp2sjis = new P2HttpCallback_SaveEucjpAsSjis();
                 }
                 $req = new P2HttpGet($url, $file, null, $eucjp2sjis);
             } else {
@@ -972,7 +972,7 @@ class P2HttpRequestPool
 
             // 同一ホストに対しての同時接続は MAX_REQUESTS_PER_HOST まで
             if (!isset($hosts[$host])) {
-                $hosts[$host] = new P2HttpRequestQueue;
+                $hosts[$host] = new P2HttpRequestQueue();
                 $queue->push($req);
             } elseif (count($hosts[$host]) < self::MAX_REQUESTS_PER_HOST) {
                 $queue->push($req);

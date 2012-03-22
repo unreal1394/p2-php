@@ -32,7 +32,6 @@ class ShowThreadK extends ShowThread
 
     //private $_lineBreaksReplace; // 連続する改行の置換文字列
 
-    //private $_nanashiName = null;   // デフォルトの名前
     private $_kushiYakiName = null; // BBQに焼かれているときの名前接頭辞
 
     // }}}
@@ -58,7 +57,9 @@ class ShowThreadK extends ShowThread
             'plugin_link2chSubject',
         );
         // +Wiki
-        if (isset($GLOBALS['replaceimageurl'])) $this->_url_handlers[] = 'plugin_replaceImageURL';
+        if (isset($GLOBALS['replaceImageUrlCtl'])) {
+            $this->_url_handlers[] = 'plugin_replaceImageUrl';
+        }
         if (P2_IMAGECACHE_AVAILABLE == 2) {
             $this->_url_handlers[] = 'plugin_imageCache2';
         } elseif ($_conf['mobile.use_picto']) {
@@ -105,7 +106,7 @@ class ShowThreadK extends ShowThread
                 $GLOBALS['pre_thumb_limit_k'] = $_conf['expack.ic2.pre_thumb_limit_k'];
                 $GLOBALS['pre_thumb_unlimited'] = false;
             } else {
-                $GLOBALS['pre_thumb_limit_k'] = null;   // ヌル値だとisset()はFALSEを返す
+                $GLOBALS['pre_thumb_limit_k'] = null;   // ヌル値だとisset()はfalseを返す
                 $GLOBALS['pre_thumb_unlimited'] = true;
             }
         }
@@ -158,12 +159,12 @@ class ShowThreadK extends ShowThread
         }
 
         // +Wiki:置換ワード
-        global $replaceword;
-        if (isset($replaceword)) {
-            $name    = $replaceword->replace('name', $this->thread, $ares, $i);
-            $mail    = $replaceword->replace('mail', $this->thread, $ares, $i);
-            $date_id = $replaceword->replace('date', $this->thread, $ares, $i);
-            $msg     = $replaceword->replace('msg',  $this->thread, $ares, $i);
+        if (isset($GLOBALS['replaceWordCtl'])) {
+            $replaceWordCtl = $GLOBALS['replaceWordCtl'];
+            $name    = $replaceWordCtl->replace('name', $this->thread, $ares, $i);
+            $mail    = $replaceWordCtl->replace('mail', $this->thread, $ares, $i);
+            $date_id = $replaceWordCtl->replace('date', $this->thread, $ares, $i);
+            $msg     = $replaceWordCtl->replace('msg',  $this->thread, $ares, $i);
         }
 
         $tores = '';
@@ -373,7 +374,7 @@ EOP;
             $tores .= "<div class=\"message\">{$msg}</div>";
             // 被レスリスト
             if ($_conf['mobile.backlink_list'] == 1) {
-                $linkstr = $this->quoteback_list_html($i, 2);
+                $linkstr = $this->_quotebackListHtml($i, 2);
                 if (strlen($linkstr)) {
                     $tores .= '<br>' . $linkstr;
                 }
@@ -406,7 +407,7 @@ EOP;
             $tores .= "{$msg}</div>\n";
             // 被レスリスト
             if ($_conf['mobile.backlink_list'] == 1) {
-                $linkstr = $this->quoteback_list_html($i, 2);
+                $linkstr = $this->_quotebackListHtml($i, 2);
                 if (strlen($linkstr)) {
                     $tores .= '<br>' . $linkstr;
                 }
@@ -428,7 +429,7 @@ EOP;
             $tores = mb_convert_kana($tores, 'rnsk'); // CP932 だと ask で ＜ を < に変換してしまうようだ
         }
 
-        return array('body'=>$tores,'q'=>'');
+        return array('body' => $tores, 'q' => '');
     }
 
     // }}}
@@ -456,7 +457,7 @@ EOP;
         if (strlen($name) && $name != $this->_nanashiName) {
             $name = preg_replace_callback(
                 self::getAnchorRegex('/(?:^|%prefix%)%nums%/'),
-                array($this, 'quote_name_callback'), $name
+                array($this, '_quoteNameCallback'), $name
             );
         }
 
@@ -513,7 +514,7 @@ EOP;
             // >>1, >1, ＞1, ＞＞1を引用レスポップアップリンク化
             $msg = preg_replace_callback(
                 self::getAnchorRegex('/%full%/'),
-                array($this, 'quoteResCallback'), $msg
+                array($this, '_quoteResCallback'), $msg
             );
 
             $msg .= "<a href=\"{$_conf['read_php']}?host={$this->thread->host}&amp;bbs={$this->thread->bbs}&amp;key={$this->thread->key}&amp;ls={$mynum}&amp;k_continue=1&amp;offline=1{$_conf['k_at_a']}\"{$this->respopup_at}{$this->target_at}>略</a>";
@@ -522,7 +523,7 @@ EOP;
 
         // 新着レスの画像は表示制限を無視する設定なら
         if ($mynum > $this->thread->readnum && $_conf['expack.ic2.newres_ignore_limit_k']) {
-            $pre_thumb_ignore_limit = TRUE;
+            $pre_thumb_ignore_limit = true;
         }
 
         // 文末の改行と連続する改行を除去
@@ -534,8 +535,8 @@ EOP;
         $msg = $this->transLink($msg);
 
         // Wikipedia記法への自動リンク
-        if ($_conf['mobile.link_wikipedia']) {
-            $msg = $this->wikipediaFilter($msg);
+        if ($_conf['mobile._linkToWikipeida']) {
+            $msg = $this->_wikipediaFilter($msg);
         }
 
         return $msg;
@@ -553,7 +554,11 @@ EOP;
     protected function _abornedRes($res_id)
     {
         global $_conf;
-        if ($_conf['ngaborn_purge_aborn']) return '';
+
+        if ($_conf['ngaborn_purge_aborn']) {
+            return '';
+        }
+
         return <<<EOP
 <div id="{$res_id}" name="{$res_id}" class="res aborned">&nbsp;</div>\n
 EOP;
@@ -696,16 +701,21 @@ EOP;
     }
 
     // }}}
-    // {{{ link_wikipedia()
+    // {{{ _linkToWikipeida()
 
     /**
      * @see ShowThread
      */
-    function link_wikipedia($word) {
+    protected function _linkToWikipeida($word)
+    {
         global $_conf;
+
         $link = 'http://ja.wapedia.org/' . rawurlencode($word);
-        return  '<a href="' . ($_conf['through_ime'] ?
-            P2Util::throughIme($link) : $link) .  "\">{$word}</a>";
+        if ($_conf['through_ime']) {
+            $link = P2Util::throughIme($link);
+        }
+
+        return  "<a href=\"{$link}\">{$word}</a>";
     }
 
     // }}}
@@ -728,11 +738,11 @@ EOP;
         }
 
         $appointed_num = mb_convert_kana($appointed_num, 'n');   // 全角数字を半角数字に変換
-        if (preg_match("/\D/",$appointed_num)) {
-            $appointed_num = preg_replace('/\D+/', '-', $appointed_num);
+        if (preg_match('/\\D/', $appointed_num)) {
+            $appointed_num = preg_replace('/\\D+/', '-', $appointed_num);
             return $this->quoteResRange($full, $qsign, $appointed_num);
         }
-        if (preg_match("/^0/", $appointed_num)) {
+        if (preg_match('/^0/', $appointed_num)) {
             return $full;
         }
         $qnum = intval($appointed_num);
@@ -847,8 +857,8 @@ EOP;
     // }}}
     // {{{ transLinkDo()から呼び出されるURL書き換えメソッド
     /**
-     * これらのメソッドは引数が処理対象パターンに合致しないとFALSEを返し、
-     * transLinkDo()はFALSEが返ってくると$_url_handlersに登録されている次の関数/メソッドに処理させようとする。
+     * これらのメソッドは引数が処理対象パターンに合致しないとfalseを返し、
+     * transLinkDo()はfalseが返ってくると$_url_handlersに登録されている次の関数/メソッドに処理させようとする。
      */
     // {{{ plugin_linkURL()
 
@@ -872,7 +882,7 @@ EOP;
             }
             return "<a href=\"{$link_url}\">{$str}</a>";
         }
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -889,7 +899,7 @@ EOP;
             $subject_url = "{$_conf['subject_php']}?host={$m[1]}&amp;bbs={$m[2]}";
             return "<a href=\"{$url}\">{$str}</a> [<a href=\"{$subject_url}{$_conf['k_at_a']}\">板をp2で開く</a>]";
         }
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -952,7 +962,7 @@ EOP;
 {$link}<br><img src="http://img.youtube.com/vi/{$id}/default.jpg" alt="YouTube {$id}">
 EOP;
         }
-        return FALSE;
+        return false;
     }
 
     // }}}
@@ -1015,7 +1025,7 @@ EOP;
             $img_str = null;
             $img_id = null;
 
-            $icdb = new IC2_DataObject_Images;
+            $icdb = new IC2_DataObject_Images();
 
             // r=0:リンク;r=1:リダイレクト;r=2:PHPで表示
             // t=0:オリジナル;t=1:PC用サムネイル;t=2:携帯用サムネイル;t=3:中間イメージ
@@ -1077,7 +1087,13 @@ EOP;
                             } else {
                                 $prv_url = "ic2.php?r={$r_type}&amp;t=1&amp;uri={$url_en}";
                             }
-                            $img_str = "<img src=\"{$prv_url}\">";
+                            $prv_url .= $this->img_dpr_query;
+                            if ($this->img_dpr === 1.5 || $this->img_dpr === 2.0) {
+                                $prv_onload = sprintf(' onload="autoAdjustImgSize(this, %f);"', $this->img_dpr);
+                            } else {
+                                $prv_onload = '';
+                            }
+                            $img_str = "<img src=\"{$prv_url}\"{$prv_onload}>";
                         }
                         $inline_preview_done = true;
                     } else {
@@ -1086,8 +1102,8 @@ EOP;
                 }
 
                 // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新
-                if (!is_null($this->img_memo) && strpos($icdb->memo, $this->img_memo) === false){
-                    $update = new IC2_DataObject_Images;
+                if (!is_null($this->img_memo) && strpos($icdb->memo, $this->img_memo) === false) {
+                    $update = new IC2_DataObject_Images();
                     if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                         $update->memo = $this->img_memo . ' ' . $icdb->memo;
                     } else {
@@ -1098,15 +1114,14 @@ EOP;
 
                 // expack.ic2.fav_auto_rank_override の設定とランク条件がOKなら
                 // お気にスレ自動画像ランクを上書き更新
-                if ($rank !== null &&
-                        self::isAutoFavRankOverride($icdb->rank, $rank)) {
+                if ($rank !== null && self::isAutoFavRankOverride($icdb->rank, $rank)) {
                     if ($update === null) {
-                        $update = new IC2_DataObject_Images;
+                        $update = new IC2_DataObject_Images();
                         $update->whereAddQuoted('uri', '=', $url);
                     }
                     $update->rank = $rank;
-
                 }
+
                 if ($update !== null) {
                     $update->update();
                 }
@@ -1165,7 +1180,10 @@ EOP;
         return false;
     }
 
-    function plugin_replaceImageURL($url, $purl, $str)
+    // }}}
+    // {{{ plugin_replaceImageUrl()
+
+    public function plugin_replaceImageUrl($url, $purl, $str)
     {
         global $_conf;
         global $pre_thumb_unlimited, $pre_thumb_ignore_limit, $pre_thumb_limit_k;
@@ -1176,11 +1194,15 @@ EOP;
 
         // if (preg_match('{^https?://.+?\\.(jpe?g|gif|png)$}i', $url) && empty($purl['query'])) {
         // +Wiki
-        global $replaceimageurl;
+        global $replaceImageUrlCtl;
+
         $url = $purl[0];
-        $replaced = $replaceimageurl->replaceImageURL($url);
-        if (!$replaced[0]) return FALSE;
-        foreach($replaced as $v) {
+        $replaced = $replaceImageUrlCtl->replaceImageUrl($url);
+        if (!$replaced[0]) {
+            return false;
+        }
+
+        foreach ($replaced as $v) {
             // インラインプレビューの有効判定
             if ($pre_thumb_unlimited || $pre_thumb_ignore_limit || $pre_thumb_limit_k > 0) {
                 $inline_preview_flag = true;
@@ -1198,7 +1220,7 @@ EOP;
             $img_str = null;
             $img_id = null;
 
-            $icdb = new IC2_DataObject_Images;
+            $icdb = new IC2_DataObject_Images();
 
             // r=0:リンク;r=1:リダイレクト;r=2:PHPで表示
             // t=0:オリジナル;t=1:PC用サムネイル;t=2:携帯用サムネイル;t=3:中間イメージ
@@ -1260,7 +1282,13 @@ EOP;
                             } else {
                                 $prv_url = "ic2.php?r={$r_type}&amp;t=1&amp;uri={$url_en}";
                             }
-                            $img_str = "<img src=\"{$prv_url}{$_conf['sid_at_a']}\">";
+                            $prv_url .= $this->img_dpr_query;
+                            if ($this->img_dpr === 1.5 || $this->img_dpr === 2.0) {
+                                $prv_onload = sprintf(' onload="autoAdjustImgSize(this, %f);"', $this->img_dpr);
+                            } else {
+                                $prv_onload = '';
+                            }
+                            $img_str = "<img src=\"{$prv_url}\"{$prv_onload}>";
                         }
                         $inline_preview_done = true;
                     } else {
@@ -1270,7 +1298,7 @@ EOP;
 
                 // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新
                 if (!is_null($this->img_memo) && strpos($icdb->memo, $this->img_memo) === false){
-                    $update = new IC2_DataObject_Images;
+                    $update = new IC2_DataObject_Images();
                     if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                         $update->memo = $this->img_memo . ' ' . $icdb->memo;
                     } else {
@@ -1284,7 +1312,7 @@ EOP;
                 if ($rank !== null &&
                         self::isAutoFavRankOverride($icdb->rank, $rank)) {
                     if ($update === null) {
-                        $update = new IC2_DataObject_Images;
+                        $update = new IC2_DataObject_Images();
                         $update->whereAddQuoted('uri', '=', $v['url']);
                     }
                     $update->rank = $rank;
@@ -1305,7 +1333,7 @@ EOP;
                 // インラインプレビューが有効で、サムネイル表示制限数以内なら
                 if ($this->thumbnailer->ini['General']['inline'] == 1 && $inline_preview_flag) {
                     $rank_str = ($rank !== null) ? '&rank=' . $rank : '';
-                    $img_str = "<img src=\"ic2.php?r=2&amp;t=1&amp;uri={$url_en}{$this->img_memo_query}{$_conf['sid_at_a']}{$rank_str}{$ref_en}\">";
+                    $img_str = "<img src=\"ic2.php?r=2&amp;t=1&amp;uri={$url_en}{$this->img_memo_query}{$rank_str}{$ref_en}\">";
                     $inline_preview_done = true;
                 } else {
                     $img_url .= $this->img_memo_query;
@@ -1344,24 +1372,35 @@ EOP;
                 $result .= "<a href=\"{$img_url}{$backto}\">{$img_str}</a>";
             }
         }
-        $result .= $this->plugin_linkURL($url, $purl, $str);
+
+        $linkUrlResult = $this->plugin_linkURL($url, $purl, $str);
+        if ($linkUrlResult !== false) {
+            $result .= $linkUrlResult;
+        }
+
         return $result;
     }
 
     // }}}
     // }}}
+    // {{{ _quotebackHorizontalListHtml()
 
-    protected function _quoteback_horizontal_list_html($anchors, $resnum)
+    protected function _quotebackHorizontalListHtml($anchors, $resnum)
     {
         global $_conf;
-        $ret="";
-        if ($_GET['showbl']) return '';
+
+        if ($_GET['showbl']) {
+            return '';
+        }
         $anchors = array_diff($anchors, array($resnum));
-        if (!$anchors)  return '';
+        if (!$anchors) {
+            return '';
+        }
+        $ret = '';
 
         $plus = array();
-        foreach($anchors as $num) {
-            $plus = array_merge($plus, $this->_get_quoteback_count($num));
+        foreach ($anchors as $num) {
+            $plus = array_merge($plus, $this->_getQuotebackCount($num));
         }
         $plus = array_unique($plus);
         $plus_cnt = count(array_diff($plus, $anchors));
@@ -1401,34 +1440,44 @@ EOP;
             }
         }
 
-        if (count($reslist) == 1 && $suppress == true && $_conf['mobile.backlink_list.suppress'] == 1) {
+        $res_count = count($reslist);
+        if ($res_count === 1 && $suppress === true && $_conf['mobile.backlink_list.suppress'] == 1) {
             $ret .= sprintf('<div>【参照ﾚｽ %s】</div>', $res_navi);
-        } else if (count($reslist) == 1 && $suppress == false) {
+        } elseif ($res_count === 1 && $suppress === false) {
             $ret .= sprintf('<div>【参照ﾚｽ %s%s】</div>', $reslist[0], $res_navi);
         } else {
-            for ($n = 0; $n < count($reslist); $n++) {
+            for ($n = 0; $n < $res_count; $n++) {
                 $ret .= '<div>【参照ﾚｽ ' . $reslist[$n] . '】</div>';
             }
             $ret .= '<div>' . ($suppress ? '略' : '') . $res_navi . '</div>';
         }
+
         return '<div class="reslist">' . $ret . '</div>';
     }
 
-    protected function _get_quoteback_count($num, $checked = null) {
+    // }}}
+    // {{{ _getQuotebackCount()
+
+    protected function _getQuotebackCount($num, $checked = null)
+    {
         $ret = array();
-        if ($checked === null) $checked = array();
+        if ($checked === null) {
+            $checked = array();
+        }
         $checked[] = $num;
-        $quotes = $this->get_quote_from();
+        $quotes = $this->getQuoteFrom();
         if ($quotes[$num]) {
             $ret = $quotes[$num];
-            foreach($quotes[$num] as $quote_num) {
+            foreach ($quotes[$num] as $quote_num) {
                 if ($quote_num != $num && !in_array($quote_num, $checked)) {
-                    $ret = array_merge($ret, $this->_get_quoteback_count($quote_num, array_merge($ret, $checked)));
+                    $ret = array_merge($ret, $this->_getQuotebackCount($quote_num, array_merge($ret, $checked)));
                 }
             }
         }
         return $ret;
     }
+
+    // }}}
 }
 
 // }}}
