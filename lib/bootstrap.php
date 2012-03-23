@@ -47,7 +47,7 @@ if (file_exists($_conf['conf_user_file'])) {
         }
 
         // デフォルト設定を読み込み、ユーザー設定とともにマージ
-        include P2_CONF_DIR . '/conf_user_def.inc.php';
+        include P2_CONFIG_DIR . '/conf_user_def.inc.php';
         $_conf = array_merge($_conf, $conf_user_def, $conf_user);
         $save_conf_user = true;
     } else {
@@ -57,7 +57,7 @@ if (file_exists($_conf['conf_user_file'])) {
     }
 } else {
     // デフォルト設定を読み込み、マージ
-    include P2_CONF_DIR . '/conf_user_def.inc.php';
+    include P2_CONFIG_DIR . '/conf_user_def.inc.php';
     $_conf = array_merge($_conf, $conf_user_def);
     $save_conf_user = true;
 }
@@ -292,7 +292,7 @@ if ($_conf['expack.user_agent']) {
 // {{{ デザイン設定 読込
 
 $skin_name = $default_skin_name = 'conf_user_style';
-$skin = P2_CONF_DIR . '/conf_user_style.inc.php';
+$skin = P2_CONFIG_DIR . '/conf_user_style.inc.php';
 if (!$_conf['ktai'] && $_conf['expack.skin.enabled']) {
     // 保存されているスキン名
     $saved_skin_name = null;
@@ -347,7 +347,7 @@ if (!$_conf['ktai'] && $_conf['expack.skin.enabled']) {
 
 if (!file_exists($skin)) {
     $skin_name = 'conf_user_style';
-    $skin = P2_CONF_DIR . '/conf_user_style.inc.php';
+    $skin = P2_CONFIG_DIR . '/conf_user_style.inc.php';
 }
 $skin_en = rawurlencode($skin_name) . '&amp;_=' . P2_VERSION_ID;
 if ($_conf['view_forced_by_query']) {
@@ -355,9 +355,9 @@ if ($_conf['view_forced_by_query']) {
 }
 
 // デフォルト設定を読み込んで
-include P2_CONF_DIR . '/conf_user_style.inc.php';
+include P2_CONFIG_DIR . '/conf_user_style.inc.php';
 // スキンで上書き
-if ($skin != P2_CONF_DIR . '/conf_user_style.inc.php') {
+if ($skin != P2_CONFIG_DIR . '/conf_user_style.inc.php') {
     include $skin;
 }
 

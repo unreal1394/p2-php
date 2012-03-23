@@ -5,8 +5,8 @@
 
 // {{{ CONSTANTS
 
-if (!defined('P2_CLI_DIR')) {
-    define('P2_CLI_DIR', realpath(__DIR__ . '/../cli'));
+if (!defined('P2_SCRIPT_DIR')) {
+    define('P2_SCRIPT_DIR', realpath(__DIR__ . '/../script'));
 }
 
 // }}}
@@ -36,7 +36,7 @@ class P2CommandRunner
             $args[] = '-d';
             $args[] = 'extension=' . escapeshellarg('http.' . PHP_SHLIB_SUFFIX);
         }
-        $args[] = escapeshellarg(P2_CLI_DIR . DIRECTORY_SEPARATOR . 'fetch-subject-txt.php');
+        $args[] = escapeshellarg(P2_SCRIPT_DIR . DIRECTORY_SEPARATOR . 'fetch-subject-txt.php');
 
         switch ($mode) {
         case 'fav':

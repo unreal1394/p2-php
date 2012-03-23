@@ -37,7 +37,8 @@ function ic2_loadconfig()
     static $ini = null;
 
     if (is_null($ini)) {
-        include P2_CONF_DIR . '/conf_ic2.inc.php';
+        $_conf = $GLOBALS['_conf'];
+        include P2_CONFIG_DIR . '/conf_ic2.inc.php';
 
         $ini = array();
         $_ic2conf = preg_grep('/^expack\\.ic2\\.\\w+\\.\\w+$/', array_keys($_conf));

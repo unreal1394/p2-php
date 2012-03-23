@@ -71,6 +71,8 @@ class IC2_DatabaseManager
      */
     static public function remove($target, $to_blacklist = false)
     {
+        $ini = ic2_loadconfig();
+
         $removed_files = array();
         if (empty($target)) {
             return $removed_files;
@@ -99,6 +101,8 @@ class IC2_DatabaseManager
         }
 
         // 画像を削除
+        $parent_dir = dirname($ini['General']['cachedir']) . DIRECTORY_SEPARATOR;
+        $pattern = '/^' . preg_quote($parent_dir, '/') . '/';
         foreach ($target as $id) {
             $icdb = new IC2_DataObject_Images();
             $icdb->whereAdd("id = {$id}");
@@ -121,7 +125,7 @@ class IC2_DatabaseManager
                         $path = $t->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
                         if (file_exists($path)) {
                             unlink($path);
-                            $removed_files[] = $path;
+                            $removed_files[] = preg_replace($pattern, '', $path);
                         }
                     }
                 }
@@ -129,7 +133,7 @@ class IC2_DatabaseManager
                 $path = $t->srcPath($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($path)) {
                     unlink($path);
-                    $removed_files[] = $path;
+                    $removed_files[] = preg_replace($pattern, '', $path);
                 }
 
                 // ブラックリスト送りの準備
@@ -137,7 +141,7 @@ class IC2_DatabaseManager
                     $_blacklist = new IC2_DataObject_BlackList();
                     $_blacklist->size = $icdb->size;
                     $_blacklist->md5  = $icdb->md5;
-                    if ($icdb->mime == 'clamscan/infected' || $icdb->rank == -4) {
+                    if ($icdb->mime === 'clamscan/infected' || $icdb->rank == -4) {
                         $_blacklist->type = 2;
                     } elseif ($icdb->rank < 0) {
                         $_blacklist->type = 1;

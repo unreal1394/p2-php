@@ -12,7 +12,7 @@
  */
 function p2_check_environment($check_recommended)
 {
-    include P2_CONF_DIR . '/setup_info.php';
+    include P2_CONFIG_DIR . '/setup_info.php';
 
     $php_version = phpversion();
 
@@ -81,7 +81,7 @@ EOP;
  */
 function p2_check_migration($config_version)
 {
-    include P2_CONF_DIR . '/setup_info.php';
+    include P2_CONFIG_DIR . '/setup_info.php';
 
     $migrators = array();
     $found = false;

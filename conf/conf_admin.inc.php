@@ -11,24 +11,19 @@
 // (それぞれパーミッションは 707 or 777 に。Web公開外ディレクトリに設定するのが望ましいです)
 
 // p2で使用する基本のデータ保存ディレクトリ
-$_conf['data_dir'] = "./data";      // ("./data")
+$_conf['data_dir'] = P2_BASE_DIR . '/data/misc';
 
 // 取得スレッドの dat データ保存ディレクトリ
-$_conf['dat_dir'] = "./data";       // ("./data")
+$_conf['dat_dir'] = P2_BASE_DIR . '/data/dat';
 
 // 取得スレッドの idx データ保存ディレクトリ
-$_conf['idx_dir'] = "./data";       // ("./data")
+$_conf['idx_dir'] = P2_BASE_DIR . '/data/idx';
 
 // 初期設定データ保存ディレクトリ
-$_conf['pref_dir'] = "./data";      // ("./data")
+$_conf['pref_dir'] = P2_BASE_DIR . '/data/pref';
 
 // SQLite3データベース保存ディレクトリ
-$_conf['db_dir'] = "./data/db";     // ("./data/db")
-
-// 将来的には以下のようにしたい予定
-// $_conf['dat_dir']  = $_conf['data_dir'] . '/dat';
-// $_conf['idx_dir']  = $_conf['data_dir'] . '/idx';
-// $_conf['pref_dir'] = $_conf['data_dir'] . '/pref';
+$_conf['db_dir'] = P2_BASE_DIR . '/data/db';
 
 // }}}
 // ----------------------------------------------------------------------
@@ -178,7 +173,7 @@ $_conf['k_accesskey'] = array(
 // ----------------------------------------------------------------------
 // {{{ 拡張パック
 
-include P2_CONF_DIR . '/conf_admin_ex.inc.php';
+include P2_CONFIG_DIR . '/conf_admin_ex.inc.php';
 
 // }}}
 

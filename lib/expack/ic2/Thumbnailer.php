@@ -28,8 +28,11 @@ class IC2_Thumbnailer
     public $ini;           // @var array   ImageCache2の設定
     public $mode;          // @var int     サムネイルの種類
     public $cachedir;      // @var string  ImageCache2のキャッシュ保存ディレクトリ
+    public $cacheuri;      // @var string  ImageCache2のキャッシュ保存ディレクトリのURI
     public $sourcedir;     // @var string  ソース保存ディレクトリ
+    public $sourceuri;     // @var string  ソース保存ディレクトリのURI
     public $thumbdir;      // @var string  サムネイル保存ディレクトリ
+    public $thumburi;      // @var string  サムネイル保存ディレクトリのURI
     public $driver;        // @var string  イメージドライバの種類
     public $epeg;          // @var bool    Epegが利用可能か否か
     public $magick;        // @var string  ImageMagickのパス
@@ -163,10 +166,13 @@ class IC2_Thumbnailer
                 $this->error('無効なイメージドライバです。');
         }
 
-        // ディレクトリ設定
-        $this->cachedir   = $this->ini['General']['cachedir'];
-        $this->sourcedir  = $this->cachedir . '/' . $this->ini['Source']['name'];
-        $this->thumbdir   = $this->cachedir . '/' . $setting['name'];
+        // ディレクトリ/URI設定
+        $this->cachedir  = $this->ini['General']['cachedir'];
+        $this->sourcedir = $this->cachedir . DIRECTORY_SEPARATOR . $this->ini['Source']['name'];
+        $this->thumbdir  = $this->cachedir . DIRECTORY_SEPARATOR . $setting['name'];
+        $this->cacheuri  = $this->ini['General']['cacheuri'];
+        $this->sourceuri = $this->cacheuri . '/' . $this->ini['Source']['name'];
+        $this->thumburi  = $this->cacheuri . '/' . $setting['name'];
 
         // サムネイルの画像形式・幅・高さ・回転角度・品質設定
         $rotate = (int) $options['rotate'];
@@ -244,7 +250,8 @@ class IC2_Thumbnailer
      *          テンポラリ・サムネイルの生成に成功したとき、true
      *          失敗したとき PEAR_Error
      */
-    public function convert($size, $md5, $mime, $width, $height, $force = false, $anigif = false, $gifcaution = false)
+    public function convert($size, $md5, $mime, $width, $height,
+                            $force = false, $anigif = false, $gifcaution = false)
     {
         // 画像
         if (!empty($this->intermd) && file_exists($this->intermd)) {
@@ -255,8 +262,8 @@ class IC2_Thumbnailer
         } else {
             $src = $this->srcPath($size, $md5, $mime, true);
         }
-        $thumbURL = $this->thumbPath($size, $md5, $mime);
-        $thumb = $this->thumbPath($size, $md5, $mime, true);
+        $thumbUrl = $this->thumbUrl($size, $md5, $mime);
+        $thumbPath = $this->thumbPath($size, $md5, $mime);
         if ($src == false) {
             $error = PEAR::raiseError("無効なMIMEタイプ。({$mime})");
             return $error;
@@ -264,39 +271,39 @@ class IC2_Thumbnailer
             $error = PEAR::raiseError("ソース画像がキャッシュされていません。({$src})");
             return $error;
         }
-        if (!$force && !$this->dynamic && file_exists($thumb)) {
-            return $thumbURL;
+        if (!$force && !$this->dynamic && file_exists($thumbPath)) {
+            return $thumbUrl;
         }
-        $thumbdir = dirname($thumb);
-        if (!is_dir($thumbdir) && !@mkdir($thumbdir)) {
-            $error = PEAR::raiseError("ディレクトリを作成できませんでした。({$thumbdir})");
+        $thumbDir = dirname($thumbPath);
+        if (!is_dir($thumbDir) && !@mkdir($thumbDir)) {
+            $error = PEAR::raiseError("ディレクトリを作成できませんでした。({$thumbDir})");
             return $error;
         }
 
         // サイズが既定値以下で回転なし、画像形式が同じならばそのままコピー
         // --- 携帯で表示できないことがあるので封印、ちゃんとサムネイルをつくる
         /*if ($this->resize == false && $this->rotate == 0 && $this->type == $this->mimemap[$mime]) {
-            if (@copy($src, $thumb)) {
-                return $thumbURL;
+            if (@copy($src, $thumbPath)) {
+                return $thumbUrl;
             } else {
-                $error = PEAR::raiseError("画像をコピーできませんでした。({$src} -&gt; {$thumb})");
+                $error = PEAR::raiseError("画像をコピーできませんでした。({$src} -&gt; {$thumbPath})");
                 return $error;
             }
         }*/
 
         // Epegでサムネイルを作成
-        if ($mime == 'image/jpeg' && $this->epeg) {
-            $dst = ($this->dynamic) ? '' : $thumb;
+        if ($mime === 'image/jpeg' && $this->epeg) {
+            $dst = ($this->dynamic) ? '' : $thumbPath;
             list($max_width, $max_height) = $this->getMaxImageSize();
             $result = epeg_thumbnail_create($src, $dst, $max_width, $max_height, $this->quality);
-            if ($result == false) {
+            if ($result === false) {
                 $error = PEAR::raiseError("サムネイルを作成できませんでした。({$src} -&gt; {$dst})");
                 return $error;
             }
             if ($this->dynamic) {
                 $this->buf = $result;
             }
-            return $thumbURL;
+            return $thumbUrl;
         }
 
         // 出力サイズを計算
@@ -328,7 +335,7 @@ class IC2_Thumbnailer
         $convertor->setResampling($this->resize);
         $convertor->setRotation($this->rotate);
         $convertor->setTrimming($this->trim);
-        if ($this->driver == 'imagemagick') {
+        if ($this->driver === 'imagemagick') {
             $convertor->setImageMagickConvertPath($this->magick);
         }
         if ($anigif) {
@@ -346,13 +353,13 @@ class IC2_Thumbnailer
                 $this->buf = $result;
             }
         } else {
-            $result = $convertor->save($src, $thumb, $size);
+            $result = $convertor->save($src, $thumbPath, $size);
         }
 
         if (PEAR::isError($result)) {
             return $result;
         }
-        return $thumbURL;
+        return $thumbUrl;
     }
 
     // }}}
@@ -449,32 +456,56 @@ class IC2_Thumbnailer
     }
 
     // }}}
-    // {{{ srcPath()
+    // {{{ getSource()
 
     /**
-     * ソース画像のパスを取得
+     * ソースパスを取得
      */
-    public function srcPath($size, $md5, $mime, $FSFullPath = false)
+    public function getSource($size, $md5, $mime, $fullPath)
     {
-        $directory = $this->getSubDir($this->sourcedir, $size, $md5, $mime, $FSFullPath);
+        $basedir = $fullPath ? $this->sourcedir : $this->sourceuri;
+        $directory = $this->getSubDir($basedir, $size, $md5, $mime, $fullPath);
         if (!$directory) {
             return false;
         }
 
         $basename = $size . '_' . $md5 . $this->mimemap[$mime];
 
-        return $directory . ($FSFullPath ? DIRECTORY_SEPARATOR : '/') . $basename;
+        return $directory . ($fullPath ? DIRECTORY_SEPARATOR : '/') . $basename;
     }
 
     // }}}
-    // {{{ thumbPath()
+    // {{{ srcPath()
+
+    /**
+     * ソース画像のパスを取得
+     */
+    public function srcPath($size, $md5, $mime)
+    {
+        return $this->getSource($size, $md5, $mime, true);
+    }
+
+    // }}}
+    // {{{ srcUrl()
+
+    /**
+     * ソース画像のUrlを取得
+     */
+    public function srcUrl($size, $md5, $mime)
+    {
+        return $this->getSource($size, $md5, $mime, false);
+    }
+
+    // }}}
+    // {{{ getThumbnail()
 
     /**
      * サムネイルのパスを取得
      */
-    public function thumbPath($size, $md5, $mime, $FSFullPath = false)
+    public function getThumbnail($size, $md5, $mime, $fullPath)
     {
-        $directory = $this->getSubDir($this->thumbdir, $size, $md5, $mime, $FSFullPath);
+        $basedir = $fullPath ? $this->thumbdir : $this->thumburi;
+        $directory = $this->getSubDir($basedir, $size, $md5, $mime, $fullPath);
         if (!$directory) {
             return false;
         }
@@ -496,7 +527,29 @@ class IC2_Thumbnailer
         }
         $basename .= $this->type;
 
-        return $directory . ($FSFullPath ? DIRECTORY_SEPARATOR : '/') . $basename;
+        return $directory . ($fullPath ? DIRECTORY_SEPARATOR : '/') . $basename;
+    }
+
+    // }}}
+    // {{{ thumbPath()
+
+    /**
+     * サムネイルのパスを取得
+     */
+    public function thumbPath($size, $md5, $mime)
+    {
+        return $this->getThumbnail($size, $md5, $mime, true);
+    }
+
+    // }}}
+    // {{{ thumbUrl()
+
+    /**
+     * サムネイルのURLを取得
+     */
+    public function thumbUrl($size, $md5, $mime)
+    {
+        return $this->getThumbnail($size, $md5, $mime, false);
     }
 
     // }}}
@@ -505,21 +558,16 @@ class IC2_Thumbnailer
     /**
      * 画像が保存されるサブディレクトリのパスを取得
      */
-    public function getSubDir($basedir, $size, $md5, $mime, $FSFullPath = false)
+    public function getSubDir($basedir, $size, $md5, $mime, $fullPath = false)
     {
-        if (!is_dir($basedir)) {
-            return false;
-        }
-
         $dirID = $this->dirID($size, $md5, $mime);
-
-        if ($FSFullPath) {
-            $directory = realpath($basedir) . DIRECTORY_SEPARATOR . $dirID;
-        } else {
-            $directory = $basedir . '/' . $dirID;
+        if ($fullPath) {
+            if (!is_dir($basedir)) {
+                return false;
+            }
+            return realpath($basedir) . DIRECTORY_SEPARATOR . $dirID;
         }
-
-        return $directory;
+        return $basedir . '/' . $dirID;
     }
 
     // }}}

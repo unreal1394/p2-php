@@ -1055,13 +1055,13 @@ EOP;
                 }
 
                 // オリジナルの有無を確認
-                $_src_url = $this->thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime);
+                $_src_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($_src_url)) {
                     $src_exists = true;
                     $img_url = $img_url2 . $icdb->id;
                     $src_url = $_src_url;
                 } else {
-                    $img_url = $this->thumbnailer->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+                    $img_url = $this->thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
                     $src_url = $src_url2 . $icdb->id;
                 }
 
@@ -1072,7 +1072,7 @@ EOP;
                     if (!isset($this->inline_prvw) || !is_object($this->inline_prvw)) {
                         $this->inline_prvw = $this->thumbnailer;
                     }
-                    $prv_url = $this->inline_prvw->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+                    $prv_url = $this->inline_prvw->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
 
                     // サムネイル表示制限数以内のとき
                     if ($inline_preview_flag) {
@@ -1250,13 +1250,13 @@ EOP;
                 }
 
                 // オリジナルの有無を確認
-                $_src_url = $this->thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime);
+                $_src_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($_src_url)) {
                     $src_exists = true;
                     $img_url = $img_url2 . $icdb->id;
                     $src_url = $_src_url;
                 } else {
-                    $img_url = $this->thumbnailer->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+                    $img_url = $this->thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
                     $src_url = $src_url2 . $icdb->id;
                 }
 
@@ -1267,7 +1267,7 @@ EOP;
                     if (!isset($this->inline_prvw) || !is_object($this->inline_prvw)) {
                         $this->inline_prvw = $this->thumbnailer;
                     }
-                    $prv_url = $this->inline_prvw->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+                    $prv_url = $this->inline_prvw->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
 
                     // サムネイル表示制限数以内のとき
                     if ($inline_preview_flag) {

@@ -1546,7 +1546,7 @@ EOP;
                 }
 
                 // オリジナルがキャッシュされているときは画像を直接読み込む
-                $_img_url = $this->thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime);
+                $_img_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($_img_url)) {
                     $img_url = $_img_url;
                     $cached = true;
@@ -1555,7 +1555,7 @@ EOP;
                 }
 
                 // サムネイルが作成されていているときは画像を直接読み込む
-                $_thumb_url = $this->thumbnailer->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+                $_thumb_url = $this->thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($_thumb_url)) {
                     $thumb_url = $_thumb_url;
                     // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新
@@ -1719,7 +1719,7 @@ EOP;
                 }
 
                 // オリジナルがキャッシュされているときは画像を直接読み込む
-                $_img_url = $this->thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime);
+                $_img_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($_img_url)) {
                     $img_url = $_img_url;
                     $cached = true;
@@ -1728,7 +1728,7 @@ EOP;
                 }
 
                 // サムネイルが作成されていているときは画像を直接読み込む
-                $_thumb_url = $this->thumbnailer->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+                $_thumb_url = $this->thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($_thumb_url)) {
                     $thumb_url = $_thumb_url;
                     // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新

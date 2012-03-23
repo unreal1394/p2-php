@@ -88,17 +88,17 @@ function rss_get_image_ic2($src_url, $memo='')
         }
 
         // オリジナルがキャッシュされているときは画像を直接読み込む
-        $_img_url = $thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime);
-        if (file_exists($_img_url)) {
-            $img_url = $_img_url;
+        $_img_path = $thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime);
+        if (file_exists($_img_path)) {
+            $img_url = $thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
             $img_size = "width=\"{$icdb->width}\" height=\"{$icdb->height}\"";
             $src_exists = true;
         }
 
         // サムネイルが作成されていているときは画像を直接読み込む
-        $_thumb_url = $thumbnailer->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
-        if (file_exists($_thumb_url)) {
-            $thumb_url = $_thumb_url;
+        $_thumb_path = $thumbnailer->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+        if (file_exists($_thumb_path)) {
+            $thumb_url = $thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
             // 自動タイトルメモ機能がONでタイトルが記録されていないときはDBを更新
             if (!is_null($img_memo) && strpos($icdb->memo, $img_memo) === false){
                 $update = new IC2_DataObject_Images();
@@ -115,9 +115,9 @@ function rss_get_image_ic2($src_url, $memo='')
         }
 
         // 携帯用サムネイルが作成されていているときは画像を直接読み込む
-        $_thumb_k_url = $thumbnailer_k->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
-        if (file_exists($_thumb_k_url)) {
-            $thumb_k_url = $_thumb_k_url;
+        $_thumb_k_path = $thumbnailer_k->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+        if (file_exists($_thumb_k_path)) {
+            $thumb_k_url = $thumbnailer_k->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
         } elseif ($src_exists) {
             $thumb_k_url = $thumb_k_url2 . $icdb->id;
         }

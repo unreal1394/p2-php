@@ -22,7 +22,7 @@ class IC2_ImageInfo
             $add['uri_w'] = $img['uri'];
         }
 
-        if ($img['mime'] == 'clamscan/infected') {
+        if ($img['mime'] === 'clamscan/infected') {
 
             // ウィルスに感染していたファイルのとき
             $add['src'] = './img/x04.png';
@@ -32,9 +32,9 @@ class IC2_ImageInfo
 
         } else {
 
-            // ソースとサムネイルのパスを取得
-            $add['src'] = $thumb->srcPath($icdb->size, $icdb->md5, $icdb->mime);
-            $add['thumb'] = $thumb->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
+            // ソースとサムネイルのURLを取得
+            $add['src'] = $thumb->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
+            $add['thumb'] = $thumb->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
 
             // サムネイルの縦横の大きさを計算
             $m = explode('x', $thumb->calc($icdb->width, $icdb->height));

@@ -153,9 +153,15 @@ function p2_init()
     // }}}
     // {{{ ライブラリ類のパス設定
 
-    define('P2_CONF_DIR', __DIR__);
+    define('P2_CONFIG_DIR', __DIR__);
 
-    define('P2_BASE_DIR', dirname(P2_CONF_DIR));
+    define('P2_BASE_DIR', dirname(P2_CONFIG_DIR));
+
+    // ドキュメントルート
+    define('P2_WWW_DIR', P2_BASE_DIR . '/rep2');
+
+    // コマンドラインスクリプト
+    define('P2_SCRIPT_DIR', P2_BASE_DIR . '/scripts');
 
     // 基本的な機能を提供するするライブラリ
     define('P2_LIB_DIR', P2_BASE_DIR . '/lib');
@@ -172,17 +178,6 @@ function p2_init()
     // スキン
     define('P2_SKIN_DIR', P2_BASE_DIR . '/skin');
     define('P2_USER_SKIN_DIR', P2_BASE_DIR . '/user_skin');
-
-    // PEARインストールディレクトリ、検索パスに追加される
-    define('P2_PEAR_DIR', P2_BASE_DIR . '/includes');
-
-    // コマンドラインツール
-    define('P2_CLI_DIR', P2_BASE_DIR . '/cli');
-
-    // 検索パスをセット
-    if (is_dir(P2_PEAR_DIR)) {
-        set_include_path(P2_PEAR_DIR . PATH_SEPARATOR . get_include_path());
-    }
 
     // }}}
     // {{{ 環境チェックとデバッグ
@@ -226,7 +221,7 @@ function p2_init()
     // {{{ 管理者用設定etc.
 
     // 管理者用設定を読み込み
-    include P2_CONF_DIR . '/conf_admin.inc.php';
+    include P2_CONFIG_DIR . '/conf_admin.inc.php';
 
     // ディレクトリの絶対パス化
     $_conf['data_dir'] = p2_realpath($_conf['data_dir']);
@@ -306,7 +301,7 @@ function p2_init()
 
     // }}}
 
-    include P2_CONF_DIR . '/empty_style.php';
+    include P2_CONFIG_DIR . '/empty_style.php';
     include P2_LIB_DIR . '/bootstrap.php';
 }
 
