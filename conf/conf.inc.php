@@ -71,13 +71,6 @@ function p2_init()
     global $skin, $skin_en, $skin_name, $skin_uniq;
     global $_conf, $_login, $_p2session;
 
-    // エラー出力設定
-    if (defined('E_DEPRECATED')) {
-        error_reporting(E_ALL & ~(E_NOTICE | E_STRICT | E_DEPRECATED));
-    } else {
-        error_reporting(E_ALL & ~(E_NOTICE | E_STRICT));
-    }
-
     // {{{ 基本変数
 
     $_conf['p2web_url']             = 'http://akid.s17.xrea.com/';
