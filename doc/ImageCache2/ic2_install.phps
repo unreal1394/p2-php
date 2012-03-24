@@ -297,37 +297,6 @@ foreach ($dirs as $dir) {
 
 <hr>
 
-<h2>.htaccessを作成</h2>
-
-<?php
-$htaccess_path = $ini['General']['cachedir'] . '/.htaccess';
-$htaccess_cont = <<<EOS
-Order allow,deny
-Deny from all
-<FilesMatch "\\.(gif|jpg|png)\$">
-    Allow from all
-</FilesMatch>\n
-EOS;
-$cachedir_path_ht = p2h(realpath($ini['General']['cachedir']));
-$htaccess_path_ht = p2h($htaccess_path);
-$htaccess_cont_ht = p2h($htaccess_cont);
-
-if (FileCtl::file_write_contents($htaccess_path, $htaccess_cont) !== false) {
-    echo <<<EOS
-<p>ファイル <em>{$htaccess_path_ht}</em> を作成</p>
-<div>Apacheの場合、パフォーマンスのため、また、.htaccess自体が無効かもしれないので、上記.htaccesを削除してhttpd.confに以下のような記述をすることをおすすめします。</div>
-<pre>&lt;Directory &quot;{$cachedir_path_ht}&quot;&gt;
-{$htaccess_cont_ht}&lt;/Directory&gt;</pre>
-EOS;
-} else {
-    echo "<p>ファイル <em>{$htaccess_path_ht}</em> の<strong>作成失敗</strong></p>\n";
-    $ok = false;
-}
-
-?>
-
-<hr>
-
 <h2><?php echo ($ok ? "準備OK" : "だめぽ"); ?></h2>
 
 <?php if (!$ok) echo '<!-- '; ?>

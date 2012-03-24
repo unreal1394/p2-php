@@ -14,28 +14,6 @@ require_once __DIR__ . '/../init.php';
 
 $_login->authorize(); //ユーザ認証
 
-//=============================================================
-// 前処理
-//=============================================================
-// アクセス拒否用の.htaccessをデータディレクトリに作成する
-$secret_dirs = array_unique(array(
-    $_conf['pref_dir'],
-    $_conf['dat_dir'],
-    $_conf['idx_dir'],
-    $_conf['db_dir'],
-    $_conf['admin_dir'],
-    $_conf['cache_dir'],
-    $_conf['cookie_dir'],
-    $_conf['compile_dir'],
-    $_conf['session_dir'],
-    $_conf['tmp_dir'],
-));
-foreach ($secret_dirs as $dir) {
-    makeDenyHtaccess($dir);
-}
-
-//=============================================================
-
 $me_url = P2Util::getMyUrl();
 $me_dir_url = dirname($me_url);
 $me_url_b = p2h(rtrim($me_dir_url, '/') . '/?b=');
@@ -148,25 +126,6 @@ EONOFRAMES;
 
     echo '</html>';
 }
-
-// {{{ makeDenyHtaccess()
-
-/**
- * ディレクトリに（アクセス拒否のための） .htaccess がなければ、自動で生成する
- */
-function makeDenyHtaccess($dir)
-{
-    $hta = $dir . '/.htaccess';
-    if (!file_exists($hta)) {
-        if (!is_dir($dir)) {
-            FileCtl::mkdirFor($hta);
-        }
-        $data = 'Order allow,deny'."\n".'Deny from all'."\n";
-        FileCtl::file_write_contents($hta, $data);
-    }
-}
-
-// }}}
 
 /*
  * Local Variables:
