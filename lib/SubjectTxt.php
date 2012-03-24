@@ -1,12 +1,4 @@
 <?php
-/*
-define(P2_SUBJECT_TXT_STORAGE, 'eashm');    // 要eAccelerator
-
-[仕様] shmだと長期キャッシュしない
-[仕様] shmだとmodifiedをつけない
-
-shmにしてもパフォーマンスはほとんど変わらない（ようだ）
-*/
 
 // {{{ SubjectTxt
 
@@ -22,7 +14,7 @@ class SubjectTxt
     public $subject_url;
     public $subject_file;
     public $subject_lines;
-    public $storage; // file, eashm(eAccelerator shm) // 2006/02/27 aki eashm は非推奨
+    public $storage;
 
     // }}}
     // {{{ constructor
@@ -34,11 +26,7 @@ class SubjectTxt
     {
         $this->host = $host;
         $this->bbs =  $bbs;
-        //if (defined('P2_SUBJECT_TXT_STORAGE') && P2_SUBJECT_TXT_STORAGE == 'eashm') {
-        //    $this->storage = P2_SUBJECT_TXT_STORAGE;
-        //} else {
-            $this->storage = 'file';
-        //}
+        $this->storage = 'file';
 
         $this->subject_file = P2Util::datDirOfHostBbs($host, $bbs) . 'subject.txt';
         $this->subject_url = 'http://' . $host . '/' . $bbs . '/subject.txt';
@@ -60,16 +48,7 @@ class SubjectTxt
      */
     public function dlAndSetSubject()
     {
-        /*
-        if ($this->storage == 'eashm') {
-            $cont = eaccelerator_get("{$this->host}/{$this->bbs}");
-        } else {
-            $cont = '';
-        }
-        */
-        //if (!$cont || !empty($_POST['newthread'])) {*/
-            $cont = $this->downloadSubject();
-        //}
+        $cont = $this->downloadSubject();
         if ($this->setSubjectLines($cont)) {
             return true;
         } else {
@@ -89,9 +68,7 @@ class SubjectTxt
     {
         global $_conf;
 
-        $perm = (isset($_conf['dl_perm'])) ? $_conf['dl_perm'] : 0606;
-
-        if ($this->storage == 'file') {
+        if ($this->storage === 'file') {
             FileCtl::mkdirFor($this->subject_file); // 板ディレクトリが無ければ作る
 
             if (file_exists($this->subject_file)) {
@@ -163,26 +140,13 @@ class SubjectTxt
                 $body = mb_convert_encoding($body, 'CP932', 'CP51932');
             }
 
-            // eashmに保存する場合
-            /*
-            if ($this->storage == 'eashm') {
-                $eacc_key = "{$this->host}/{$this->bbs}";
-                eaccelerator_lock($eacc_key);
-                //echo $body;
-                eaccelerator_put($eacc_key, $body, $_conf['sb_dl_interval']);
-                eaccelerator_unlock($eacc_key);
-            */
-            // ファイルに保存する場合
-            //} else {
-                if (FileCtl::file_write_contents($this->subject_file, $body) === false) {
-                    p2die('cannot write file');
-                }
-                chmod($this->subject_file, $perm);
-            //}
+            if (FileCtl::file_write_contents($this->subject_file, $body) === false) {
+                p2die('cannot write file');
+            }
         } else {
             // touchすることで更新インターバルが効くので、しばらく再チェックされなくなる
             // （変更がないのに修正時間を更新するのは、少し気が進まないが、ここでは特に問題ないだろう）
-            if ($this->storage == 'file') {
+            if ($this->storage === 'file') {
                 touch($this->subject_file);
             }
         }
@@ -227,24 +191,7 @@ class SubjectTxt
      */
     public function setSubjectLines($cont = '')
     {
-        /*
-        if ($this->storage == 'eashm') {
-            if (!$cont) {
-                $cont = eaccelerator_get("{$this->host}/{$this->bbs}");
-            }
-            $this->subject_lines = explode("\n", $cont);
-        */
-        /*
-        } elseif ($this->storage == 'file') {
-            if (extension_loaded('zlib') && strpos($this->host, '.2ch.net') !== false) {
-                $this->subject_lines = FileCtl::gzfile_read_lines($this->subject_file); // これはそのうち外す 2005/6/5
-            } else {
-                */
-                $this->subject_lines = FileCtl::file_read_lines($this->subject_file);
-                /*
-            }
-        }
-        */
+        $this->subject_lines = FileCtl::file_read_lines($this->subject_file);
 
         // JBBS@したらばなら重複スレタイを削除する
         if (P2Util::isHostJbbsShitaraba($this->host)) {

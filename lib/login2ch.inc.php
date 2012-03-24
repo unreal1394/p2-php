@@ -116,7 +116,6 @@ function login2ch()
 
     // SIDの記録保持
     $cont = sprintf('<?php $uaMona = %s; $SID2ch = %s;', var_export($uaMona, true), var_export($SID2ch, true));
-    FileCtl::make_datafile($_conf['sid2ch_php'], $_conf['pass_perm']);
     if (false === file_put_contents($_conf['sid2ch_php'], $cont, LOCK_EX)) {
         P2Util::pushInfoHtml("<p>p2 Error: {$_conf['sid2ch_php']} を保存できませんでした。ログイン登録失敗。</p>");
         return false;

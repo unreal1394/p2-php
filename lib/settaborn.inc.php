@@ -37,7 +37,7 @@ function settaborn($host, $bbs, $key, $set)
     $taborn_idx = $idx_host_bbs_dir_s . 'p2_threads_aborn.idx';
 
     // p2_threads_aborn.idx Ç™Ç»ÇØÇÍÇŒê∂ê¨
-    FileCtl::make_datafile($taborn_idx, $_conf['p2_perm']);
+    FileCtl::make_datafile($taborn_idx);
 
     // p2_threads_aborn.idx ì«Ç›çûÇ›;
     $taborn_lines= FileCtl::file_read_lines($taborn_idx, FILE_IGNORE_NEW_LINES);

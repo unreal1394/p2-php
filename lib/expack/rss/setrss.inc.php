@@ -10,8 +10,6 @@ require_once P2EX_LIB_DIR . '/rss/parser.inc.php';
 // リクエスト読み込み
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($_POST['submit_setrss'])) {
-        FileCtl::make_datafile($_conf['expack.rss.setting_path'], $_conf['expack.rss.setting_perm']);
-
         $fp = fopen($_conf['expack.rss.setting_path'], 'wb');
         if (!$fp) {
             p2die("{$_conf['expack.rss.setting_path']} を更新できませんでした");
@@ -100,7 +98,7 @@ $site = p2h($site);
 // {{{ 読み込み
 
 // rss_pathファイルがなければ生成
-FileCtl::make_datafile($_conf['expack.rss.setting_path'], $_conf['expack.rss.setting_perm']);
+FileCtl::make_datafile($_conf['expack.rss.setting_path']);
 
 // rss_path読み込み;
 $lines = FileCtl::file_read_lines($_conf['expack.rss.setting_path'], FILE_IGNORE_NEW_LINES);

@@ -59,7 +59,7 @@ if (!empty($_POST['submit_save'])) {
     }
 
     // シリアライズして保存
-    FileCtl::make_datafile($_conf['conf_user_file'], $_conf['conf_user_perm']);
+    FileCtl::make_datafile($_conf['conf_user_file']);
     if (FileCtl::file_write_contents($_conf['conf_user_file'], serialize($conf_save)) === false) {
         P2Util::pushInfoHtml('<p>×設定を更新保存できませんでした</p>');
     } else {

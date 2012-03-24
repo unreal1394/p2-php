@@ -71,7 +71,7 @@ class IC2_Switch
 
         $switch_file = $_conf['expack.ic2.switch_path'];
         if (!file_exists($switch_file)) {
-            FileCtl::make_datafile($switch_file, $_conf['p2_perm']);
+            FileCtl::make_datafile($switch_file);
             $flags = self::ENABLED_ALL;
         } else {
             $flags = self::ENABLED_ALL & filesize($switch_file);

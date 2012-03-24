@@ -79,7 +79,7 @@ function setFav($host, $bbs, $key, $setfav, $ttitle = null, $setnum = null)
     }
 
     // favlistƒtƒ@ƒCƒ‹‚ª‚È‚¯‚ê‚Î¶¬
-    FileCtl::make_datafile($favlist_idx, $_conf['favlist_perm']);
+    FileCtl::make_datafile($favlist_idx);
 
     // favlist“Ç‚İ‚İ
     $favlines = FileCtl::file_read_lines($favlist_idx, FILE_IGNORE_NEW_LINES);

@@ -95,7 +95,6 @@ class P2HttpCallback_SaveEucjpAsSjis extends P2HttpCallback
                           mb_convert_encoding($req->getResponseBody(), 'CP932', 'CP51932'),
                           LOCK_EX
                           );
-        chmod($destination, $req->getFilePermission());
     }
 
     // }}}
@@ -124,7 +123,6 @@ class P2HttpCallback_SaveUtf8AsSjis extends P2HttpCallback
                           mb_convert_encoding($req->getResponseBody(), 'CP932', 'UTF-8'),
                           LOCK_EX
                           );
-        chmod($destination, $req->getFilePermission());
     }
 
     // }}}
@@ -174,13 +172,6 @@ class P2HttpGet extends HttpRequest
      * @var string
      */
     private $_destination;
-
-    /**
-     * ダウンロードしたデータを保存する際のパーミッション
-     *
-     * @var int
-     */
-    private $_permission;
 
     /**
      * エラーコード
@@ -306,7 +297,6 @@ class P2HttpGet extends HttpRequest
         }
 
         $this->_destination = $destination;
-        $this->_permission = !empty($_conf['dl_perm']) ? $_conf['dl_perm'] : 0666;
         $this->_errorCode = self::E_NONE;
         $this->_errorInfo = '';
         $this->_onSuccess = $onSuccess;
@@ -375,7 +365,6 @@ class P2HttpGet extends HttpRequest
                     $this->_onSuccess->invoke($this);
                 } else {
                     file_put_contents($this->_destination, $this->getResponseBody(), LOCK_EX);
-                    chmod($this->_destination, $this->_permission);
                 }
             } else {
                 if ($this->_onFailure) {
@@ -414,19 +403,6 @@ class P2HttpGet extends HttpRequest
     }
 
     // }}}
-    // {{{ getFilePermission()
-
-    /**
-     * ダウンロードしたデータを保存する際のパーミッションを取得する
-     *
-     * @return int
-     */
-    public function getFilePermission()
-    {
-        return $this->_permission;
-    }
-
-    // }}}
     // {{{ setFileDestination()
 
     /**
@@ -438,20 +414,6 @@ class P2HttpGet extends HttpRequest
     public function setFileDestination($destination)
     {
         $this->_destination = $destination;
-    }
-
-    // }}}
-    // {{{ setFilePermission()
-
-    /**
-     * ダウンロードしたデータを保存する際のパーミッションを設定する
-     *
-     * @param int $permission
-     * @return void
-     */
-    public function setFilePermission($permission)
-    {
-        $this->_permission = $permission;
     }
 
     // }}}

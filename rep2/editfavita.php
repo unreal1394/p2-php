@@ -106,7 +106,7 @@ P2Util::printInfoHtml();
 //================================================================
 
 // favitaƒtƒ@ƒCƒ‹‚ª‚È‚¯‚ê‚Î¶¬
-FileCtl::make_datafile($_conf['favita_brd'], $_conf['favita_perm']);
+FileCtl::make_datafile($_conf['favita_brd']);
 // favita“Ç‚İ‚İ
 $lines = FileCtl::file_read_lines($_conf['favita_brd'], FILE_IGNORE_NEW_LINES);
 $okini_itas = array();

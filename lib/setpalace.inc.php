@@ -38,7 +38,7 @@ function setPal($host, $bbs, $key, $setpal, $ttitle = null)
     $lock = new P2Lock($_conf['palace_idx'], false);
 
     // palace_idx ÉtÉ@ÉCÉãÇ™Ç»ÇØÇÍÇŒê∂ê¨
-    FileCtl::make_datafile($_conf['palace_idx'], $_conf['palace_perm']);
+    FileCtl::make_datafile($_conf['palace_idx']);
 
     // palace_idx ì«Ç›çûÇ›
     $pallines = FileCtl::file_read_lines($_conf['palace_idx'], FILE_IGNORE_NEW_LINES);

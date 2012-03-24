@@ -131,7 +131,7 @@ if ($query) {
     } else {
         // ŒŸõ—š—ð‚ðXV
         if ($_conf['expack.tgrep.recent_num'] > 0) {
-            FileCtl::make_datafile($_conf['expack.tgrep.recent_file'], $_conf['expack.tgrep.file_perm']);
+            FileCtl::make_datafile($_conf['expack.tgrep.recent_file']);
             $tgrep_recent_list = FileCtl::file_read_lines($_conf['expack.tgrep.recent_file'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             if (!is_array($tgrep_recent_list)) {
                 $tgrep_recent_list = array();
@@ -145,7 +145,6 @@ if ($query) {
             if (FileCtl::file_write_contents($_conf['expack.tgrep.recent_file'], $tgrep_recent_data) === false) {
                 p2die('cannot write file.');
             }
-            chmod($_conf['expack.tgrep.recent_file'], $_conf['p2_perm']);
         }
     }
 } else {

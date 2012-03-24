@@ -265,7 +265,6 @@ class ResFilter
         global $_conf;
 
         $cachefile = $_conf['pref_dir'] . '/p2_res_filter.txt';
-        FileCtl::make_datafile($cachefile, $_conf['p2_perm']);
         $res_filter_cont = serialize(array(
             'field'   => $this->field,
             'method'  => $this->method,

@@ -55,9 +55,6 @@ function p2GetRSS($remotefile, $atom = 0)
         filemtime($localpath) < (time() - $_conf['expack.rss.check_interval'] * 60)
     ) {
         $dl = P2Util::fileDownload($remotefile, $localpath, true, 301);
-        if ($dl->isSuccess()) {
-            chmod($localpath, $_conf['expack.rss.setting_perm']);
-        }
     }
 
     // キャッシュが更新されなかったか、ダウンロード成功ならRSSをパース
@@ -184,7 +181,6 @@ function atom_to_rss($input, $stylesheet, $output)
         }
         return false;
     }
-    chmod($output, $_conf['expack.rss.setting_perm']);
 
     // FreeBSD 5.3 Ports の textproc/php4-xslt ではバグのせいか変換の際に名前空間が失われるので補正する
     // (php4-xslt-4.3.10_2, expat-1.95.8, libiconv-1.9.2_1, Sablot-1.0.1)

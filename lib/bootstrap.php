@@ -75,7 +75,6 @@ if ($save_conf_user) {
     }
 
     $cont = serialize($conf_save);
-    FileCtl::make_datafile($_conf['conf_user_file'], $_conf['conf_user_perm']);
     if (FileCtl::file_write_contents($_conf['conf_user_file'], $cont) === false) {
         $dispname = '$_conf[\'pref_dir\']/' . basename($_conf['conf_user_file']);
         p2die("ユーザー設定ファイル {$dispname} に書き込めませんでした。");
@@ -302,7 +301,7 @@ if (!$_conf['ktai'] && $_conf['expack.skin.enabled']) {
             $saved_skin_name = null;
         }
     } else {
-        FileCtl::make_datafile($_conf['expack.skin.setting_path'], $_conf['expack.skin.setting_perm']);
+        FileCtl::make_datafile($_conf['expack.skin.setting_path']);
     }
 
     // リクエストで指定されたスキン名

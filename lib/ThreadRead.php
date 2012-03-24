@@ -240,7 +240,6 @@ class ThreadRead extends Thread
                         }
                         $body = substr($body, 1);
                     }
-                    FileCtl::make_datafile($this->keydat, $_conf['dat_perm']);
 
                     $file_append = ($zero_read) ? 0 : FILE_APPEND;
 
@@ -472,7 +471,6 @@ class ThreadRead extends Thread
                         }
                     }
 
-                    FileCtl::make_datafile($this->keydat, $_conf['dat_perm']);
                     if (FileCtl::file_write_contents($this->keydat, $body) === false) {
                         p2die('cannot write file. downloadDat2chMaru()');
                     }
@@ -493,7 +491,6 @@ class ThreadRead extends Thread
                                 $cont .= $aline;
                             }
                         }
-                        FileCtl::make_datafile($this->keydat, $_conf['dat_perm']);
                         if (FileCtl::file_write_contents($this->keydat, $cont) === false) {
                             p2die('cannot write file. downloadDat2chMaru()');
                         }
@@ -656,7 +653,6 @@ class ThreadRead extends Thread
                         }
                     }
 
-                    FileCtl::make_datafile($this->keydat, $_conf['dat_perm']);
                     if (FileCtl::file_write_contents($this->keydat, $body) === false) {
                         p2die('cannot write file. downloadDat2chKako()');
                     }
@@ -1463,7 +1459,6 @@ EOP;
         }
 
         // ƒ[ƒJƒ‹dat‚É‘‚«ž‚Ý
-        FileCtl::make_datafile($this->keydat, $_conf['dat_perm']);
         if (FileCtl::file_write_contents($this->keydat, $body) === false) {
             p2die('cannot write file. downloadDat2chMoritapo()');
         }

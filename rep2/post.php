@@ -270,7 +270,7 @@ if ($host && $bbs && $key) {
 
     $lock = new P2Lock($_conf['res_hist_idx'], false);
 
-    FileCtl::make_datafile($_conf['res_hist_idx'], $_conf['res_write_perm']); // Ç»ÇØÇÍÇŒê∂ê¨
+    FileCtl::make_datafile($_conf['res_hist_idx']); // Ç»ÇØÇÍÇŒê∂ê¨
 
     $lines = FileCtl::file_read_lines($_conf['res_hist_idx'], FILE_IGNORE_NEW_LINES);
 
@@ -328,7 +328,7 @@ if ($_conf['res_write_rec']) {
     $message = htmlspecialchars($MESSAGE, ENT_NOQUOTES, 'Shift_JIS');
     $message = preg_replace('/\\r\\n|\\r|\\n/', '<br>', $message);
 
-    FileCtl::make_datafile($_conf['res_hist_dat'], $_conf['res_write_perm']); // Ç»ÇØÇÍÇŒê∂ê¨
+    FileCtl::make_datafile($_conf['res_hist_dat']); // Ç»ÇØÇÍÇŒê∂ê¨
 
     $resnum = '';
     if (!empty($_POST['newthread'])) {

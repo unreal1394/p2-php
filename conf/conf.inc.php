@@ -105,9 +105,11 @@ function p2_init()
     // タイムゾーンをセット
     date_default_timezone_set('Asia/Tokyo');
 
-    // スクリプト実行制限時間 (秒)
-    if (!defined('P2_CLI_RUN')) {
+    if (!(defined('P2_CLI_RUN') && P2_CLI_RUN)) {
+        // スクリプト実行制限時間 (秒)
         set_time_limit(60); // (60)
+        // umask
+        umask(0);
     }
 
     // 自動フラッシュをオフにする
@@ -122,13 +124,8 @@ function p2_init()
 
     // Windows なら
     if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
-        // Windows
-        defined('PATH_SEPARATOR') or define('PATH_SEPARATOR', ';');
-        defined('DIRECTORY_SEPARATOR') or define('DIRECTORY_SEPARATOR', '\\');
         define('P2_OS_WINDOWS', 1);
     } else {
-        defined('PATH_SEPARATOR') or define('PATH_SEPARATOR', ':');
-        defined('DIRECTORY_SEPARATOR') or define('DIRECTORY_SEPARATOR', '/');
         define('P2_OS_WINDOWS', 0);
     }
 

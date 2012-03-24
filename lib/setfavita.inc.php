@@ -238,7 +238,7 @@ function setFavItaGetBrdPath($setnum = null)
     }
 
     // p2_favita.brd ƒtƒ@ƒCƒ‹‚ª‚È‚¯‚ê‚Î¶¬
-    FileCtl::make_datafile($favita_brd, $_conf['favita_perm']);
+    FileCtl::make_datafile($favita_brd);
 
     return $favita_brd;
 }

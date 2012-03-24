@@ -472,7 +472,7 @@ function recRecent($data)
     $lock = new P2Lock($_conf['recent_idx'], false);
 
     // $_conf['recent_idx'] ƒtƒ@ƒCƒ‹‚ª‚È‚¯‚ê‚Î¶¬
-    FileCtl::make_datafile($_conf['recent_idx'], $_conf['rct_perm']);
+    FileCtl::make_datafile($_conf['recent_idx']);
 
     $lines = FileCtl::file_read_lines($_conf['recent_idx'], FILE_IGNORE_NEW_LINES);
     $neolines = array();

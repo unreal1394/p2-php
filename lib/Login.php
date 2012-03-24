@@ -397,10 +397,8 @@ class Login
 
         $cont = <<<EOP
 <?php
-\${$key}='{$sub_id}';
-?>
+\${$key}='{$sub_id}';\n
 EOP;
-        FileCtl::make_datafile($auth_file, $_conf['pass_perm']);
         $fp = fopen($auth_file, 'wb');
         if (!$fp) {
             P2Util::pushInfoHtml('<p>Error: データを保存できませんでした。認証登録失敗。</p>');
@@ -436,14 +434,15 @@ EOP;
     {
         global $_conf;
 
-        $crypted_login_pass = sha1($pass);
+        $login_user = strval($user_u);
+        $hashed_login_pass = sha1($pass);
+        $login_user_repr = var_export($login_user, true);
+        $login_pass_repr = var_export($hashed_login_pass, true);
         $auth_user_cont = <<<EOP
 <?php
-\$rec_login_user_u = '{$user_u}';
-\$rec_login_pass_x = '{$crypted_login_pass}';
-?>
+\$rec_login_user_u = {$login_user_repr};
+\$rec_login_pass_x = {$login_pass_repr};\n
 EOP;
-        FileCtl::make_datafile($_conf['auth_user_file'], $_conf['pass_perm']); // ファイルがなければ生成
         if (FileCtl::file_write_contents($_conf['auth_user_file'], $auth_user_cont) === false) {
             p2die("{$_conf['auth_user_file']} を保存できませんでした。認証{$p_str['user']}登録失敗。");
         }

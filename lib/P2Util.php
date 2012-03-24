@@ -245,8 +245,6 @@ class P2Util
     {
         global $_conf;
 
-        $perm = (isset($_conf['dl_perm'])) ? $_conf['dl_perm'] : 0606;
-
         if (file_exists($localfile)) {
             $modified = http_date(filemtime($localfile));
         } else {
@@ -292,7 +290,6 @@ class P2Util
             if (FileCtl::file_write_contents($localfile, $wap_res->content) === false) {
                 p2die('cannot write file.');
             }
-            chmod($localfile, $perm);
         }
 
         return $wap_res;
@@ -319,9 +316,8 @@ class P2Util
             */
             if (is_dir(dirname(realpath($aDir))) && is_writable(dirname(realpath($aDir)))) {
                 //$info_msg_ht .= "ディレクトリの自動作成を試みます...<br>";
-                if (mkdir($aDir, $_conf['data_dir_perm'])) {
+                if (mkdir($aDir)) {
                     //$info_msg_ht .= "ディレクトリの自動作成が成功しました。";
-                    chmod($aDir, $_conf['data_dir_perm']);
                 } else {
                     //$info_msg_ht .= "ディレクトリを自動作成できませんでした。<br>手動でディレクトリを作成し、パーミッションを設定して下さい。";
                 }
@@ -399,7 +395,6 @@ class P2Util
             if ($itaj != $bbs) {
                 self::$_itaNames[$id] = $p2_setting['itaj'] = $itaj;
 
-                FileCtl::make_datafile($p2_setting_txt, $_conf['p2_perm']);
                 $p2_setting_cont = serialize($p2_setting);
                 if (FileCtl::file_write_contents($p2_setting_txt, $p2_setting_cont) === false) {
                     p2die("{$p2_setting_txt} を更新できませんでした");
@@ -755,7 +750,6 @@ class P2Util
 
         $cont = $cont . "\n";
 
-        FileCtl::make_datafile($keyidx, $_conf['key_perm']);
         if (FileCtl::file_write_contents($keyidx, $cont) === false) {
             p2die('cannot write file.');
         }
@@ -1030,7 +1024,6 @@ class P2Util
                 }
 
                 // 保存
-                FileCtl::make_datafile($_conf['res_hist_dat'], $_conf['res_write_perm']);
                 FileCtl::file_write_contents($_conf['res_hist_dat'], $cont);
 
                 // p2_res_hist.dat.php を名前を変えてバックアップ。（もう要らない）
@@ -1070,7 +1063,7 @@ class P2Util
                 $cont = str_replace("<>", "\t", $cont);
 
                 // データPHP形式で保存
-                DataPhp::writeDataPhp($_conf['res_hist_dat_php'], $cont, $_conf['res_write_perm']);
+                DataPhp::writeDataPhp($_conf['res_hist_dat_php'], $cont);
             }
         }
         return true;
@@ -1184,11 +1177,9 @@ class P2Util
 
         $cont = implode("\n", $lines) . "\n";
 
-        FileCtl::make_datafile($logfile, $_conf['p2_perm']);
-
         // 書き込み処理
         if ($format == 'dataphp') {
-            DataPhp::writeDataPhp($logfile, $cont, $_conf['p2_perm']);
+            DataPhp::writeDataPhp($logfile, $cont);
         } else {
             FileCtl::file_write_contents($logfile, $cont);
         }
@@ -1282,7 +1273,6 @@ class P2Util
 \$rec_login2chPW = {$login2chPW_repr};
 \$rec_autoLogin2ch = {$autoLogin2ch_repr};\n
 EOP;
-        FileCtl::make_datafile($_conf['idpw2ch_php'], $_conf['pass_perm']);    // ファイルがなければ生成
         $fp = @fopen($_conf['idpw2ch_php'], 'wb');
         if (!$fp) {
             p2die("{$_conf['idpw2ch_php']} を更新できませんでした");

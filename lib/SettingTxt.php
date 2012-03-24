@@ -78,8 +78,6 @@ class SettingTxt
             return false;
         }
 
-        $perm = (isset($_conf['dl_perm'])) ? $_conf['dl_perm'] : 0606;
-
         FileCtl::mkdirFor($this->_setting_txt); // 板ディレクトリが無ければ作る
 
         if (file_exists($this->_setting_srd) && file_exists($this->_setting_txt)) {
@@ -148,7 +146,7 @@ class SettingTxt
         $body = $req->getResponseBody();
 
         // DL成功して かつ 更新されていたら保存
-        if ($body && $code != "304") {
+        if ($body && $code != '304') {
 
             // したらば or be.2ch.net ならEUCをSJISに変換
             if (P2Util::isHostJbbsShitaraba($this->_host) || P2Util::isHostBe2chNet($this->_host)) {
@@ -158,7 +156,6 @@ class SettingTxt
             if (FileCtl::file_write_contents($this->_setting_txt, $body) === false) {
                 p2die('cannot write file');
             }
-            chmod($this->_setting_txt, $perm);
 
             // パースしてキャッシュを保存する
             if (!$this->cacheParsedSettingTxt()) {

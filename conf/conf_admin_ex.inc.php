@@ -34,14 +34,8 @@ $_conf['expack.skin.enabled'] = 1; // (1)
 // 設定ファイルのパス
 $_conf['expack.skin.setting_path'] = $_conf['pref_dir'] . '/p2_user_skin.txt';
 
-// 設定ファイルのパーミッション
-$_conf['expack.skin.setting_perm'] = 0606; // (0606)
-
 // フォント設定ファイルのパス
 $_conf['expack.skin.fontconfig_path'] = $_conf['pref_dir'] . '/p2_user_font.txt';
-
-// フォント設定ファイルのパーミッション
-$_conf['expack.skin.fontconfig_perm'] = 0606; // (0606)
 
 // }}}
 // {{{ tGrep
@@ -51,9 +45,6 @@ $_conf['expack.tgrep.quick_file'] = $_conf['pref_dir'] . '/p2_tgrep_quick.txt';
 
 // 検索履歴リストのパス
 $_conf['expack.tgrep.recent_file'] = $_conf['pref_dir'] . '/p2_tgrep_recent.txt';
-
-// ファイルのパーミッション
-$_conf['expack.tgrep.file_perm'] = 0606; // (0606)
 
 // }}}
 // {{{ スマートポップアップメニュー
@@ -84,9 +75,6 @@ $_conf['expack.rss.enabled'] = 0; // (0)
 
 // 設定ファイルのパス
 $_conf['expack.rss.setting_path'] = $_conf['pref_dir'] . '/p2_rss.txt';
-
-// 設定ファイルのパーミッション
-$_conf['expack.rss.setting_perm'] = 0606; // (0606)
 
 // ImageCache2を使ってリンクされた画像をキャッシュする（off:0, on:1）
 $_conf['expack.rss.with_imgcache'] = 0; // (0)

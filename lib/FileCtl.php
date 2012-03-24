@@ -30,7 +30,7 @@ class FileCtl
     // {{{ make_datafile()
 
     /**
-     * 書き込み用のファイルがなければ生成してパーミッションを調整する
+     * 書き込み用のファイルがなければ作る
      *
      * @param string $file
      * @param int $perm
@@ -38,12 +38,11 @@ class FileCtl
      */
     static public function make_datafile($file, $perm = null)
     {
-        global $_conf;
-
         // デフォルトのパーミッション
-        if ($perm === null || !($perm & 0777)) {
-            $default_perm = 0777 & $_conf['p2_perm'];
-            $perm = $default_perm ? $default_perm : 0606;
+        $perm = intval($perm);
+        if (($perm & 0777) === 0 || ($perm & ~0777) !== 0) {
+            $default_perm = 0666 & umask();
+            $perm = $default_perm ? $default_perm : 0666;
         }
 
         if (strpos($file, P2_NULLBYTE) !== false) {
@@ -73,7 +72,7 @@ class FileCtl
     // {{{ mkdirFor()
 
     /**
-     * 親ディレクトリがなければ生成してパーミッションを調整する
+     * 親ディレクトリがなければ作る
      *
      * @param string $apath
      * @param int $perm
@@ -81,41 +80,14 @@ class FileCtl
      */
     static public function mkdirFor($apath, $perm = null)
     {
-        global $_conf;
-
-        // デフォルトのパーミッション
-        if ($perm === null || !($perm & 0777)) {
-            $default_perm = 0777 & $_conf['data_dir_perm'];
-            $perm = $default_perm ? $default_perm : 0707;
-        }
-
-        $dir_limit = 50; // 親階層を上る制限回数
-
-        if (!$parentdir = dirname($apath)) {
-            p2die("cannot mkdir. ({$parentdir})", '親ディレクトリが空白です。');
-        }
-        if (strpos($parentdir, P2_NULLBYTE) !== false) {
-            $epath = str_replace(P2_NULLBYTE, '\\0', $parentdir);
-            p2die("cannot mkdir. ({$epath})", 'ディレクトリ名にNULLバイトが含まれています。');
-        }
-        $i = 1;
-        if (!is_dir($parentdir)) {
-            if ($i > $dir_limit) {
-                p2die("cannot mkdir. ({$parentdir})", '階層を上がり過ぎたので、ストップしました。');
-            }
-            self::mkdirFor($parentdir);
-            mkdir($parentdir, $perm) or p2die("cannot mkdir. ({$parentdir})");
-            chmod($parentdir, $perm);
-            $i++;
-        }
-        return true;
+        return self::mkdirRecursive(dirname($apath), $perm);
     }
 
     // }}}
     // {{{ mkdirRecursive()
 
     /**
-     * ディレクトリがなければ生成してパーミッションを調整する
+     * ディレクトリがなければ作る
      *
      * @param string $apath
      * @param int $perm
@@ -123,7 +95,31 @@ class FileCtl
      */
     static public function mkdirRecursive($apath, $perm = null)
     {
-        return self::mkdirFor($apath . DIRECTORY_SEPARATOR . '_', $perm);
+        if (is_dir($apath)) {
+            return true;
+        } elseif (file_exists($apath)) {
+            p2die("cannot mkdir, file already exists. ({$apath})");
+        }
+
+        // デフォルトのパーミッション
+        $perm = intval($perm);
+        if (($perm & 0777) === 0 || ($perm & ~0777) !== 0) {
+            $default_perm = 0777 & umask();
+            $perm = $default_perm ? $default_perm : 0777;
+        }
+
+        if (strlen($apath) === 0) {
+            p2die("cannot mkdir. ({$apath})", 'ディレクトリ名が空白です。');
+        }
+        if (strpos($apath, P2_NULLBYTE) !== false) {
+            $epath = str_replace(P2_NULLBYTE, '\\0', $apath);
+            p2die("cannot mkdir. ({$epath})", 'ディレクトリ名にNULLバイトが含まれています。');
+        }
+        if (!@mkdir($apath, $perm, true)) {
+            p2die("cannot mkdir. ({$apath})");
+        }
+
+        return true;
     }
 
     // }}}

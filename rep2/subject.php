@@ -742,7 +742,6 @@ if ($spmode == 'merge_favita') {
         $merged_faivta_read_idx = $_conf['pref_dir'] . '/p2_favita_read.idx';
     }
 
-    FileCtl::make_datafile($merged_faivta_read_idx, $_conf['p2_perm']);
     $fp = fopen($merged_faivta_read_idx, 'wb');
     if (!$fp || !flock($fp, LOCK_EX)) {
         p2die("cannot write file {$merged_faivta_read_idx}.");
@@ -937,7 +936,7 @@ function saveSbSetting($p2_setting_txt, $p2_setting, $pre_setting)
         } elseif (!empty($_GET['sort'])) {
             $p2_setting['sort'] = $_GET['sort'];
         }
-        FileCtl::make_datafile($p2_setting_txt, $_conf['p2_perm']);
+        FileCtl::make_datafile($p2_setting_txt);
         if ($p2_setting) {
             if ($p2_setting_cont = serialize($p2_setting)) {
                 if (FileCtl::file_write_contents($p2_setting_txt, $p2_setting_cont) === false) {
@@ -988,10 +987,10 @@ function saveSubjectKeys($subject_keys, $sb_keys_txt, $sb_keys_b_txt)
     //if (file_exists($sb_keys_b_txt)) { unlink($sb_keys_b_txt); }
     if (empty($_REQUEST['norefresh']) && !empty($subject_keys)) {
         if (file_exists($sb_keys_txt)) {
-            FileCtl::make_datafile($sb_keys_b_txt, $_conf['p2_perm']);
+            FileCtl::make_datafile($sb_keys_b_txt);
             copy($sb_keys_txt, $sb_keys_b_txt);
         } else {
-            FileCtl::make_datafile($sb_keys_txt, $_conf['p2_perm']);
+            FileCtl::make_datafile($sb_keys_txt);
         }
         if ($sb_keys_cont = serialize($subject_keys)) {
             if (FileCtl::file_write_contents($sb_keys_txt, $sb_keys_cont) === false) {
