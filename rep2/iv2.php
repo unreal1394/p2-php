@@ -284,7 +284,7 @@ $qf->addRule('thumbtype', 'invalid thumbtype.', 'arrayKeyExists', $_thumbtype);
 // Flexy
 $_flexy_options = array(
     'locale' => 'ja',
-    'charset' => 'cp932',
+    'charset' => 'Shift_JIS',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'iv2',
     'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" ‚Æ“™‰¿

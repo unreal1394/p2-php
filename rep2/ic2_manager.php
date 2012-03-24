@@ -39,7 +39,7 @@ if (DB::isError($db)) {
 // テンプレートエンジン初期化
 $_flexy_options = array(
     'locale' => 'ja',
-    'charset' => 'cp932',
+    'charset' => 'Shift_JIS',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
     'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" と等価
@@ -202,6 +202,7 @@ if (isset($_POST['action'])) {
 
 $flexy->setData('skin', $skin_en);
 $flexy->setData('php_self', $_SERVER['SCRIPT_NAME']);
+$flexy->setData('p2vid', P2_VERSION_ID);
 $flexy->setData('info_msg', P2Util::getInfoHtml());
 $flexy->setData('pc', !$_conf['ktai']);
 $flexy->setData('iphone', $_conf['iphone']);

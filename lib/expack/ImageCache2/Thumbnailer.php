@@ -260,7 +260,7 @@ class ImageCache2_Thumbnailer
             $width  = $csize[0];
             $height = $csize[1];
         } else {
-            $src = $this->srcPath($size, $md5, $mime, true);
+            $src = $this->srcPath($size, $md5, $mime);
         }
         $thumbUrl = $this->thumbUrl($size, $md5, $mime);
         $thumbPath = $this->thumbPath($size, $md5, $mime);
@@ -275,7 +275,7 @@ class ImageCache2_Thumbnailer
             return $thumbUrl;
         }
         $thumbDir = dirname($thumbPath);
-        if (!is_dir($thumbDir) && !@mkdir($thumbDir)) {
+        if (!is_dir($thumbDir) && !mkdir($thumbDir)) {
             $error = PEAR::raiseError("ディレクトリを作成できませんでした。({$thumbDir})");
             return $error;
         }
@@ -563,7 +563,9 @@ class ImageCache2_Thumbnailer
         $dirID = $this->dirID($size, $md5, $mime);
         if ($fullPath) {
             if (!is_dir($basedir)) {
-                return false;
+                if (!mkdir($basedir)) {
+                    return false;
+                }
             }
             return realpath($basedir) . DIRECTORY_SEPARATOR . $dirID;
         }

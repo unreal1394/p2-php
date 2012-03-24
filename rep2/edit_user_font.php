@@ -16,7 +16,7 @@ $flexy_options = array(
     'templateDir' => './skin',
     'compileDir'  => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'fontconfig',
     'locale' => 'ja',
-    'charset' => 'cp932',
+    'charset' => 'Shift_JIS',
 );
 
 $fontconfig_types = array(

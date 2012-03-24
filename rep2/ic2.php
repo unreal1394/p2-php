@@ -759,7 +759,7 @@ function ic2_display($url, $params)
             // Flexy‚ÆQurickForm_Renderer‚Ì‰Šú‰»
             $_flexy_options = array(
                 'locale' => 'ja',
-                'charset' => 'cp932',
+                'charset' => 'Shift_JIS',
                 'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
                 'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
                 'numberFormat' => '', // ",0,'.',','" ‚Æ“™‰¿

@@ -141,7 +141,7 @@ $qfe['close']    = $qf->addElement('button', 'close', null, $_attr_close);
 // Flexy
 $_flexy_options = array(
     'locale' => 'ja',
-    'charset' => 'cp932',
+    'charset' => 'Shift_JIS',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
     'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" ‚Æ“™‰¿
@@ -150,6 +150,7 @@ $_flexy_options = array(
 $flexy = new HTML_Template_Flexy($_flexy_options);
 
 $flexy->setData('php_self', $_SERVER['SCRIPT_NAME']);
+$flexy->setData('p2vid', P2_VERSION_ID);
 $flexy->setData('skin', $skin_en);
 $flexy->setData('isPopUp', $isPopUp);
 $flexy->setData('pc', !$_conf['ktai']);

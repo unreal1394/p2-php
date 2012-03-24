@@ -20,9 +20,9 @@
 {info_msg:h}
 <hr />
 
+{if:data}
 <form method="post" action="{php_self}" target="_self" onsubmit="return confirm('–{“–‚É‚æ‚ë‚µ‚¢‚Å‚·‚©H');" flexy:ignore="yes">
 
-{if:data}
 {if:data_renderer_errlog}<flexy:include src="_vt_errlog.tpl.html" />{else:}
 {if:data_renderer_blacklist}<flexy:include src="_vt_blacklist.tpl.html" />{end:}
 {end:}
