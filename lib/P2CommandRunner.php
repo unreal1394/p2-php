@@ -6,7 +6,7 @@
 // {{{ CONSTANTS
 
 if (!defined('P2_SCRIPT_DIR')) {
-    define('P2_SCRIPT_DIR', realpath(__DIR__ . '/../script'));
+    define('P2_SCRIPT_DIR', realpath(__DIR__ . '/../scripts'));
 }
 
 // }}}

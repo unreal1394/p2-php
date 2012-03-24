@@ -9,7 +9,4 @@
 3. conf/conf_ic2.inc.phpを適宜編集する。
    DSNについてはPEARの説明ページ(http://jp.pear.php.net/manual/ja/package.database.db.intro-dsn.php)を参照
 
-4. doc/ImageCache2/i2_install.phps を rep2フォルダにコピーし、i2_install.phpにリネームする。
- そして http://あなたのrep2/ic2_install.php にアクセスして最後の行に「準備OK」と出ればOK。
-
-6. rep2/ic2_install.phpを削除。
+4. コンソールで php scripts/ic2.php setup コマンドを実行する。

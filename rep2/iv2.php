@@ -570,13 +570,13 @@ if (isset($_POST['edit_submit']) && !empty($_POST['change'])) {
 //$all = (int)$icdb->count('*', true);
 //$db->setFetchMode(DB_FETCHMODE_ASSOC);
 $sql = sprintf('SELECT COUNT(*) FROM %s %s', $db->quoteIdentifier($ini['General']['table']), $icdb->_query['condition']);
-$all = $db->getOne($sql);
+$all = (int)$db->getOne($sql);
 if (DB::isError($all)) {
     p2die($all->getMessage());
 }
 
 // マッチするレコードがなかったらエラーを表示、レコードがあれば表示用オブジェクトに値を代入
-if ($all == 0) {
+if ($all === 0) {
 
     // レコードなし
     $flexy->setData('nomatch', true);
