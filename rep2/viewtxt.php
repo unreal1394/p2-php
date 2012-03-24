@@ -16,23 +16,16 @@ if (!isset($_GET['file'])) {
 // 変数
 //=========================================================
 $file = (isset($_GET['file'])) ? $_GET['file'] : null;
-$encode = "Shift_JIS";
+$encode = 'Shift_JIS';
 
 //=========================================================
 // 前処理
 //=========================================================
 // 読み込めるファイルを限定する
-$readable_files = array("doc/README.txt", "doc/README-EX.txt", "doc/ChangeLog.txt");
+$readable_files = array('doc/README.txt', 'doc/README-EX.txt', 'doc/ChangeLog.txt');
 
-if ($readable_files && $file and (!in_array($file, $readable_files))) {
-    $i = 0;
-    foreach ($readable_files as $afile) {
-        if ($i != 0) {
-            $files_st .= "と";
-        }
-        $files_st .= "「".$afile."」";
-        $i++;
-    }
+if ($readable_files && $file && (!in_array($file, $readable_files))) {
+    $files_st = '「' . implode('」と「', $readable_files) . '」';
     p2die(basename($_SERVER['SCRIPT_NAME'])." 先生の読めるファイルは、{$files_st}だけ！");
 }
 
@@ -43,7 +36,7 @@ if ($readable_files && $file and (!in_array($file, $readable_files))) {
 if (preg_match('/\\.txt$/i', $file)) {
     viewTxtFile($file, $encode);
 } else {
-    p2die("error: cannot view \"{$file}\"");
+    p2die("error: cannot view '{$file}'");
 }
 
 // {{{ viewTxtFile()
@@ -53,7 +46,7 @@ if (preg_match('/\\.txt$/i', $file)) {
  */
 function viewTxtFile($file, $encode)
 {
-    if ($file == '') {
+    if (!$file) {
         p2die('file が指定されていません');
     }
 
@@ -61,13 +54,13 @@ function viewTxtFile($file, $encode)
     $ptitle = $filename;
 
     //ファイル内容読み込み
-    $cont = FileCtl::file_read_contents($file);
+    $cont = FileCtl::file_read_contents(P2_BASE_DIR . DIRECTORY_SEPARATOR . $file);
     if ($cont === false) {
         $cont_area = '';
     } else {
-        if ($encode == 'EUC-JP') {
+        if (strcasecmp($encode, 'EUC-JP') === 0) {
             $cont = mb_convert_encoding($cont, 'CP932', 'CP51932');
-        } elseif ($encode == 'UTF-8') {
+        } elseif (strcasecmp($encode, 'UTF-8') === 0) {
             $cont = mb_convert_encoding($cont, 'CP932', 'UTF-8');
         }
         $cont_area = p2h($cont);
