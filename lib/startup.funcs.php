@@ -10,7 +10,7 @@
  *
  * @return bool
  */
-function p2_check_environment($check_recommended)
+function p2_check_environment()
 {
     include P2_CONFIG_DIR . '/setup_info.php';
 
@@ -18,10 +18,8 @@ function p2_check_environment($check_recommended)
 
     if (version_compare($php_version, '5.4.0-dev', '>=')) {
         $required_version = $p2_required_version_5_4;
-        $recommended_version = $p2_recommended_version_5_4;
     } else {
         $required_version = $p2_required_version_5_3;
-        $recommended_version = $p2_recommended_version_5_3;
     }
 
     // PHPのバージョン
@@ -41,29 +39,6 @@ function p2_check_environment($check_recommended)
         if (ini_get($directive)) {
             p2die("{$directive} が On です。",
                   "php.ini で {$directive} を Off にしてください。");
-        }
-    }
-
-    // 推奨バージョン
-    if ($check_recommended) {
-        if (version_compare($php_version, $recommended_version, '<')) {
-            // title.php のみメッセージを表示
-            if (!is_numeric($check_recommended)) {
-                $check_recommended = p2h($check_recommended);
-            }
-            if (basename($_SERVER['PHP_SELF'], '.php') == 'title') {
-                $info_msg_ht = <<<EOP
-<p><strong>推奨バージョンより古いPHPで動作しています。</strong>
-<em>(PHP {$php_version})</em><br>
-PHP {$recommended_version} 以降にアップデートすることをおすすめします。</p>
-<p style="font-size:smaller">このメッセージを表示しないようにするには
-<em>{\$rep2_directory}</em>/conf/conf.inc.php の {$check_recommended} 行目、<br>
-<samp>p2_check_environment(<strong>__LINE__</strong>);</samp> を
-<samp>p2_check_environment(<strong>false</strong>);</samp> に書き換えてください。</p>
-EOP;
-            }
-            P2Util::pushInfoHtml($info_msg_ht);
-            return false;
         }
     }
 

@@ -180,7 +180,7 @@ function p2_init()
     require_once P2_LIB_DIR . '/wiki/P2UtilWiki.php';
 
     // 動作環境を確認 (要件を満たしているならコメントアウト可)
-    p2_check_environment(__LINE__);
+    p2_check_environment();
 
     if ($debug) {
         if (!class_exists('Benchmark_Profiler', false)) {
