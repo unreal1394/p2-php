@@ -1,1 +1,3 @@
-*.phar
+composer.lock
+composer.phar
+p2pear.phar
