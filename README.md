@@ -93,7 +93,7 @@ Webブラウザから変更できない項目は [conf/conf_admin.inc.php](https
 
 ## 古いバージョンからの移行
 
-rsky/p2-php@144c0e91c0822dc6ba5c237ec9759b3c98bd6a0d でルートディレクトリにあったWeb経由でアクセスされるファイルをrep2ディレクトリに移動する等、ファイル構成を変更しました。
+SHA: 144c0e91c0822dc6ba5c237ec9759b3c98bd6a0d でルートディレクトリにあったWeb経由でアクセスされるファイルをrep2ディレクトリに移動する等、ファイル構成を変更しました。
 
 既存のデータをそのまま使い続けるには、conf/conf_user_admin.inc.php および conf/conf_ic2.inc.php を下記のように旧版相当の設定にします。
 
