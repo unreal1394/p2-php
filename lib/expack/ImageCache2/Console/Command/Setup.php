@@ -85,6 +85,7 @@ class Setup extends sfConsoleCommand
         if ($this->checkConfiguration()) {
             $result = $this->connect();
             if ($result) {
+                $this->info('Database: OK');
                 $this->serialPriamryKey = $result[0];
                 $this->tableExtraDefs = $result[1];
                 $this->createTables();
@@ -98,29 +99,35 @@ class Setup extends sfConsoleCommand
      */
     private function checkConfiguration()
     {
-        global $_conf;
+        $result = true;
 
-        if (!$_conf['expack.ic2.enabled']) {
+        $enabled = $GLOBALS['_conf']['expack.ic2.enabled'];
+        $dsn = $this->config['General']['dsn'];
+        $driver = $this->config['General']['driver'];
+
+        $this->comment('enabled=' . var_export($enabled, true));
+        $this->comment('dsn=' . var_export($dsn, true));
+        $this->comment('driver=' . var_export($driver, true));
+
+        if (!$enabled) {
             $this->error("\$_conf['expack.ic2.enabled'] is not enabled in conf/conf_admin_ex.inc.php.");
-            return false;
+            $result = false;
         }
 
-        if (!$this->config['General']['dsn']) {
+        if (!$dsn) {
             $this->error("\$_conf['expack.ic2.general.dsn'] is not set in conf/conf_ic2.inc.php.");
-            return false;
+            $result = false;
         }
 
-        $this->comment('enabled=' . var_export($_conf['expack.ic2.enabled'], true));
-        $this->comment('dsn=' . var_export($this->config['General']['dsn'], true));
-        $this->comment('driver=' . var_export($this->config['General']['driver'], true));
-
-        $driver = strtolower($this->config['General']['driver']);
+        $driver = strtolower($driver);
         switch ($driver) {
             case 'imagemagick6':
             case 'imagemagick':
                 if (!ic2_findexec('convert', $this->config['General']['magick'])) {
                     $this->error("Command 'convert' is not found");
-                    return false;
+                    $result = false;
+                } else {
+                    $this->info('Image Driver: OK');
                 }
                 break;
             case 'gd':
@@ -128,15 +135,17 @@ class Setup extends sfConsoleCommand
             case 'imlib2':
                 if (!extension_loaded($driver)) {
                     $this->error("Extension {$driver} is not loaded");
-                    return false;
+                    $result = false;
+                } else {
+                    $this->info('Image Driver: OK');
                 }
                 break;
             default:
                 $this->error('Unknow image driver.');
-                return false;
+                $result = false;
         }
 
-        return true;
+        return $result;
     }
 
     /**
@@ -194,10 +203,6 @@ class Setup extends sfConsoleCommand
                 break;
         }
 
-        if (!is_null($result)) {
-            $this->info("Database: OK");
-        }
-
         return $result;
     }
 
@@ -206,8 +211,9 @@ class Setup extends sfConsoleCommand
         $serialPriamryKey = 'INTEGER PRIMARY KEY AUTO_INCREMENT';
         $tableExtraDefs = ' TYPE=MyISAM';
 
-        $result = $this->db->getRow("SHOW VARIABLES LIKE 'version'",
-                                    array(), DB_FETCHMODE_ORDERED);
+        $db = $this->db;
+        $result = $db->getRow("SHOW VARIABLES LIKE 'version'",
+                              array(), DB_FETCHMODE_ORDERED);
         if (is_array($result)) {
             $version = $result[1];
             if (version_compare($version, '4.1.2', 'ge')) {
@@ -217,15 +223,15 @@ class Setup extends sfConsoleCommand
 
         if (!$this->dryRun) {
             if ($mysqli && function_exists('mysqli_set_charset')) {
-                mysqli_set_charset($this->db->connection, 'utf8');
+                mysqli_set_charset($db->connection, 'utf8');
             } elseif (!$mysqli && function_exists('mysql_set_charset')) {
-                mysql_set_charset('utf8', $this->db->connection);
+                mysql_set_charset('utf8', $db->connection);
             } else {
-                $this->db->query('SET NAMES utf8');
+                $db->query('SET NAMES utf8');
             }
         }
 
-        $stmt = $this->db->prepare('SHOW TABLES LIKE ?');
+        $stmt = $db->prepare('SHOW TABLES LIKE ?');
         if (PEAR::isError($stmt)) {
             $this->error($stmt->getMessage());
             return null;
@@ -241,15 +247,17 @@ class Setup extends sfConsoleCommand
         $serialPriamryKey = 'SERIAL PRIMARY KEY';
         $tableExtraDefs = '';
 
+        $db = $this->db;
+
         if (!$this->dryRun) {
             if (function_exists('pg_set_client_encoding')) {
-                pg_set_client_encoding($this->db->connection, 'UNICODE');
+                pg_set_client_encoding($db->connection, 'UNICODE');
             } else {
-                $this->db->query("SET CLIENT_ENCODING TO 'UNICODE'");
+                $db->query("SET CLIENT_ENCODING TO 'UNICODE'");
             }
         }
 
-        $stmt = $this->db->prepare("SELECT relname FROM pg_class WHERE relkind = 'r' AND relname = ?");
+        $stmt = $db->prepare("SELECT relname FROM pg_class WHERE relkind = 'r' AND relname = ?");
         if (PEAR::isError($stmt)) {
             $this->error($stmt->getMessage());
             return null;
@@ -265,7 +273,9 @@ class Setup extends sfConsoleCommand
         $serialPriamryKey = 'INTEGER PRIMARY KEY';
         $tableExtraDefs = '';
 
-        $stmt = $this->db->prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name= ?");
+        $db = $this->db;
+
+        $stmt = $db->prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name= ?");
         if (PEAR::isError($stmt)) {
             $this->error($stmt->getMessage());
             return null;
@@ -419,10 +429,11 @@ SQL;
 
     private function doCreateIndex($indexName, $tableName, array $fieldNames)
     {
-        $callback = array($this->db, 'quoteIdentifier');
+        $db = $this->query;
+        $callback = array($db, 'quoteIdentifier');
         $sql = sprintf('CREATE INDEX %s ON %s (%s);',
-                        $this->db->quoteIdentifier($indexName),
-                       $this->db->quoteIdentifier($tableName),
+                       $db->quoteIdentifier($indexName),
+                       $db->quoteIdentifier($tableName),
                        implode(', ', array_map($callback, $fieldNames)));
 
         if ($this->dryRun) {
@@ -430,21 +441,23 @@ SQL;
             return true;
         }
 
-        $result = $this->db->query($sql);
+        $result = $db->query($sql);
         if (PEAR::isError($result)) {
             $this->error($result->getMessage());
             return false;
         }
 
         $this->info("Index '{$indexName}' created");
+
         return true;
     }
 
     private function findIndex($indexName, $tableName)
     {
+        $db = $this->db;
         $sql = sprintf($this->findIndexFormat,
-                       $this->db->quoteIdentifier($tableName));
-        $result = $this->db->query($sql, array($indexName));
+                       $db->quoteIdentifier($tableName));
+        $result = $db->query($sql, array($indexName));
         if (PEAR::isError($result)) {
             $this->error($result->getMessage());
             return false;
