@@ -11,7 +11,7 @@
 // (それぞれパーミッションは 707 or 777 に。Web公開外ディレクトリに設定するのが望ましいです)
 
 // p2で使用する基本のデータ保存ディレクトリ
-$_conf['data_dir'] = P2_BASE_DIR . '/data/misc';
+$_conf['data_dir'] = P2_BASE_DIR . '/data';
 
 // 取得スレッドの dat データ保存ディレクトリ
 $_conf['dat_dir'] = P2_BASE_DIR . '/data/dat';
