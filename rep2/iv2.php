@@ -55,8 +55,8 @@ require_once 'HTML/QuickForm.php';
 require_once 'HTML/QuickForm/Renderer/ObjectFlexy.php';
 require_once 'HTML/Template/Flexy.php';
 require_once 'HTML/Template/Flexy/Element.php';
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
-require_once P2EX_LIB_DIR . '/ic2/QuickForm/Rules.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/QuickForm/Rules.php';
 
 // }}}
 // {{{ config
@@ -85,7 +85,7 @@ $_defaults = array(
     'threshold' => $ini['Viewer']['threshold'],
     'compare' => $ini['Viewer']['compare'],
     'mode' => $_default_mode,
-    'thumbtype' => IC2_Thumbnailer::SIZE_DEFAULT,
+    'thumbtype' => ImageCache2_Thumbnailer::SIZE_DEFAULT,
 );
 
 // フォームの固定値
@@ -175,7 +175,7 @@ if ($_conf['ktai']) {
 // {{{ prepare (DB & Cache)
 
 // DB_DataObjectを継承したDAO
-$icdb = new IC2_DataObject_Images();
+$icdb = new ImageCache2_DataObject_Images();
 $db = $icdb->getDatabaseConnection();
 $db_class = strtolower(get_class($db));
 
@@ -212,9 +212,9 @@ if ($ini['Viewer']['cache']) {
     }
 
     $cache = new P2KeyValueStore_FunctionCache($kvs, $cache_lifetime);
-    $imageInfo_getExtraInfo = $cache->createProxy('IC2_ImageInfo::getExtraInfo');
-    $imageInfo_getExifData = $cache->createProxy('IC2_ImageInfo::getExifData');
-    $editForm_imgManager = $cache->createProxy('IC2_EditForm::imgManager');
+    $imageInfo_getExtraInfo = $cache->createProxy('ImageCache2_ImageInfo::getExtraInfo');
+    $imageInfo_getExifData = $cache->createProxy('ImageCache2_ImageInfo::getExifData');
+    $editForm_imgManager = $cache->createProxy('ImageCache2_EditForm::imgManager');
 
     $use_cache = true;
 } else {
@@ -230,9 +230,9 @@ if ($ini['Viewer']['cache']) {
 $_attribures = array('accept-charset' => 'UTF-8,Shift_JIS');
 $_method = ($_SERVER['REQUEST_METHOD'] == 'GET') ? 'get' : 'post';
 $qf = new HTML_QuickForm('go', $_method, $_SERVER['SCRIPT_NAME'], '_self', $_attribures);
-$qf->registerRule('numberInRange',  null, 'IC2_QuickForm_Rule_NumberInRange');
-$qf->registerRule('inArray',        null, 'IC2_QuickForm_Rule_InArray');
-$qf->registerRule('arrayKeyExists', null, 'IC2_QuickForm_ArrayKeyExists');
+$qf->registerRule('numberInRange',  null, 'ImageCache2_QuickForm_Rule_NumberInRange');
+$qf->registerRule('inArray',        null, 'ImageCache2_QuickForm_Rule_InArray');
+$qf->registerRule('arrayKeyExists', null, 'ImageCache2_QuickForm_ArrayKeyExists');
 $qf->setDefaults($_defaults);
 $qf->setConstants($_constants);
 $qfe = array();
@@ -286,7 +286,7 @@ $_flexy_options = array(
     'locale' => 'ja',
     'charset' => 'cp932',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'iv2',
-    'templateDir' => P2EX_LIB_DIR . '/ic2/templates',
+    'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" と等価
     'plugins' => array('P2Util' => P2_LIB_DIR . '/P2Util.php')
 );
@@ -327,33 +327,33 @@ $flexy->setData('extra_headers_x', $_conf['extra_headers_xht']);
 // 検証
 $qf->validate();
 $sv = $qf->getSubmitValues();
-$page      = IC2_ParameterUtility::getValidValue('page',   $_defaults['page'], 'intval');
-$cols      = IC2_ParameterUtility::getValidValue('cols',   $_defaults['cols'], 'intval');
-$rows      = IC2_ParameterUtility::getValidValue('rows',   $_defaults['rows'], 'intval');
-$order     = IC2_ParameterUtility::getValidValue('order',  $_defaults['order']);
-$sort      = IC2_ParameterUtility::getValidValue('sort',   $_defaults['sort'] );
-$field     = IC2_ParameterUtility::getValidValue('field',  $_defaults['field']);
-$key       = IC2_ParameterUtility::getValidValue('key',    $_defaults['key']);
-$threshold = IC2_ParameterUtility::getValidValue('threshold', $_defaults['threshold'], 'intval');
-$compare   = IC2_ParameterUtility::getValidValue('compare',   $_defaults['compare']);
-$mode      = IC2_ParameterUtility::getValidValue('mode',      $_defaults['mode'], 'intval');
-$thumbtype = IC2_ParameterUtility::getValidValue('thumbtype', $_defaults['thumbtype'], 'intval');
+$page      = ImageCache2_ParameterUtility::getValidValue('page',   $_defaults['page'], 'intval');
+$cols      = ImageCache2_ParameterUtility::getValidValue('cols',   $_defaults['cols'], 'intval');
+$rows      = ImageCache2_ParameterUtility::getValidValue('rows',   $_defaults['rows'], 'intval');
+$order     = ImageCache2_ParameterUtility::getValidValue('order',  $_defaults['order']);
+$sort      = ImageCache2_ParameterUtility::getValidValue('sort',   $_defaults['sort'] );
+$field     = ImageCache2_ParameterUtility::getValidValue('field',  $_defaults['field']);
+$key       = ImageCache2_ParameterUtility::getValidValue('key',    $_defaults['key']);
+$threshold = ImageCache2_ParameterUtility::getValidValue('threshold', $_defaults['threshold'], 'intval');
+$compare   = ImageCache2_ParameterUtility::getValidValue('compare',   $_defaults['compare']);
+$mode      = ImageCache2_ParameterUtility::getValidValue('mode',      $_defaults['mode'], 'intval');
+$thumbtype = ImageCache2_ParameterUtility::getValidValue('thumbtype', $_defaults['thumbtype'], 'intval');
 
 // サムネイル作成クラス
 $thumbsize = $thumbtype;
 if (!empty($_SESSION['device_pixel_ratio'])) {
     $dpr = $_SESSION['device_pixel_ratio'];
     if ($dpr === 1.5) {
-        $thumbsize |= IC2_Thumbnailer::DPR_1_5;
+        $thumbsize |= ImageCache2_Thumbnailer::DPR_1_5;
     } elseif ($dpr === 2.0) {
-        $thumbsize |= IC2_Thumbnailer::DPR_2_0;
+        $thumbsize |= ImageCache2_Thumbnailer::DPR_2_0;
     } else {
         $dpr = 1.0;
     }
 } else {
     $dpr = 1.0;
 }
-$thumb = new IC2_Thumbnailer($thumbsize);
+$thumb = new ImageCache2_Thumbnailer($thumbsize);
 
 // 携帯用に調整
 if ($_conf['ktai']) {
@@ -484,14 +484,14 @@ if (isset($_POST['edit_submit']) && !empty($_POST['change'])) {
     // 一括でパラメータ変更
     case 1:
         // ランクを変更
-        $newrank = IC2_ParameterUtility::intoRange($_POST['setrank'], -1, 5);
-        IC2_DatabaseManager::setRank($target, $newrank);
+        $newrank = ImageCache2_ParameterUtility::intoRange($_POST['setrank'], -1, 5);
+        ImageCache2_DatabaseManager::setRank($target, $newrank);
         // メモを追加
         if (!empty($_POST['addmemo'])) {
             $newmemo = get_magic_quotes_gpc() ? stripslashes($_POST['addmemo']) : $_POST['addmemo'];
             $newmemo = $icdb->uniform($newmemo, 'CP932');
             if ($newmemo !== '') {
-                 IC2_DatabaseManager::addMemo($target, $newmemo);
+                 ImageCache2_DatabaseManager::addMemo($target, $newmemo);
             }
         }
         break;
@@ -527,14 +527,14 @@ if (isset($_POST['edit_submit']) && !empty($_POST['change'])) {
 
         // 情報を更新
         if (count($updated) > 0) {
-            IC2_DatabaseManager::update($updated);
+            ImageCache2_DatabaseManager::update($updated);
         }
 
         // 削除（＆ブラックリスト送り）
         if (count($removed) > 0) {
             foreach ($removed as $id => $to_blacklist) {
                 $removed_files = array_merge($removed_files,
-                                             IC2_DatabaseManager::remove(array($id), $to_blacklist));
+                                             ImageCache2_DatabaseManager::remove(array($id), $to_blacklist));
             }
             if ($to_blacklist) {
                 if ($no_blacklist) {
@@ -558,7 +558,7 @@ if (isset($_POST['edit_submit']) && !empty($_POST['change'])) {
     $target = array_unique(array_map('intval', $_POST['change']));
     $to_blacklist = !empty($_POST['edit_toblack']);
     $removed_files = array_merge($removed_files,
-                                 IC2_DatabaseManager::remove($target, $to_blacklist));
+                                 ImageCache2_DatabaseManager::remove($target, $to_blacklist));
     $flexy->setData('toBlackList', $to_blacklist);
 }
 
@@ -725,19 +725,19 @@ if ($all == 0) {
 
     // 編集モード用フォームを生成
     if ($mode == 1 || $mode == 2) {
-        $flexy->setData('editFormHeader', IC2_EditForm::header((isset($mf_hiddens) ? $mf_hiddens : array()), $mode));
+        $flexy->setData('editFormHeader', ImageCache2_EditForm::header((isset($mf_hiddens) ? $mf_hiddens : array()), $mode));
         if ($mode == 1) {
-            $flexy->setData('editFormCheckAllOn', IC2_EditForm::checkAllOn());
-            $flexy->setData('editFormCheckAllOff', IC2_EditForm::checkAllOff());
-            $flexy->setData('editFormCheckAllReverse', IC2_EditForm::checkAllReverse());
-            $flexy->setData('editFormSelect', IC2_EditForm::selectRank($_threshold));
-            $flexy->setData('editFormText', IC2_EditForm::textMemo());
-            $flexy->setData('editFormSubmit', IC2_EditForm::submit());
-            $flexy->setData('editFormReset', IC2_EditForm::reset());
-            $flexy->setData('editFormRemove', IC2_EditForm::remove());
-            $flexy->setData('editFormBlackList', IC2_EditForm::toblack());
+            $flexy->setData('editFormCheckAllOn', ImageCache2_EditForm::checkAllOn());
+            $flexy->setData('editFormCheckAllOff', ImageCache2_EditForm::checkAllOff());
+            $flexy->setData('editFormCheckAllReverse', ImageCache2_EditForm::checkAllReverse());
+            $flexy->setData('editFormSelect', ImageCache2_EditForm::selectRank($_threshold));
+            $flexy->setData('editFormText', ImageCache2_EditForm::textMemo());
+            $flexy->setData('editFormSubmit', ImageCache2_EditForm::submit());
+            $flexy->setData('editFormReset', ImageCache2_EditForm::reset());
+            $flexy->setData('editFormRemove', ImageCache2_EditForm::remove());
+            $flexy->setData('editFormBlackList', ImageCache2_EditForm::toblack());
         } elseif ($mode == 2) {
-            $flexy->setData('editForm', new IC2_EditForm_Object);
+            $flexy->setData('editForm', new ImageCache2_EditForm_Object);
         }
     }
 
@@ -830,19 +830,19 @@ if ($all == 0) {
         if ($use_cache) {
             $add = $imageInfo_getExtraInfo->invoke($img);
             if ($mode == 1) {
-                $chk = IC2_EditForm::imgChecker($img); // 比較的軽いのでキャッシュしない
+                $chk = ImageCache2_EditForm::imgChecker($img); // 比較的軽いのでキャッシュしない
                 $add += $chk;
             } elseif ($mode == 2) {
                 $mng = $editForm_imgManager->invoke($img, $status);
                 $add += $mng;
             }
         } else {
-            $add = IC2_ImageInfo::getExtraInfo($img);
+            $add = ImageCache2_ImageInfo::getExtraInfo($img);
             if ($mode == 1) {
-                $chk = IC2_EditForm::imgChecker($img);
+                $chk = ImageCache2_EditForm::imgChecker($img);
                 $add += $chk;
             } elseif ($mode == 2) {
-                $mng = IC2_EditForm::imgManager($img, $status);
+                $mng = ImageCache2_EditForm::imgManager($img, $status);
                 $add += $mng;
             }
         }
@@ -852,7 +852,7 @@ if ($all == 0) {
             $add['t_width'] = $add['t_height'] = 32;
             $to_blacklist = false;
             $removed_files = array_merge($removed_files,
-                                         IC2_DatabaseManager::remove(array($img['id'], $to_blacklist)));
+                                         ImageCache2_DatabaseManager::remove(array($img['id'], $to_blacklist)));
             $flexy->setData('toBlackList', $to_blacklist);
         } else {
             // サムネイルのパスのみdevicePixelRatioが影響するので再取得
@@ -889,7 +889,7 @@ if ($all == 0) {
             if ($use_cache) {
                 $item['exif'] = $imageInfo_getExifData->invoke($add['src']);
             } else {
-                $item['exif'] = IC2_ImageInfo::getExifData($add['src']);
+                $item['exif'] = ImageCache2_ImageInfo::getExifData($add['src']);
             }
         } else {
             $item['exif'] = null;
@@ -918,7 +918,7 @@ if ($all == 0) {
 
     $flexy->setData('items', $items);
     $flexy->setData('popup', $popup);
-    $flexy->setData('matrix', new IC2_Matrix($cols, $rows, $i));
+    $flexy->setData('matrix', new ImageCache2_Matrix($cols, $rows, $i));
 }
 
 $flexy->setData('removedFiles', $removed_files);

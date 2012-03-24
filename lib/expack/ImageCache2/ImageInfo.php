@@ -1,11 +1,11 @@
 <?php
 
-// {{{ IC2_ImageInfo
+// {{{ ImageCache2_ImageInfo
 
 /**
  * ImageCache2 - 画像情報取得用ユーティリティクラス
  */
-class IC2_ImageInfo
+class ImageCache2_ImageInfo
 {
     // {{{ getExtraInfo()
 

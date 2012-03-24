@@ -20,7 +20,7 @@ if (!$_conf['expack.ic2.enabled']) {
 
 // ライブラリ読み込み
 require_once 'HTTP/Client.php';
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // 受け付けるMIMEタイプ
 $mimemap = array('image/jpeg' => '.jpg', 'image/png' => '.png', 'image/gif' => '.gif');
@@ -36,7 +36,7 @@ $id       = isset($_REQUEST['id'])    ? intval($_REQUEST['id']) : null;
 $uri      = isset($_REQUEST['uri'])   ? $_REQUEST['uri'] : (isset($_REQUEST['url']) ? $_REQUEST['url'] : null);
 $file     = isset($_REQUEST['file'])  ? $_REQUEST['file'] : null;
 $force    = !empty($_REQUEST['f']);   // 強制更新
-$thumb    = isset($_REQUEST['t'])     ? intval($_REQUEST['t']) : IC2_Thumbnailer::SIZE_SOURCE;  // サムネイルタイプ
+$thumb    = isset($_REQUEST['t'])     ? intval($_REQUEST['t']) : ImageCache2_Thumbnailer::SIZE_SOURCE;  // サムネイルタイプ
 $dpr      = isset($_REQUEST['d'])     ? floatval($_REQUEST['d']) : 1.0; // device pixel ratio
 $redirect = isset($_REQUEST['r'])     ? intval($_REQUEST['r']) : 1;     // 表示方法
 $rank     = isset($_REQUEST['rank'])  ? intval($_REQUEST['rank']) : 0;  // レーティング
@@ -91,18 +91,18 @@ if (!empty($uri)) {
 }
 
 // 値の調整
-if (!in_array($thumb, array(IC2_Thumbnailer::SIZE_SOURCE,
-                            IC2_Thumbnailer::SIZE_PC,
-                            IC2_Thumbnailer::SIZE_MOBILE,
-                            IC2_Thumbnailer::SIZE_INTERMD)))
+if (!in_array($thumb, array(ImageCache2_Thumbnailer::SIZE_SOURCE,
+                            ImageCache2_Thumbnailer::SIZE_PC,
+                            ImageCache2_Thumbnailer::SIZE_MOBILE,
+                            ImageCache2_Thumbnailer::SIZE_INTERMD)))
 {
-    $thumb = IC2_Thumbnailer::SIZE_DEFAULT;
+    $thumb = ImageCache2_Thumbnailer::SIZE_DEFAULT;
 }
 
 if ($dpr === 1.5) {
-    $thumb_type = $thumb | IC2_Thumbnailer::DPR_1_5;
+    $thumb_type = $thumb | ImageCache2_Thumbnailer::DPR_1_5;
 } elseif ($dpr === 2.0) {
-    $thumb_type = $thumb | IC2_Thumbnailer::DPR_2_0;
+    $thumb_type = $thumb | ImageCache2_Thumbnailer::DPR_2_0;
 } else {
     $thumb_type = $thumb;
     $dpr = 1.0;
@@ -118,7 +118,7 @@ if ($memo === '') {
     $memo = null;
 }
 
-$thumbnailer = new IC2_Thumbnailer($thumb_type);
+$thumbnailer = new ImageCache2_Thumbnailer($thumb_type);
 
 // }}}
 // {{{ IC2TempFile
@@ -173,7 +173,7 @@ if ($doDL) {
 // {{{ search
 
 // 画像がキャッシュされているか確認
-$search = new IC2_DataObject_Images();
+$search = new ImageCache2_DataObject_Images();
 $filepath = null;
 $fileurl = null;
 $mtime = -1;
@@ -218,7 +218,7 @@ if ($result) {
         if (is_string($search->memo) && strlen($search->memo) > 0) {
             $memo .= ' ' . $search->memo;
         }
-        $update = new IC2_DataObject_Images();
+        $update = new ImageCache2_DataObject_Images();
         $update->memo = $params['memo'] = $memo;
         $update->whereAddQuoted('uri', '=', $search->uri);
         $update->update();
@@ -227,7 +227,7 @@ if ($result) {
 
     // ランク変更
     if (isset($_REQUEST['rank'])) {
-        $update = new IC2_DataObject_Images();
+        $update = new ImageCache2_DataObject_Images();
         $update->rank = $params['rank'] = $rank;
         $update->whereAddQuoted('size', '=', $search->size);
         $update->whereAddQuoted('md5',  '=', $search->md5);
@@ -257,7 +257,7 @@ if ($result) {
 }
 
 // 画像がブラックリストにあるか確認
-$blacklist = new IC2_DataObject_BlackList();
+$blacklist = new ImageCache2_DataObject_BlackList();
 if ($blacklist->get($uri)) {
     switch ($blacklist->type) {
         case 0:
@@ -277,7 +277,7 @@ if ($blacklist->get($uri)) {
 
 // 画像がエラーログにあるか確認
 if (!$force && $ini['Getter']['checkerror']) {
-    $errlog = new IC2_DataObject_Errors();
+    $errlog = new ImageCache2_DataObject_Errors();
     if ($errlog->get($uri)) {
         ic2_error($errlog->errcode, '', false);
     }
@@ -476,7 +476,7 @@ if (($force || !file_exists($newfile)) && !@rename($tmpfile, $newfile)) {
 @chmod($newfile, 0644);
 
 // データベースにファイル情報を記録する
-$record = new IC2_DataObject_Images();
+$record = new ImageCache2_DataObject_Images();
 if ($retry && $size == $_size && $md5 == $_md5 && $mime == $_mime) {
     $record->time = time();
     if ($ini['General']['automemo'] && !is_null($memo)) {
@@ -523,7 +523,7 @@ function ic2_aborn($params, $infected = false)
     global $ini;
     extract($params);
 
-    $aborn = new IC2_DataObject_Images();
+    $aborn = new ImageCache2_DataObject_Images();
     $aborn->uri = $uri;
     $aborn->host = $host;
     $aborn->name = $name;
@@ -549,7 +549,7 @@ function ic2_checkAbornedFile($tmpfile, $params)
     extract($params);
 
     // ブラックリスト検索
-    $bl_check = new IC2_DataObject_BlackList();
+    $bl_check = new ImageCache2_DataObject_BlackList();
     $bl_check->whereAddQuoted('size', '=', $size);
     $bl_check->whereAddQuoted('md5',  '=', $md5);
     if ($bl_check->find(true)) {
@@ -574,7 +574,7 @@ function ic2_checkAbornedFile($tmpfile, $params)
     }
 
     // あぼーん画像検索
-    $check = new IC2_DataObject_Images();
+    $check = new ImageCache2_DataObject_Images();
     $check->whereAddQuoted('size', '=', $size);
     $check->whereAddQuoted('md5',  '=', $md5);
     //$check->whereAddQuoted('mime', '=', $mime); // SizeとMD5で十分
@@ -761,7 +761,7 @@ function ic2_display($url, $params)
                 'locale' => 'ja',
                 'charset' => 'cp932',
                 'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
-                'templateDir' => P2EX_LIB_DIR . '/ic2/templates',
+                'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
                 'numberFormat' => '', // ",0,'.',','" と等価
             );
             $flexy = new HTML_Template_Flexy($_flexy_options);
@@ -926,7 +926,7 @@ function ic2_error($code, $optmsg = '', $write_log = true)
     }
 
     if ($write_log) {
-        $logger = new IC2_DataObject_Errors();
+        $logger = new ImageCache2_DataObject_Errors();
         $logger->uri     = isset($uri) ? $uri : (isset($id) ? $id : $file);
         $logger->errcode = $code;
         $logger->errmsg  = mb_convert_encoding($message, 'UTF-8', 'CP932');
@@ -988,7 +988,7 @@ function ic2_finish($fileurl, $thumb, $params, $force, $anigif = false, $gif_cau
 // {{{ check_anigif()
 
 function check_anigif($path) {
-    require_once P2EX_LIB_DIR . '/ic2/GifAnimationDetector.php';
+    require_once P2EX_LIB_DIR . '/ImageCache2/GifAnimationDetector.php';
     return GifAnimationDetector::isAnimated($path);
 }
 // }}}

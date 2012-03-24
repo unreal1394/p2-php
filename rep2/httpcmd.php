@@ -235,11 +235,11 @@ case 'offline':
 
 case 'ic2':
     if (isset($_REQUEST['switch'])) {
-        if (!class_exists('IC2_Switch', false)) {
-            include P2EX_LIB_DIR . '/ic2/Switch.php';
+        if (!class_exists('ImageCache2_Switch', false)) {
+            include P2EX_LIB_DIR . '/ImageCache2/Switch.php';
         }
         $switch = (bool)$_REQUEST['switch'];
-        if (IC2_Switch::set($switch, !empty($_REQUEST['mobile']))) {
+        if (ImageCache2_Switch::set($switch, !empty($_REQUEST['mobile']))) {
             if ($switch) {
                 $r_msg = '1'; // ON‚É‚µ‚½
             } else {

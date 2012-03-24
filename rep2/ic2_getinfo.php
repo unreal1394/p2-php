@@ -29,12 +29,12 @@ if (!isset($_GET['id']) && !isset($_GET['url']) && !isset($_GET['md5'])) {
 }
 
 // ƒ‰ƒCƒuƒ‰ƒŠ“Ç‚Ýž‚Ý
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // }}}
 // {{{ execute
 
-$icdb = new IC2_DataObject_Images();
+$icdb = new ImageCache2_DataObject_Images();
 if (isset($_GET['id'])) {
     $icdb->whereAdd(sprintf('id=%d', (int)$_GET['id']));
 } elseif (isset($_GET['url'])) {
@@ -48,15 +48,15 @@ if (!$icdb->find(1)) {
     exit;
 }
 
-$thumb_type = isset($_GET['t']) ? $_GET['t'] : IC2_Thumbnailer::SIZE_DEFAULT;
+$thumb_type = isset($_GET['t']) ? $_GET['t'] : ImageCache2_Thumbnailer::SIZE_DEFAULT;
 switch ($thumb_type) {
-    case IC2_Thumbnailer::SIZE_PC:
-    case IC2_Thumbnailer::SIZE_MOBILE:
-    case IC2_Thumbnailer::SIZE_INTERMD:
-        $thumbnailer = new IC2_Thumbnailer($thumb_type);
+    case ImageCache2_Thumbnailer::SIZE_PC:
+    case ImageCache2_Thumbnailer::SIZE_MOBILE:
+    case ImageCache2_Thumbnailer::SIZE_INTERMD:
+        $thumbnailer = new ImageCache2_Thumbnailer($thumb_type);
         break;
     default:
-        $thumbnailer = new IC2_Thumbnailer();
+        $thumbnailer = new ImageCache2_Thumbnailer();
 }
 
 $size = (int)$icdb->size;

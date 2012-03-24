@@ -1,8 +1,8 @@
 <?php
 
-// {{{ IC2_DataObject_Images
+// {{{ ImageCache2_DataObject_Images
 
-class IC2_DataObject_Images extends IC2_DataObject_Common
+class ImageCache2_DataObject_Images extends ImageCache2_DataObject_Common
 {
     // {{{ constants
 
@@ -65,7 +65,7 @@ class IC2_DataObject_Images extends IC2_DataObject_Common
     public function ic2_isError($url)
     {
         // ブラックリストをチェック
-        $blacklist = new IC2_DataObject_BlackList();
+        $blacklist = new ImageCache2_DataObject_BlackList();
         if ($blacklist->get($url)) {
             switch ($blacklist->type) {
                 case 0:
@@ -81,7 +81,7 @@ class IC2_DataObject_Images extends IC2_DataObject_Common
 
         // エラーログをチェック
         if ($this->_ini['Getter']['checkerror']) {
-            $errlog = new IC2_DataObject_Errors();
+            $errlog = new ImageCache2_DataObject_Errors();
             if ($errlog->get($url)) {
                 return $errlog->errcode;
             }

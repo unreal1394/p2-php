@@ -20,7 +20,7 @@ if (!$_conf['expack.ic2.enabled']) {
 
 // ƒ‰ƒCƒuƒ‰ƒŠ“Ç‚Ýž‚Ý
 require_once 'HTML/Template/Flexy.php';
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // Ý’è“Ç‚Ýž‚Ý
 $ini = ic2_loadconfig();
@@ -41,7 +41,7 @@ $_flexy_options = array(
     'locale' => 'ja',
     'charset' => 'cp932',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
-    'templateDir' => P2EX_LIB_DIR . '/ic2/templates',
+    'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" ‚Æ“™‰¿
 );
 
@@ -96,7 +96,7 @@ if (isset($_POST['action'])) {
             }
             if ($result) {
                 $target = $result[0];
-                $removed_files = IC2_DatabaseManager::remove($target, $to_blacklist);
+                $removed_files = ImageCache2_DatabaseManager::remove($target, $to_blacklist);
             } else {
                 $removed_files = array();
             }

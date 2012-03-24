@@ -240,14 +240,14 @@ abstract class ShowThread
     /**
      * リンクするサムネイルを生成するクラスのインスタンス
      *
-     * @var IC2_Thumbnailer
+     * @var ImageCache2_Thumbnailer
      */
     public $thumbnailer;
 
     /**
      * インライン表示するサムネイルを生成するクラスのインスタンス
      *
-     * @var IC2_Thumbnailer
+     * @var ImageCache2_Thumbnailer
      */
     public $inline_prvw;
 

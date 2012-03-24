@@ -126,8 +126,8 @@ function ic2_findexec($command, $search_path = '', $escape = true)
  */
 function ic2_load_class($name)
 {
-    if (strncmp($name, 'IC2_', 3) === 0) {
-        include P2EX_LIB_DIR . '/ic2/' . str_replace('_', '/', substr($name, 3)) . '.php';
+    if (strncmp($name, 'ImageCache2_', 3) === 0) {
+        include P2EX_LIB_DIR . '/ImageCache2/' . str_replace('_', '/', substr($name, 3)) . '.php';
     } elseif (strncmp($name, 'Thumbnailer_', 12) === 0) {
         include P2_LIB_DIR . '/' . str_replace('_', '/', $name) . '.php';
     }

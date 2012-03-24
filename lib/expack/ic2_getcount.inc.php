@@ -4,11 +4,11 @@
  */
 
 function getIC2ImageCount($key, $threshold = null) {
-    require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+    require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
     // 設定ファイル読み込み
     $ini = ic2_loadconfig();
 
-    $icdb = new IC2_DataObject_Images();
+    $icdb = new ImageCache2_DataObject_Images();
     // 閾値でフィルタリング
     if ($threshold === null) $threshold = $ini['Viewer']['threshold'];
     if (!($threshold == -1)) {

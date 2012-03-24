@@ -39,19 +39,19 @@ if ($id <= 0 || $rank > 5 || ($rank < -1 && !($remove && $rank == -5))) {
 }
 
 // ƒ‰ƒCƒuƒ‰ƒŠ“Ç‚İ‚İ
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // }}}
 // {{{ execute
 
-$finder = new IC2_DataObject_Images();
+$finder = new ImageCache2_DataObject_Images();
 $finder->whereAdd(sprintf('id = %d', $id));
 
 $code = -1;
 
 if ($finder->find(1)) {
     if ($rank != -5) {
-        $setter = new IC2_DataObject_Images();
+        $setter = new ImageCache2_DataObject_Images();
         $setter->rank = $rank;
         $setter->whereAddQuoted('size', '=', $finder->size);
         $setter->whereAddQuoted('md5',  '=', $finder->md5);
@@ -66,7 +66,7 @@ if ($finder->find(1)) {
     if ($remove) {
         $orig_info_msg_ht = P2Util::getInfoHtml();
 
-        $removed_files = IC2_DatabaseManager::remove(array($finder->id), $rank < 0);
+        $removed_files = ImageCache2_DatabaseManager::remove(array($finder->id), $rank < 0);
         if ($code != 0 && !P2Util::hasInfoHtml()) {
             $code = 1;
         } else {

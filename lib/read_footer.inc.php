@@ -167,7 +167,7 @@ EOP;
 }
 
 if ($_conf['expack.ic2.enabled']) {
-    include P2EX_LIB_DIR . '/ic2/templates/info.tpl.html';
+    include P2EX_LIB_DIR . '/ImageCache2/templates/info.tpl.html';
 }
 
 // ====

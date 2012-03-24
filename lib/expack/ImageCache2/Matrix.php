@@ -1,10 +1,10 @@
 <?php
-// {{{ IC2_Matrix
+// {{{ ImageCache2_Matrix
 
 /**
  * ImageCache2 - s—ñŠÇ—ƒNƒ‰ƒX
  */
-class IC2_Matrix
+class ImageCache2_Matrix
 {
     // {{{ properties
 

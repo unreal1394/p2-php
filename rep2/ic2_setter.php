@@ -19,7 +19,7 @@ if (!$_conf['expack.ic2.enabled']) {
 // {{{ ライブラリ読み込み
 
 require_once 'HTML/Template/Flexy.php';
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // }}}
 // {{{ config
@@ -83,12 +83,12 @@ if (!empty($_GET['upload']) && !empty($_FILES['upimg'])) {
         P2Util::pushInfoHtml($err_fmt['none']);
     } else {
         // サムネイル作成クラスのインスタンスを作成
-        $thumbnailer = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_DEFAULT);
+        $thumbnailer = new ImageCache2_Thumbnailer(ImageCache2_Thumbnailer::SIZE_DEFAULT);
 
         // DBに記録する共通データを設定
         $f_host = 'localhost';
         $f_time = time();
-        $f_memo = isset($_POST['memo']) ? IC2_DataObject_Images::staticUniform($_POST['memo'], 'CP932') : '';
+        $f_memo = isset($_POST['memo']) ? ImageCache2_DataObject_Images::staticUniform($_POST['memo'], 'CP932') : '';
         $f_rank = isset($_POST['rank']) ? intval($_POST['rank']) : 0;
         if ($f_rank > 5) {
             $f_rank = 5;
@@ -126,7 +126,7 @@ $_flexy_options = array(
     'locale' => 'ja',
     'charset' => 'Shift_JIS',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
-    'templateDir' => P2EX_LIB_DIR . '/ic2/templates',
+    'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" と等価
 );
 
@@ -291,7 +291,7 @@ function ic2_register_uploaded_file($file)
     }
 
     // 既存の画像か検索
-    $search1 = new IC2_DataObject_Images();
+    $search1 = new ImageCache2_DataObject_Images();
     $search1->whereAddQuoted('size', '=', $file['size']);
     $search1->whereAddQuoted('md5',  '=', $file['md5']);
     $search1->whereAddQuoted('mime', '=', $file['mime']);
@@ -326,7 +326,7 @@ function ic2_register_uploaded_file($file)
 
     } else {
 
-        $record = new IC2_DataObject_Images();
+        $record = new ImageCache2_DataObject_Images();
         $record->uri    = $utf8_path;
         $record->host   = $f_host;
         $record->name   = $utf8_name;

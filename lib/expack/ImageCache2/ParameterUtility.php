@@ -1,11 +1,11 @@
 <?php
 
-// {{{ IC2_ParameterUtility
+// {{{ ImageCache2_ParameterUtility
 
 /**
  * ImageCache2 - リクエスト変数の矯正ユーティリティクラス
  */
-class IC2_ParameterUtility
+class ImageCache2_ParameterUtility
 {
     // {{{ getValidValue()
 

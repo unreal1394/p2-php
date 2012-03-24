@@ -27,7 +27,7 @@ require_once 'HTML/QuickForm/Renderer/ObjectFlexy.php';
 require_once 'HTML/Template/Flexy.php';
 require_once 'HTML/Template/Flexy/Element.php';
 require_once 'Validate.php';
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // 設定ファイル読み込み
 $ini = ic2_loadconfig();
@@ -37,8 +37,8 @@ $options = &PEAR::getStaticProperty('DB_DataObject','options');
 $options = array('database' => $ini['General']['dsn'], 'quote_identifiers' => true);
 
 // 設定関連のエラーはこれらのクラスのコンストラクタでチェックされる
-$thumbnailer = new IC2_Thumbnailer();
-$icdb = new IC2_DataObject_Images();
+$thumbnailer = new ImageCache2_Thumbnailer();
+$icdb = new ImageCache2_DataObject_Images();
 $db = $icdb->getDatabaseConnection();
 
 // }}}

@@ -1,11 +1,11 @@
 <?php
 
-// {{{ IC2_DataObject_Common
+// {{{ ImageCache2_DataObject_Common
 
 /**
  * @abstract
  */
-class IC2_DataObject_Common extends DB_DataObject
+class ImageCache2_DataObject_Common extends DB_DataObject
 {
     // {{{ properties
 

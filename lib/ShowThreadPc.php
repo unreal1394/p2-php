@@ -1517,7 +1517,7 @@ EOP;
                 ($referer ? '&amp;ref=' . rawurlencode($referer) : '');
             $img_id = null;
 
-            $icdb = new IC2_DataObject_Images();
+            $icdb = new ImageCache2_DataObject_Images();
 
             // r=0:リンク;r=1:リダイレクト;r=2:PHPで表示
             // t=0:オリジナル;t=1:PC用サムネイル;t=2:携帯用サムネイル;t=3:中間イメージ
@@ -1560,7 +1560,7 @@ EOP;
                     $thumb_url = $_thumb_url;
                     // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新
                     if (!is_null($this->img_memo) && strpos($icdb->memo, $this->img_memo) === false){
-                        $update = new IC2_DataObject_Images();
+                        $update = new ImageCache2_DataObject_Images();
                         if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                             $update->memo = $this->img_memo . ' ' . $icdb->memo;
                         } else {
@@ -1574,7 +1574,7 @@ EOP;
                     if ($rank !== null &&
                             self::isAutoFavRankOverride($icdb->rank, $rank)) {
                         if ($update === null) {
-                            $update = new IC2_DataObject_Images();
+                            $update = new ImageCache2_DataObject_Images();
                             $update->whereAddQuoted('uri', '=', $url);
                         }
                         $update->rank = $rank;
@@ -1690,7 +1690,7 @@ EOP;
             $thumb_id = 'thumbs' . $serial . $this->thumb_id_suffix;
             $tmp_thumb = './img/ic_load.png';
 
-            $icdb = new IC2_DataObject_Images();
+            $icdb = new ImageCache2_DataObject_Images();
 
             // r=0:リンク;r=1:リダイレクト;r=2:PHPで表示
             // t=0:オリジナル;t=1:PC用サムネイル;t=2:携帯用サムネイル;t=3:中間イメージ
@@ -1733,7 +1733,7 @@ EOP;
                     $thumb_url = $_thumb_url;
                     // 自動スレタイメモ機能がONでスレタイが記録されていないときはDBを更新
                     if (!is_null($this->img_memo) && strpos($icdb->memo, $this->img_memo) === false){
-                        $update = new IC2_DataObject_Images();
+                        $update = new ImageCache2_DataObject_Images();
                         if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                             $update->memo = $this->img_memo . ' ' . $icdb->memo;
                         } else {
@@ -1747,7 +1747,7 @@ EOP;
                     if ($rank !== null &&
                             self::isAutoFavRankOverride($icdb->rank, $rank)) {
                         if ($update === null) {
-                            $update = new IC2_DataObject_Images();
+                            $update = new ImageCache2_DataObject_Images();
                             $update->whereAddQuoted('uri', '=', $v['url']);
                         }
                         $update->rank = $rank;

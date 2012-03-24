@@ -1,8 +1,8 @@
 <?php
 
-// {{{ IC2_DataObject_Errors
+// {{{ ImageCache2_DataObject_Errors
 
-class IC2_DataObject_Errors extends IC2_DataObject_Common
+class ImageCache2_DataObject_Errors extends ImageCache2_DataObject_Common
 {
     // {{{ constcurtor
 

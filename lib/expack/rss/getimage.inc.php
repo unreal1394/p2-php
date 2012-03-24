@@ -3,7 +3,7 @@
  * rep2expck - RSS画像キャッシュ
  */
 
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // {{{ rss_get_image()
 
@@ -35,11 +35,11 @@ function rss_get_image_ic2($src_url, $memo='')
     static $thumbnailer_k = null;
 
     if (is_null($thumbnailer)) {
-        $thumbnailer = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_PC);
-        $thumbnailer_k = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_MOBILE);
+        $thumbnailer = new ImageCache2_Thumbnailer(ImageCache2_Thumbnailer::SIZE_PC);
+        $thumbnailer_k = new ImageCache2_Thumbnailer(ImageCache2_Thumbnailer::SIZE_MOBILE);
     }
 
-    $icdb = new IC2_DataObject_Images();
+    $icdb = new ImageCache2_DataObject_Images();
 
     if ($thumbnailer->ini['General']['automemo'] && $memo !== '') {
         $img_memo = $icdb->uniform($memo, 'CP932');
@@ -101,7 +101,7 @@ function rss_get_image_ic2($src_url, $memo='')
             $thumb_url = $thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
             // 自動タイトルメモ機能がONでタイトルが記録されていないときはDBを更新
             if (!is_null($img_memo) && strpos($icdb->memo, $img_memo) === false){
-                $update = new IC2_DataObject_Images();
+                $update = new ImageCache2_DataObject_Images();
                 if (!is_null($icdb->memo) && strlen($icdb->memo) > 0) {
                     $update->memo = $img_memo . ' ' . $icdb->memo;
                 } else {

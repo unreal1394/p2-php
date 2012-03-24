@@ -20,7 +20,7 @@ if (!$_conf['expack.ic2.enabled']) {
 
 // ライブラリ読み込み
 require_once 'HTML/Template/Flexy.php';
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // }}}
 // {{{ 設定と消去
@@ -35,12 +35,12 @@ if (!isset($_REQUEST['table'])) {
 $mode = $_REQUEST['table'];
 switch ($mode) {
     case 'errlog':
-        $table = new IC2_DataObject_Errors();
+        $table = new ImageCache2_DataObject_Errors();
         $table->orderBy('occured ASC');
         $title = 'エラーログ';
         break;
     case 'blacklist':
-        $table = new IC2_DataObject_BlackList();
+        $table = new ImageCache2_DataObject_BlackList();
         $table->orderBy('uri ASC');
         $title = 'ブラックリスト';
         break;
@@ -71,7 +71,7 @@ $_flexy_options = array(
     'locale' => 'ja',
     'charset' => 'cp932',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
-    'templateDir' => P2EX_LIB_DIR . '/ic2/templates',
+    'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" と等価
 );
 

@@ -1,11 +1,11 @@
 <?php
 
-// {{{ IC2_DatabaseManager
+// {{{ ImageCache2_DatabaseManager
 
 /**
  * ImageCache2 - 画像情報を操作するクラス
  */
-class IC2_DatabaseManager
+class ImageCache2_DatabaseManager
 {
     // {{{ update()
 
@@ -18,12 +18,12 @@ class IC2_DatabaseManager
             return;
         }
         if (!is_array($updated)) {
-            P2Util::pushInfoHtml('<p>WARNING! IC2_DatabaseManager::update(): 不正な引数</p>');
+            P2Util::pushInfoHtml('<p>WARNING! ImageCache2_DatabaseManager::update(): 不正な引数</p>');
             return;
         }
 
         // トランザクションの開始
-        $ta = new IC2_DataObject_Images();
+        $ta = new ImageCache2_DataObject_Images();
         $db = $ta->getDatabaseConnection();
         if ($db->phptype == 'pgsql') {
             $ta->query('BEGIN');
@@ -33,19 +33,19 @@ class IC2_DatabaseManager
 
         // 画像データを更新
         foreach ($updated as $id => $data) {
-            $icdb = new IC2_DataObject_Images();
+            $icdb = new ImageCache2_DataObject_Images();
             $icdb->whereAdd("id = $id");
             if ($icdb->find(true)) {
                 // メモを更新
                 if ($icdb->memo != $data['memo']) {
-                    $memo = new IC2_DataObject_Images();
+                    $memo = new ImageCache2_DataObject_Images();
                     $memo->memo = (strlen($data['memo']) > 0) ? $data['memo'] : '';
                     $memo->whereAdd("id = $id");
                     $memo->update();
                 }
                 // ランクを更新
                 if ($icdb->rank != $data['rank']) {
-                    $rank = new IC2_DataObject_Images();
+                    $rank = new ImageCache2_DataObject_Images();
                     $rank->rank = $data['rank'];
                     $rank->whereAddQuoted('size', '=', $icdb->size);
                     $rank->whereAddQuoted('md5',  '=', $icdb->md5);
@@ -86,13 +86,13 @@ class IC2_DatabaseManager
                     return $removed_files;
                 }
             } else {
-                P2Util::pushInfoHtml('<p>WARNING! IC2_DatabaseManager::remove(): 不正な引数</p>');
+                P2Util::pushInfoHtml('<p>WARNING! ImageCache2_DatabaseManager::remove(): 不正な引数</p>');
                 return $removed_files;
             }
         }
 
         // トランザクションの開始
-        $ta = new IC2_DataObject_Images();
+        $ta = new ImageCache2_DataObject_Images();
         $db = $ta->getDatabaseConnection();
         if ($db->phptype == 'pgsql') {
             $ta->query('BEGIN');
@@ -104,24 +104,24 @@ class IC2_DatabaseManager
         $parent_dir = dirname($ini['General']['cachedir']) . DIRECTORY_SEPARATOR;
         $pattern = '/^' . preg_quote($parent_dir, '/') . '/';
         foreach ($target as $id) {
-            $icdb = new IC2_DataObject_Images();
+            $icdb = new ImageCache2_DataObject_Images();
             $icdb->whereAdd("id = {$id}");
 
             if ($icdb->find(true)) {
                 // キャッシュしているファイルを削除
                 $sizes = array(
-                    IC2_Thumbnailer::SIZE_PC,
-                    IC2_Thumbnailer::SIZE_MOBILE,
-                    IC2_Thumbnailer::SIZE_INTERMD,
+                    ImageCache2_Thumbnailer::SIZE_PC,
+                    ImageCache2_Thumbnailer::SIZE_MOBILE,
+                    ImageCache2_Thumbnailer::SIZE_INTERMD,
                 );
                 $dprs = array(
-                    IC2_Thumbnailer::DPR_DEFAULT,
-                    IC2_Thumbnailer::DPR_1_5,
-                    IC2_Thumbnailer::DPR_2_0,
+                    ImageCache2_Thumbnailer::DPR_DEFAULT,
+                    ImageCache2_Thumbnailer::DPR_1_5,
+                    ImageCache2_Thumbnailer::DPR_2_0,
                 );
                 foreach ($sizes as $size) {
                     foreach ($dprs as $dpr) {
-                        $t = new IC2_Thumbnailer($size | $dpr);
+                        $t = new ImageCache2_Thumbnailer($size | $dpr);
                         $path = $t->thumbPath($icdb->size, $icdb->md5, $icdb->mime);
                         if (file_exists($path)) {
                             unlink($path);
@@ -129,7 +129,7 @@ class IC2_DatabaseManager
                         }
                     }
                 }
-                $t = new IC2_Thumbnailer();
+                $t = new ImageCache2_Thumbnailer();
                 $path = $t->srcPath($icdb->size, $icdb->md5, $icdb->mime);
                 if (file_exists($path)) {
                     unlink($path);
@@ -138,7 +138,7 @@ class IC2_DatabaseManager
 
                 // ブラックリスト送りの準備
                 if ($to_blacklist) {
-                    $_blacklist = new IC2_DataObject_BlackList();
+                    $_blacklist = new ImageCache2_DataObject_BlackList();
                     $_blacklist->size = $icdb->size;
                     $_blacklist->md5  = $icdb->md5;
                     if ($icdb->mime === 'clamscan/infected' || $icdb->rank == -4) {
@@ -151,7 +151,7 @@ class IC2_DatabaseManager
                 }
 
                 // 同一画像を検索
-                $remover = new IC2_DataObject_Images();
+                $remover = new ImageCache2_DataObject_Images();
                 $remover->whereAddQuoted('size', '=', $icdb->size);
                 $remover->whereAddQuoted('md5',  '=', $icdb->md5);
                 //$remover->whereAddQuoted('mime', '=', $icdb->mime); // SizeとMD5で十分
@@ -199,12 +199,12 @@ class IC2_DatabaseManager
                     return;
                 }
             } else {
-                P2Util::pushInfoHtml('<p>WARNING! IC2_DatabaseManager::setRank(): 不正な引数</p>');
+                P2Util::pushInfoHtml('<p>WARNING! ImageCache2_DatabaseManager::setRank(): 不正な引数</p>');
                 return $removed_files;
             }
         }
 
-        $icdb = new IC2_DataObject_Images();
+        $icdb = new ImageCache2_DataObject_Images();
         $icdb->rank = $rank;
         foreach ($target as $id) {
             $icdb->whereAdd("id = $id", 'OR');
@@ -232,13 +232,13 @@ class IC2_DatabaseManager
                     return;
                 }
             } else {
-                P2Util::pushInfoHtml('<p>WARNING! IC2_DatabaseManager::addMemo(): 不正な引数</p>');
+                P2Util::pushInfoHtml('<p>WARNING! ImageCache2_DatabaseManager::addMemo(): 不正な引数</p>');
                 return $removed_files;
             }
         }
 
         // トランザクションの開始
-        $ta = new IC2_DataObject_Images();
+        $ta = new ImageCache2_DataObject_Images();
         $db = $ta->getDatabaseConnection();
         if ($db->phptype == 'pgsql') {
             $ta->query('BEGIN');
@@ -248,10 +248,10 @@ class IC2_DatabaseManager
 
         // メモに指定文字列が含まれていなければ更新
         foreach ($target as $id) {
-            $find = new IC2_DataObject_Images();
+            $find = new ImageCache2_DataObject_Images();
             $find->whereAdd("id = $id");
             if ($find->find(true) && strpos($find->memo, $memo) === false) {
-                $update = new IC2_DataObject_Images();
+                $update = new ImageCache2_DataObject_Images();
                 $update->whereAdd("id = $id");
                 if (strlen($find->memo) > 0) {
                     $update->memo = $find->memo . ' ' . $memo;

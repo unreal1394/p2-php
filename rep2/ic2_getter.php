@@ -22,7 +22,7 @@ if (!$_conf['expack.ic2.enabled']) {
 require_once 'HTML/QuickForm.php';
 require_once 'HTML/QuickForm/Renderer/ObjectFlexy.php';
 require_once 'HTML/Template/Flexy.php';
-require_once P2EX_LIB_DIR . '/ic2/bootstrap.php';
+require_once P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
 
 // ポップアップウインドウ？
 if (empty($_GET['popup'])) {
@@ -74,9 +74,9 @@ $qf_constants = array(
 
 // プレビューの大きさ
 $_preview_size = array(
-    IC2_Thumbnailer::SIZE_PC      => $ini['Thumb1']['width'] . '&times;' . $ini['Thumb1']['height'],
-    IC2_Thumbnailer::SIZE_MOBILE  => $ini['Thumb2']['width'] . '&times;' . $ini['Thumb2']['height'],
-    IC2_Thumbnailer::SIZE_INTERMD => $ini['Thumb3']['width'] . '&times;' . $ini['Thumb3']['height'],
+    ImageCache2_Thumbnailer::SIZE_PC      => $ini['Thumb1']['width'] . '&times;' . $ini['Thumb1']['height'],
+    ImageCache2_Thumbnailer::SIZE_MOBILE  => $ini['Thumb2']['width'] . '&times;' . $ini['Thumb2']['height'],
+    ImageCache2_Thumbnailer::SIZE_INTERMD => $ini['Thumb3']['width'] . '&times;' . $ini['Thumb3']['height'],
 );
 
 // 属性
@@ -143,7 +143,7 @@ $_flexy_options = array(
     'locale' => 'ja',
     'charset' => 'cp932',
     'compileDir' => $_conf['compile_dir'] . DIRECTORY_SEPARATOR . 'ic2',
-    'templateDir' => P2EX_LIB_DIR . '/ic2/templates',
+    'templateDir' => P2EX_LIB_DIR . '/ImageCache2/templates',
     'numberFormat' => '', // ",0,'.',','" と等価
 );
 
@@ -187,7 +187,7 @@ if ($qf->validate() && ($params = $qf->getSubmitValues()) && isset($params['uri'
         $extra_params .= '&ref=' . rawurlencode($params['ref']);
     }
     if (isset($params['memo']) && strlen(trim($params['memo'])) > 0) {
-        $new_memo = IC2_DataObject_Images::staticUniform($params['memo'], 'CP932');
+        $new_memo = ImageCache2_DataObject_Images::staticUniform($params['memo'], 'CP932');
         $_memo_en = rawurlencode($new_memo);
         // レンダリング時にhtmlspecialchars()されるので、ここでは&を&amp;にしない
         $extra_params .= '&memo=' . $_memo_en . '&' . $_conf['detect_hint_q_utf8'];
@@ -296,11 +296,11 @@ if ($execDL) {
         }
     }
 
-    $thumbnailer = new IC2_Thumbnailer($thumb_type);
+    $thumbnailer = new ImageCache2_Thumbnailer($thumb_type);
     $images = array();
 
     foreach ($URLs as $url) {
-        $icdb = new IC2_DataObject_Images();
+        $icdb = new ImageCache2_DataObject_Images();
         $img_title = p2h($url);
         $url_en = rawurlencode($url);
         $src_url = 'ic2.php?r=1&uri=' . $url_en;

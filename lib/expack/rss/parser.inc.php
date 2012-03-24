@@ -12,10 +12,10 @@ if ($GLOBALS['_conf']['expack.rss.with_imgcache'] &&
     ((!$GLOBALS['_conf']['ktai'] && $GLOBALS['_conf']['expack.ic2.enabled'] % 2 == 1) ||
     ($GLOBALS['_conf']['ktai'] && $GLOBALS['_conf']['expack.ic2.enabled'] >= 2)))
 {
-    if (!class_exists('IC2_Switch', false)) {
-        require P2EX_LIB_DIR . '/ic2/Switch.php';
+    if (!class_exists('ImageCache2_Switch', false)) {
+        require P2EX_LIB_DIR . '/ImageCache2/Switch.php';
     }
-    if (IC2_Switch::get($GLOBALS['_conf']['ktai'])) {
+    if (ImageCache2_Switch::get($GLOBALS['_conf']['ktai'])) {
         if (!function_exists('rss_get_image')) {
             require P2EX_LIB_DIR . '/rss/getimage.inc.php';
         }

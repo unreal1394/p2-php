@@ -676,13 +676,13 @@ if ($_conf['iphone']) {
     // ImageCache2
     if ($_conf['expack.ic2.enabled']) {
         if (!function_exists('ic2_loadconfig')) {
-            include P2EX_LIB_DIR . '/ic2/bootstrap.php';
+            include P2EX_LIB_DIR . '/ImageCache2/bootstrap.php';
         }
         $ic2conf = ic2_loadconfig();
         if ($ic2conf['Thumb1']['width'] > 80) {
-            include P2EX_LIB_DIR . '/ic2/templates/info-v.tpl.html';
+            include P2EX_LIB_DIR . '/ImageCache2/templates/info-v.tpl.html';
         } else {
-            include P2EX_LIB_DIR . '/ic2/templates/info-h.tpl.html';
+            include P2EX_LIB_DIR . '/ImageCache2/templates/info-h.tpl.html';
         }
     }
     // SPM

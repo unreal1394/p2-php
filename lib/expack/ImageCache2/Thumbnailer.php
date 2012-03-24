@@ -3,9 +3,9 @@
  * rep2expack - ImageCache2
  */
 
-// {{{ IC2_Thumbnailer
+// {{{ ImageCache2_Thumbnailer
 
-class IC2_Thumbnailer
+class ImageCache2_Thumbnailer
 {
     // {{{ constants
 
@@ -45,7 +45,7 @@ class IC2_Thumbnailer
     public $rotate;        // @var int     画像を回転する角度（回転しないとき0）
     public $trim;          // @var bolean  画像をトリミングするか否か
     public $coord;         // @var array   画像をトリミングする範囲（トリミングしないときfalse）
-    public $found;         // @var array   IC2_DataObject_Imagesでクエリを送信した結果
+    public $found;         // @var array   ImageCache2_DataObject_Imagesでクエリを送信した結果
     public $dynamic;       // @var bool    動的生成するか否か（trueのとき結果をファイルに保存しない）
     public $intermd;       // @var string  動的生成に利用する中間イメージのパス（ソースから直接生成するときfalse）
     public $buf;           // @var string  動的生成した画像データ
@@ -107,7 +107,7 @@ class IC2_Thumbnailer
         $this->ini = ic2_loadconfig();
 
         // データベースに接続
-        $icdb = new IC2_DataObject_Images();
+        $icdb = new ImageCache2_DataObject_Images();
         $this->db = $icdb->getDatabaseConnection();
         if (DB::isError($this->db)) {
             $this->error($this->db->getMessage());
@@ -579,7 +579,7 @@ class IC2_Thumbnailer
     public function dirID($size = null, $md5 = null, $mime = null)
     {
         if ($size && $md5 && $mime) {
-            $icdb = new IC2_DataObject_Images();
+            $icdb = new ImageCache2_DataObject_Images();
             $icdb->whereAddQUoted('size', '=', $size);
             $icdb->whereAddQuoted('md5',  '=', $md5);
             $icdb->whereAddQUoted('mime', '=', $mime);

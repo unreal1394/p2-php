@@ -1,14 +1,14 @@
 <?php
 require_once 'HTML/Template/Flexy/Element.php';
 
-// {{{ IC2_EditForm
+// {{{ ImageCache2_EditForm
 
 /**
  * 画像編集用フォーム要素を生成するクラス
  *
  * @static
  */
-class IC2_EditForm
+class ImageCache2_EditForm
 {
     // {{{ header()
 
@@ -377,43 +377,43 @@ class IC2_EditForm
 /**
  * インスタンスをFlexyにアサインして使うためのラッパークラス
  */
-class IC2_EditForm_Object
+class ImageCache2_EditForm_Object
 {
     public function header($hiddens, $mode) {
-        return IC2_EditForm::header($hiddens, $mode);
+        return ImageCache2_EditForm::header($hiddens, $mode);
     }
     public function submit($id = '') {
-        return IC2_EditForm::submit($id);
+        return ImageCache2_EditForm::submit($id);
     }
     public function remove($id = '') {
-        return IC2_EditForm::remove($id);
+        return ImageCache2_EditForm::remove($id);
     }
     public function toblack($id = '') {
-        return IC2_EditForm::toblack($id);
+        return ImageCache2_EditForm::toblack($id);
     }
     public function reset($id = '') {
-        return IC2_EditForm::reset($id);
+        return ImageCache2_EditForm::reset($id);
     }
     public function checkAllOn($id = '') {
-        return IC2_EditForm::checkAllOn($id);
+        return ImageCache2_EditForm::checkAllOn($id);
     }
     public function checkAllOff($id = '') {
-        return IC2_EditForm::checkAllOff($id);
+        return ImageCache2_EditForm::checkAllOff($id);
     }
     public function checkAllReverse($id = '') {
-        return IC2_EditForm::checkAllReverse($id);
+        return ImageCache2_EditForm::checkAllReverse($id);
     }
     public function selectRank($range, $id = '') {
-        return IC2_EditForm::selectRank($range, $id);
+        return ImageCache2_EditForm::selectRank($range, $id);
     }
     public function textMemo($id = '') {
-        return IC2_EditForm::textMemo($id);
+        return ImageCache2_EditForm::textMemo($id);
     }
     public function imgManager($img, $status) {
-        return IC2_EditForm::imgManager($img, $status);
+        return ImageCache2_EditForm::imgManager($img, $status);
     }
     public function imgChecker($img) {
-        return IC2_EditForm::imgChecker($img);
+        return ImageCache2_EditForm::imgChecker($img);
     }
 }
 

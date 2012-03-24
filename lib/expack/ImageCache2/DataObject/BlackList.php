@@ -1,8 +1,8 @@
 <?php
 
-// {{{ IC2_DataObject_BlackList
+// {{{ ImageCache2_DataObject_BlackList
 
-class IC2_DataObject_BlackList extends IC2_DataObject_Common
+class ImageCache2_DataObject_BlackList extends ImageCache2_DataObject_Common
 {
     // {{{ constants
 

@@ -112,7 +112,7 @@ class ExpackLoader
         if ((!$_conf['ktai'] && $_conf['expack.ic2.enabled'] % 2 == 1) ||
             ($_conf['ktai'] && $_conf['expack.ic2.enabled'] >= 2))
         {
-            self::loadFunction('ic2_loadconfig', 'ic2/bootstrap.php');
+            self::loadFunction('ic2_loadconfig', 'ImageCache2/bootstrap.php');
             define('P2_IMAGECACHE_AVAILABLE', 2);
         } else {
             define('P2_IMAGECACHE_AVAILABLE', 0);
@@ -158,28 +158,28 @@ class ExpackLoader
 
         if (!$_conf['ktai']) {
             $aShowThread->thumb_id_suffix = '-' . strtr(microtime(), '. ', '--');
-            $aShowThread->thumbnailer = new IC2_Thumbnailer(IC2_Thumbnailer::SIZE_PC);
+            $aShowThread->thumbnailer = new ImageCache2_Thumbnailer(ImageCache2_Thumbnailer::SIZE_PC);
         } else {
-            $preview_size = IC2_Thumbnailer::SIZE_PC;
-            $thumb_size = IC2_Thumbnailer::SIZE_MOBILE;
+            $preview_size = ImageCache2_Thumbnailer::SIZE_PC;
+            $thumb_size = ImageCache2_Thumbnailer::SIZE_MOBILE;
             if ($_conf['iphone'] && !empty($_SESSION['device_pixel_ratio'])) {
                 $dpr = $_SESSION['device_pixel_ratio'];
                 if ($dpr === 1.5) {
-                    $preview_size |= IC2_Thumbnailer::DPR_1_5;
-                    $thumb_size   |= IC2_Thumbnailer::DPR_1_5;
+                    $preview_size |= ImageCache2_Thumbnailer::DPR_1_5;
+                    $thumb_size   |= ImageCache2_Thumbnailer::DPR_1_5;
                 } elseif ($dpr === 2.0) {
-                    $preview_size |= IC2_Thumbnailer::DPR_2_0;
-                    $thumb_size   |= IC2_Thumbnailer::DPR_2_0;
+                    $preview_size |= ImageCache2_Thumbnailer::DPR_2_0;
+                    $thumb_size   |= ImageCache2_Thumbnailer::DPR_2_0;
                 } else {
                     $dpr = 1.0;
                 }
             }
-            $aShowThread->inline_prvw = new IC2_Thumbnailer($preview_size);
-            $aShowThread->thumbnailer = new IC2_Thumbnailer($thumb_size);
+            $aShowThread->inline_prvw = new ImageCache2_Thumbnailer($preview_size);
+            $aShowThread->thumbnailer = new ImageCache2_Thumbnailer($thumb_size);
         }
 
         if ($aShowThread->thumbnailer->ini['General']['automemo']) {
-            $aShowThread->img_memo = IC2_DataObject_Images::staticUniform($aShowThread->thread->ttitle, 'CP932');
+            $aShowThread->img_memo = ImageCache2_DataObject_Images::staticUniform($aShowThread->thread->ttitle, 'CP932');
             $aShowThread->img_memo_query = '&amp;memo=' . rawurlencode($aShowThread->img_memo);
             $aShowThread->img_memo_query .= '&amp;' . $_conf['detect_hint_q_utf8'];
         } else {
@@ -194,8 +194,8 @@ class ExpackLoader
             $aShowThread->img_dpr_query = '';
         }
 
-        self::loadClass('IC2_Switch', 'ic2/Switch.php');
-        if (!IC2_Switch::get($_conf['ktai'])) {
+        self::loadClass('ImageCache2_Switch', 'ImageCache2/Switch.php');
+        if (!ImageCache2_Switch::get($_conf['ktai'])) {
             $GLOBALS['pre_thumb_limit'] = 0;
             $GLOBALS['pre_thumb_limit_k'] = 0;
             $GLOBALS['pre_thumb_unlimited'] = false;

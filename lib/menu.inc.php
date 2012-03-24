@@ -328,10 +328,10 @@ EOP;
 // Å°ImageCache2
 //==============================================================
 if ($_conf['expack.ic2.enabled']) {
-    if (!class_exists('IC2_Switch', false)) {
-        include P2EX_LIB_DIR . '/ic2/Switch.php';
+    if (!class_exists('ImageCache2_Switch', false)) {
+        include P2EX_LIB_DIR . '/ImageCache2/Switch.php';
     }
-    if (IC2_Switch::get()) {
+    if (ImageCache2_Switch::get()) {
         $ic2sw = array('inline', 'none');
     } else {
         $ic2sw = array('none', 'inline');
