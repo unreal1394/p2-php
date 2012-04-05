@@ -16,7 +16,7 @@ Replace=$1<a href="hissi.php?bbs=$bbs&date=$2$3$4&id=$id" target="_blank"><img s
 とすれば、必死チェッカーに対応してる板では画像が表示され、そうでない板では表示されない。
 */
 
-include_once './conf/conf.inc.php';
+require_once __DIR__ . '/../init.php';
 
 $_login->authorize(); //ユーザ認証
 

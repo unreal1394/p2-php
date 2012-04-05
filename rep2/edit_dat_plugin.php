@@ -3,7 +3,7 @@
     p2 - DAT取得プラグイン編集インタフェース
 */
 
-include_once './conf/conf.inc.php';
+require_once __DIR__ . '/../init.php';
 require_once P2_LIB_DIR . '/wiki/DatPluginCtl.php';
  
 $_login->authorize(); // ユーザ認証

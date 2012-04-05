@@ -9,7 +9,7 @@ id:IDを渡す
 img:何か含まれていれば画像を表示
 */
 
-include_once './conf/conf.inc.php';
+require_once __DIR__ . '/../init.php';
 
 $_login->authorize(); //ユーザ認証
 
