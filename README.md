@@ -16,10 +16,9 @@
   cd p2-php</pre>
 
 2. 依存ライブラリをダウンロード
-  <pre>curl -L -O https://github.com/downloads/rsky/p2-php/p2pear.phar</pre>
-  MD5 (p2pear.phar) = 5e02b3d21bccc7a23422f1c43d2d971f
-  <pre>curl -O http://getcomposer.org/composer.phar
-  php composer.phar install</pre>
+  <pre>git submodule update --init
+  curl -O http://getcomposer.org/composer.phar
+  php -d detect_unicode=0 composer.phar install</pre>
 
 3. Webサーバが書き込めるようにディレクトリのアクセス権をセット  
   (CGI/suEXECIやCLI/Built-in web serverでは不要)
@@ -82,13 +81,14 @@ Webブラウザから変更できない項目は [conf/conf_admin.inc.php](https
 
     git pull
 
-### p2pear.pharが古いとき
+### PEARライブラリ
 
-    curl -L -O https://github.com/downloads/rsky/p2-php/p2pear.phar
+    git submodule foreach 'git pull origin master'
+    git submodule update
 
 ### composer.jsonが更新されたとき
 
-    php composer.phar update
+    php -d detect_unicode=0 composer.phar update
 
 
 ## 古いバージョンからの移行
