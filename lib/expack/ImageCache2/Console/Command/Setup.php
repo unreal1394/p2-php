@@ -429,7 +429,7 @@ SQL;
 
     private function doCreateIndex($indexName, $tableName, array $fieldNames)
     {
-        $db = $this->query;
+        $db = $this->db;
         $callback = array($db, 'quoteIdentifier');
         $sql = sprintf('CREATE INDEX %s ON %s (%s);',
                        $db->quoteIdentifier($indexName),
