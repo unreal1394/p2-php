@@ -107,8 +107,7 @@ $_conf['expack.ic2.zip'] = 0; // (0)
 $_conf['expack.aas.enabled'] = 0; // (0)
 
 //TrueTypeフォントのパス
-$_conf['expack.aas.font_path'] = "./ttf/mona.ttf"; // ("./ttf/mona.ttf")
-//$_conf['expack.aas.font_path'] = "./ttf/ipagp-mona.ttf";
+$_conf['expack.aas.font_path'] = P2_BASE_DIR . '/ttf/mona.ttf';
 
 // 数値参照のデコードに失敗したときの代替文字
 $_conf['expack.aas.unknown_char'] = "?"; // ("?")
