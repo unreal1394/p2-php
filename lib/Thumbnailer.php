@@ -211,12 +211,12 @@ abstract class Thumbnailer
     /**
      * Sets rotation.
      *
-     * @param int $angle
+     * @param int $degrees
      * @return void
      */
     public function setRotation($degrees)
     {
-        $this->_rotation = $degrees;
+        $this->_rotation = (int)$degrees % 360;
     }
 
     // }}}
