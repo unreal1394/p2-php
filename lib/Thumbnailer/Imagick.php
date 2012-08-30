@@ -96,16 +96,18 @@ class Thumbnailer_Imagick extends Thumbnailer
         $im = new Imagick();
         $im->readImage($source);
 
-        if (method_exists($im, 'rewind')) {
-            $im->rewind();
-        }
-        if (method_exists($im, 'flattenImages')) {
+        if ($im->getNumberImages() > 1) {
             $im->flattenImages();
         }
-        if (method_exists($im, 'getImageMatte') && method_exists($im, 'setImageMatte')) {
-            if ($im->getImageMatte()) {
-                $im->setImageMatte(false);
-            }
+
+        $colorspace = $im->getImageColorSpace();
+        if ($colorspace !== Imagick::COLORSPACE_RGB &&
+            $colorspace !== Imagick::COLORSPACE_SRGB) {
+            $im->setImageColorSpace(Imagick::COLORSPACE_SRGB);
+        }
+
+        if ($im->getImageMatte()) {
+            $im->setImageMatte(false);
         }
 
         if ($this->doesTrimming()) {
@@ -114,11 +116,13 @@ class Thumbnailer_Imagick extends Thumbnailer
 
         if ($this->doesResampling()) {
             $im->thumbnailImage($tw, $th);
-        } else {
-            $im->stripImage();
+            $im->resizeImage($tw, $th, Imagick::FILTER_LANCZOS, 0.9, true);
         }
 
-        if ($degrees = $this->getRotation()) {
+        $im->stripImage();
+
+        $degrees = $this->getRotation();
+        if ($degrees) {
             $bgcolor = $this->getBgColor();
             $bg = sprintf('rgb(%d,%d,%d)', $bgcolor[0], $bgcolor[1], $bgcolor[2]);
             $im->rotateImage(new ImagickPixel($bg), $degrees);
@@ -132,8 +136,6 @@ class Thumbnailer_Imagick extends Thumbnailer
                 $im->setCompressionQuality($this->getQuality());
             }
         }
-
-        $im->setImageColorSpace(Imagick::COLORSPACE_RGB);
 
         return $im;
     }
