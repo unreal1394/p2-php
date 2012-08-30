@@ -9,7 +9,7 @@
 /**
  * Image manipulation class which uses imagick php extension version 2.0 or later.
  */
-class Thumbnailer_Imagick extends Thumbnailer_Common
+class Thumbnailer_Imagick extends Thumbnailer
 {
     // {{{ save()
 
