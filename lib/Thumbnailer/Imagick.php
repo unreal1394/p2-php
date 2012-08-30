@@ -115,7 +115,6 @@ class Thumbnailer_Imagick extends Thumbnailer
         }
 
         if ($this->doesResampling()) {
-            $im->thumbnailImage($tw, $th);
             $im->resizeImage($tw, $th, Imagick::FILTER_LANCZOS, 0.9, true);
         }
 
