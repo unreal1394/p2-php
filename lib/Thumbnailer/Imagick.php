@@ -94,6 +94,13 @@ class Thumbnailer_Imagick extends Thumbnailer
         extract($size);
 
         $im = new Imagick();
+        $js = 0;
+        $hint = max($tw, $th) * $js;
+        if ($hint > 0 && $hint < $sw && $hint < $sh) {
+            if (pathinfo($source, PATHINFO_EXTENSION) === 'jpg') {
+                $im->setOption('jpeg:size', sprintf('%dx%d', $hint, $hint));
+            }
+        }
         $im->readImage($source);
 
         if ($im->getNumberImages() > 1) {
