@@ -1,4 +1,7 @@
 {
+    "name": "rsky/rep2-expack",
+    "description": "The 2ch viewer written in PHP",
+    "license": "MIT",
     "require": {
         "php": ">=5.3.2",
         "symfony/console": "2.0.*",
