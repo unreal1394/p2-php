@@ -1,6 +1,6 @@
 {
-    "name": "rsky/rep2-expack",
-    "description": "The 2ch viewer written in PHP",
+    "name": "rsky/p2-php",
+    "description": "The server side 2ch viewer written in PHP",
     "license": "MIT",
     "require": {
         "php": ">=5.3.2",
