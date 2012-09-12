@@ -168,7 +168,7 @@ echo <<<EOP
 <br>
 <div class="container">
     {$newversion_found}
-    <p>rep2-expack rev.{$_conf['p2expack']}; extends rep2-{$_conf['p2version']}<br>
+    <p>{$_conf['p2name']} ver.{$_conf['p2version']}<br>
     <a href="{$expack_url_r}"{$_conf['ext_win_target_at']}>{$_conf['expack.web_url']}</a><br>
     <a href="{$p2web_url_r}"{$_conf['ext_win_target_at']}>{$_conf['p2web_url']}</a></p>
     <ul>
@@ -223,7 +223,7 @@ function checkUpdatan()
     //$kita = '·À*¥ßß¥*:.¡..¡.:*¥ß(ßÍß)ß¥*:.¡. .¡.:*¥ßß¥*!!!!!';
 
     $newversion_found_html = '';
-    if ($update_ver && version_compare($update_ver, $_conf['p2expack'], '>')) {
+    if ($update_ver && version_compare($update_ver, $_conf['p2version'], '>')) {
         $newversion_found_html = <<<EOP
 <div class="kakomi">
     {$kita}<br>
