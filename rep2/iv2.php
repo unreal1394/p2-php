@@ -456,8 +456,16 @@ if ($key !== '') {
 }
 
 // 重複画像をスキップするとき
+if ($ini['Viewer']['unique'] == 1) {
+    $_find_unique = true;
+} elseif ($ini['Viewer']['unique'] == 2 &&
+          in_array($order, array('size', 'width', 'height', 'pixels'))) {
+    $_find_unique = true;
+} else {
+    $_find_unique = false;
+}
 $_find_duplicated = 0; // 試験的パラメータ、登録レコード数がこれ以上の画像のみを抽出
-if ($ini['Viewer']['unique'] || $_find_duplicated > 1) {
+if ($_find_unique || $_find_duplicated > 1) {
     $subq = 'SELECT ' . (($sort == 'ASC') ? 'MIN' : 'MAX') . '(id) FROM ';
     $subq .= $db->quoteIdentifier($ini['General']['table']);
     if (isset($keys)) {
