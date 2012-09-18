@@ -744,7 +744,11 @@ if ($all === 0) {
     // DB‚©‚çæ“¾‚·‚é”ÍˆÍ‚ğİ’è‚µ‚ÄŒŸõ
     $from = ($page - 1) * $ipp;
     if ($order == 'pixels') {
-        $orderBy = '(width * height) ' . $sort;
+        if (preg_match('/^(my|pg)sql:/', $ini['General']['dsn'])) {
+            $orderBy = '(CAST(width AS INTEGER) * CAST(height AS INTEGER)) ' . $sort;
+        } else {
+            $orderBy = '(width * height) ' . $sort;
+        }
     } elseif ($order == 'date_uri' || $order == 'date_uri2') {
         if ($db_class == 'db_sqlite') {
             /*
