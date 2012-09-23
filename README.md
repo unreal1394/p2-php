@@ -99,36 +99,13 @@ Webブラウザから変更できない項目は [conf/conf_admin.inc.php](https
     php -d detect_unicode=0 composer.phar update
 
 
-## 古いバージョンからの移行
-
-[144c0e91c](https://github.com/rsky/p2-php/commit/144c0e91c0822dc6ba5c237ec9759b3c98bd6a0d)でルートディレクトリにあったWeb経由でアクセスされるファイルをrep2ディレクトリに移動する等、ファイル構成を変更しました。
-
-既存のデータをそのまま使い続けるには、conf/conf_user_admin.inc.php および conf/conf_ic2.inc.php を下記のように旧版相当の設定にします。
-
-### conf/conf_user_admin.inc.php
-
-※ dataディレクトリの位置はindex.phpがある階層よりひとつ上。
-
-    $_conf['data_dir'] = P2_BASE_DIR . '/data';
-    $_conf['dat_dir']  = P2_BASE_DIR . '/data';
-    $_conf['idx_dir']  = P2_BASE_DIR . '/data';
-    $_conf['pref_dir'] = P2_BASE_DIR . '/data';
-
-### conf/conf_ic2.inc.php
-
-    $_conf['expack.ic2.general.cachedir'] = P2_WWW_DIR . '/cache';    $_conf['expack.ic2.general.cacheuri'] = './cache';
-    // 以下はSQLite2の場合のみ    $_conf['expack.ic2.general.dsn'] = 'sqlite:///' . P2_WWW_DIR . '/cache/imgcache.sqlite';
-
-※ SQLite2な人は rep2/cache/imgcache.sqlite を data/db/imgcache.sqlite に移動して
-DSNは `"sqlite:///{$_conf['db_dir']}/imgcache.sqlite"` がおすすめ。
-
 ## Authors & Contributors
 
 * **aki** *(original)* http://akid.s17.xrea.com/
 * **rsk** *(expack)* https://github.com/rsky/p2-php/
 * **unpush** https://github.com/unpush/p2-php/
 * **thermon** https://github.com/thermon/p2-php/
-* **part32の892** *(+live)* http://plus-live.main.jp/
+* **part32の892** *(+live)* https://github.com/pluslive/p2-php/
 * **2ch p2/rep2スレの>>1-1000**
 
 
