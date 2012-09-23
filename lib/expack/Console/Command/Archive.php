@@ -96,7 +96,7 @@ class Archive extends Command
     private function checkout($branch, OutputInterface $output, $verbose = false)
     {
         $command = 'git checkout ' . ($verbose ? '' : ' --quiet')
-                 . escapeshellarg($branch);
+                 . ' ' . escapeshellarg($branch);
 
         return $this->execCommand($command, $output) === 0;
     }
