@@ -37,9 +37,9 @@
 
 PHP 5.4の新機能、[ビルトインウェブサーバー](http://docs.php.net/manual/ja/features.commandline.webserver.php)で簡単に試せます。
 
-ルートディレクトリで以下のようにすると、Webサーバーの設定をしなくても `http://localhost:8080/` でrep2を使えます。**(Windowsでも!)**
+以下のようにすると、Webサーバーの設定をしなくても `http://localhost:8080/` でrep2を使えます。**(Windowsでも!)**
 
-    php -S localhost:8080 -t rep2 router.php
+    php -S localhost:8080 -t rep2
 
 moriyoshi++
 
