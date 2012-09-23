@@ -19,11 +19,11 @@ class Update extends sfConsoleCommand
         ->setName('update')
         ->setDescription('Updates rep2 expack')
         ->setDefinition(array(
-            new InputOption('no-rep2',  null, null, 'Don\'t update rep2'),
-            new InputOption('alldeps',  null, null, 'Update all depenencies'),
-            new InputOption('composer', null, null, 'Update composer.phar'),
-            new InputOption('pear',     null, null, 'Update PEAR libraries'),
-            new InputOption('vendor',   null, null, 'Update vendor libraries'),
+            new InputOption('no-rep2',  null, InputOption::VALUE_NONE, 'Don\'t update rep2'),
+            new InputOption('alldeps',  null, InputOption::VALUE_NONE, 'Update all depenencies'),
+            new InputOption('composer', null, InputOption::VALUE_NONE, 'Update composer.phar'),
+            new InputOption('pear',     null, InputOption::VALUE_NONE, 'Update PEAR libraries'),
+            new InputOption('vendor',   null, InputOption::VALUE_NONE, 'Update vendor libraries'),
         ));
     }
 
@@ -33,8 +33,10 @@ class Update extends sfConsoleCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $verbose = (bool)$input->getOption('verbose');
+
         if (!$input->getOption('no-rep2')) {
-            if (!$this->updateSelf($output)) {
+            if (!$this->updateSelf($output, $verbose)) {
                 return 1;
             }
         }
@@ -43,7 +45,7 @@ class Update extends sfConsoleCommand
         foreach (array('pear', 'composer', 'vendor') as $dep) {
             if ($updateAllDeps || $input->getOption($dep)) {
                 $method = 'update' . ucfirst($dep);
-                if (!$this->$method($output)) {
+                if (!$this->$method($output, $verbose)) {
                     return 1;
                 }
             }
@@ -55,52 +57,64 @@ class Update extends sfConsoleCommand
     /**
      * Update rep2
      *
-     * @var OutputInterface $output
+     * @param OutputInterface $output
+     * @param bool $verbose
      *
      * @return bool
      */
-    private function updateSelf(OutputInterface $output)
+    private function updateSelf(OutputInterface $output, $verbose = false)
     {
-        $command = 'git pull --quiet';
+        $command = 'git pull' . ($verbose ? '' : ' --quiet');
         return $this->runShellCommand($command, $output) === 0;
     }
 
     /**
      * Update PEAR libraries
      *
-     * @var OutputInterface $output
+     * @param OutputInterface $output
+     * @param bool $verbose
      *
      * @return bool
      */
-    private function updatePear(OutputInterface $output)
+    private function updatePear(OutputInterface $output, $verbose = false)
     {
-        $command = 'git submodule update --quiet';
+        $quiet = ($verbose ? '' : ' --quiet');
+        $command = 'git submodule' . $quiet . ' foreach '
+                 .  escapeshellarg('git fetch' . $quiet . ' origin');
+        if ($this->runShellCommand($command, $output) !== 0) {
+            return false;
+        }
+        $command = 'git submodule' . $quiet . ' update';
         return $this->runShellCommand($command, $output) === 0;
     }
 
     /**
      * Update composer.phar
      *
-     * @var OutputInterface $output
+     * @param OutputInterface $output
+     * @param bool $verbose
      *
      * @return bool
      */
-    private function updateComposer(OutputInterface $output)
+    private function updateComposer(OutputInterface $output, $verbose = false)
     {
-        $command = escapeshellarg(PHP_BINARY) . ' composer.phar selfupdate';
+        $command = escapeshellarg(PHP_BINARY)
+                 . ' -d detect_unicode=0 composer.phar selfupdate';
         return $this->runShellCommand($command, $output) === 0;
     }
 
     /**
      * Update vendor libraries
      *
-     * @var OutputInterface $output
+     * @param OutputInterface $output
+     * @param bool $verbose
      *
      * @return bool
      */
-    private function updateVendor(OutputInterface $output)
+    private function updateVendor(OutputInterface $output, $verbose = false)
     {
-        $command = escapeshellarg(PHP_BINARY) . ' composer.phar update';
+        $command = escapeshellarg(PHP_BINARY)
+                 . ' -d detect_unicode=0 composer.phar update';
         return $this->runShellCommand($command, $output) === 0;
     }
 

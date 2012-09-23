@@ -25,11 +25,6 @@
   <pre>chmod 0777 data/* rep2/ic</pre>
 
 
-### Zipでくれ
-
-つ[Tags](https://github.com/rsky/p2-php/tags)
-
-
 ## 動作環境
 以下のコマンドを実行して、全ての項目で `OK` が出たなら大丈夫です。
 
@@ -85,17 +80,14 @@ Webブラウザから変更できない項目は [conf/conf_admin.inc.php](https
 
 ## 更新
 
-### 本体
+    php scripts/p2cmd.php update
+
+これは下記コマンドを個別に実行するのと等価です。
 
     git pull
-
-### PEARライブラリ
-
-    git submodule foreach 'git pull origin master'
+    git submodule foreach 'git fetch origin'
     git submodule update
-
-### composer.jsonが更新されたとき
-
+    php -d detect_unicode=0 composer.phar update
     php -d detect_unicode=0 composer.phar update
 
 
