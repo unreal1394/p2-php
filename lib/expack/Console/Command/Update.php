@@ -2,12 +2,11 @@
 
 namespace expack\Console\Command;
 
-use Symfony\Component\Console\Command\Command as sfConsoleCommand;
 use Symfony\Component\Console\Input\InputOption,
     Symfony\Component\Console\Input\InputInterface,
     Symfony\Component\Console\Output\OutputInterface;
 
-class Update extends sfConsoleCommand
+class Update extends Command
 {
     /**
      * (non-PHPdoc)
@@ -65,7 +64,8 @@ class Update extends sfConsoleCommand
     private function updateSelf(OutputInterface $output, $verbose = false)
     {
         $command = 'git pull' . ($verbose ? '' : ' --quiet');
-        return $this->runShellCommand($command, $output) === 0;
+
+        return $this->execCommand($command, $output) === 0;
     }
 
     /**
@@ -81,11 +81,13 @@ class Update extends sfConsoleCommand
         $quiet = ($verbose ? '' : ' --quiet');
         $command = 'git submodule' . $quiet . ' foreach '
                  .  escapeshellarg('git fetch' . $quiet . ' origin');
-        if ($this->runShellCommand($command, $output) !== 0) {
+        if ($this->execCommand($command, $output) !== 0) {
             return false;
         }
+
         $command = 'git submodule' . $quiet . ' update';
-        return $this->runShellCommand($command, $output) === 0;
+
+        return $this->execCommand($command, $output) === 0;
     }
 
     /**
@@ -100,7 +102,8 @@ class Update extends sfConsoleCommand
     {
         $command = escapeshellarg(PHP_BINARY)
                  . ' -d detect_unicode=0 composer.phar selfupdate';
-        return $this->runShellCommand($command, $output) === 0;
+
+        return $this->execCommand($command, $output) === 0;
     }
 
     /**
@@ -115,24 +118,7 @@ class Update extends sfConsoleCommand
     {
         $command = escapeshellarg(PHP_BINARY)
                  . ' -d detect_unicode=0 composer.phar update';
-        return $this->runShellCommand($command, $output) === 0;
-    }
 
-    /**
-     * Execute command
-     *
-     * @param string $command
-     * @param OutputInterface $output
-     *
-     * @return int
-     */
-    private function runShellCommand($command, $output)
-    {
-        $output->writeln("<comment>{$command}</comment>");
-        exec($command, $lines, $code);
-        if ($lines) {
-            array_map(array($output, 'writeln'), $lines);
-        }
-        return $code;
+        return $this->execCommand($command, $output) === 0;
     }
 }
