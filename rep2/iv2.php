@@ -253,7 +253,7 @@ $qfe['rows']      = $qf->addElement('text', 'rows', '縦', array('size' => 3, 'ma
 $qfe['order']     = $qf->addElement('select', 'order', '並び順', $_order);
 $qfe['sort']      = $qf->addElement('select', 'sort', '方向', $_sort);
 $qfe['field']     = $qf->addElement('select', 'field', 'フィールド', $_field);
-$qfe['keyword']       = $qf->addElement('text', 'keyword', 'キーワード', array('size' => 20));
+$qfe['keyword']   = $qf->addElement('text', 'keyword', 'キーワード', array('size' => 20));
 $qfe['compare']   = $qf->addElement('select', 'compare', '比較方法', $_compare);
 $qfe['threshold'] = $qf->addElement('select', 'threshold', 'しきい値', $_threshold);
 $qfe['thumbtype'] = $qf->addElement('select', 'thumbtype', 'サムネイルタイプ', $_thumbtype);
@@ -333,7 +333,7 @@ $rows      = ImageCache2_ParameterUtility::getValidValue('rows',   $_defaults['r
 $order     = ImageCache2_ParameterUtility::getValidValue('order',  $_defaults['order']);
 $sort      = ImageCache2_ParameterUtility::getValidValue('sort',   $_defaults['sort'] );
 $field     = ImageCache2_ParameterUtility::getValidValue('field',  $_defaults['field']);
-$key       = ImageCache2_ParameterUtility::getValidValue('keyword',    $_defaults['keyword']);
+$key       = ImageCache2_ParameterUtility::getValidValue('keyword',   $_defaults['keyword']);
 $threshold = ImageCache2_ParameterUtility::getValidValue('threshold', $_defaults['threshold'], 'intval');
 $compare   = ImageCache2_ParameterUtility::getValidValue('compare',   $_defaults['compare']);
 $mode      = ImageCache2_ParameterUtility::getValidValue('mode',      $_defaults['mode'], 'intval');
