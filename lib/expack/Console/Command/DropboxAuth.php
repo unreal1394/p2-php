@@ -32,7 +32,7 @@ class DropboxAuth extends sfConsoleCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $appAuthJsonFile = \P2_CONFIG_DIR . '/dropbox.json';
+        $appAuthJsonFile = $GLOBALS['_conf']['dropbox_auth_json'];
         $clientIdentifier = $GLOBALS['_conf']['p2name'];
         $callbackUrl = null;
 
