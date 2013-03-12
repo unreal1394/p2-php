@@ -179,9 +179,6 @@ function p2_init()
     include P2_LIB_DIR . '/wiki/P2UtilWiki.php';
 
     if ($debug) {
-        if (!class_exists('Benchmark_Profiler', false)) {
-            include 'Benchmark/Profiler.php';
-        }
         $profiler = new Benchmark_Profiler(true);
         // p2_print_memory_usage();
         register_shutdown_function('p2_print_memory_usage');
