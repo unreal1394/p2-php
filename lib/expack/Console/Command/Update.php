@@ -21,7 +21,6 @@ class Update extends Command
             new InputOption('no-rep2',  null, InputOption::VALUE_NONE, 'Don\'t update rep2'),
             new InputOption('alldeps',  null, InputOption::VALUE_NONE, 'Update all depenencies'),
             new InputOption('composer', null, InputOption::VALUE_NONE, 'Update composer.phar'),
-            new InputOption('pear',     null, InputOption::VALUE_NONE, 'Update PEAR libraries'),
             new InputOption('vendor',   null, InputOption::VALUE_NONE, 'Update vendor libraries'),
         ));
     }
@@ -41,7 +40,7 @@ class Update extends Command
         }
 
         $updateAllDeps = (bool)$input->getOption('alldeps');
-        foreach (array('pear', 'composer', 'vendor') as $dep) {
+        foreach (array('composer', 'vendor') as $dep) {
             if ($updateAllDeps || $input->getOption($dep)) {
                 $method = 'update' . ucfirst($dep);
                 if (!$this->$method($output, $verbose)) {
@@ -64,28 +63,6 @@ class Update extends Command
     private function updateSelf(OutputInterface $output, $verbose = false)
     {
         $command = 'git pull' . ($verbose ? '' : ' --quiet');
-
-        return $this->execCommand($command, $output) === 0;
-    }
-
-    /**
-     * Update PEAR libraries
-     *
-     * @param OutputInterface $output
-     * @param bool $verbose
-     *
-     * @return bool
-     */
-    private function updatePear(OutputInterface $output, $verbose = false)
-    {
-        $quiet = ($verbose ? '' : ' --quiet');
-        $command = 'git submodule' . $quiet . ' foreach '
-                 .  escapeshellarg('git fetch' . $quiet . ' origin');
-        if ($this->execCommand($command, $output) !== 0) {
-            return false;
-        }
-
-        $command = 'git submodule' . $quiet . ' update';
 
         return $this->execCommand($command, $output) === 0;
     }
