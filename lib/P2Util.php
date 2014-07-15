@@ -953,7 +953,7 @@ class P2Util
         if (!array_key_exists($in_host, self::$_hostIsJbbsShitaraba)) {
             if ($in_host == 'rentalbbs.livedoor.com') {
                 self::$_hostIsJbbsShitaraba[$in_host] = true;
-            } elseif (preg_match('<^jbbs\\.(?:shitaraba\\.com|livedoor\\.(?:com|jp))(?:/|$)>', $in_host)) {
+            } elseif (preg_match('<^jbbs\\.(?:shitaraba\\.(?:net|com)|livedoor\\.(?:com|jp))(?:/|$)>', $in_host)) {
                 self::$_hostIsJbbsShitaraba[$in_host] = true;
             } else {
                 self::$_hostIsJbbsShitaraba[$in_host] = false;
@@ -973,7 +973,7 @@ class P2Util
      */
     static public function adjustHostJbbs($in_str)
     {
-        return preg_replace('<(^|/)jbbs\\.(?:shitaraba|livedoor)\\.com(/|$)>', '\\1jbbs.livedoor.jp\\2', $in_str, 1);
+        return preg_replace('<(^|/)jbbs\\.(?:shitaraba|livedoor)\\.(?:net|com)(/|$)>', '\\1jbbs.shitaraba.net\\2', $in_str, 1);
         //return preg_replace('<(^|/)jbbs\\.(?:shitaraba\\.com|livedoor\\.(?:com|jp))(/|$)>', '\\1rentalbbs.livedoor.com\\2', $in_str, 1);
     }
 
@@ -1904,7 +1904,7 @@ ERR;
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
 
             // ‚µ‚½‚ç‚ÎJBBS - http://jbbs.livedoor.com/bbs/read.cgi/computer/2999/1081177036/-100
-            } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.com))/bbs/read\\.cgi
+            } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))/bbs/read\\.cgi
                     /(\\w+)/(\\d+)/(\\d+)/((?:\\d+)?-(?:\\d+)?)?[^"]*>x', $nama_url, $matches))
             {
                 $host = $matches[1] . '/' . $matches[2];
@@ -1919,7 +1919,7 @@ ERR;
                 $host = $matches[1];
                 list($bbs, $key, $ls) = self::parseMachiQuery($matches[2]);
 
-            } elseif (preg_match('<^http://((jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.com))(?:/(\\w+))?)/bbs/read\\.(?:pl|cgi)\\?(.+)>',
+            } elseif (preg_match('<^http://((jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))(?:/(\\w+))?)/bbs/read\\.(?:pl|cgi)\\?(.+)>',
                     $nama_url, $matches))
             {
                 $host = $matches[1];
