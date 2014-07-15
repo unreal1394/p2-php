@@ -358,7 +358,7 @@ class ThreadRead extends Thread
     protected function _downloadDat2chNotFound($code = null)
     {
         // 2ch, bbspink ならread.cgiで確認
-        if (P2Util::isHost2chs($this->host)) {
+        if (P2Util::isHost2chs($this->host) || P2Util::isHostVip2ch($this->host)) {
             $this->getdat_error_msg_ht .= $this->get2chDatError($code);
         }
         $this->diedat = true;
@@ -782,6 +782,7 @@ class ThreadRead extends Thread
         $dat_response_status = '';
         $dat_response_msg = '';
 
+        $vip2ch_kakosoko_match = "/格.{1,2}されています。もう書き込みできません。。/";
         $kakosoko_match = "/このスレッドは過去ログ倉庫に格.{1,2}されています/";
 
         $naidesu_match = "/<title>そんな板orスレッドないです。<\/title>/";
@@ -846,7 +847,7 @@ EOP;
         //
         // <title>がそんな板orスレッドないです。or error 3939
         //
-        } elseif ($reason === 'kakohtml' or preg_match($naidesu_match, $read_response_html, $matches) || preg_match($error3939_match, $read_response_html, $matches)) {
+        } elseif ($reason === 'kakohtml' or preg_match($naidesu_match, $read_response_html, $matches) || preg_match($error3939_match, $read_response_html, $matches) ||preg_match($vip2ch_kakosoko_match, $read_response_html, $matches)) {
 
             if ($reason === 'kakohtml' or preg_match($kakohtml_match, $read_response_html, $matches)) {
                 if ($reason === 'kakohtml') {
@@ -863,6 +864,18 @@ EOP;
                 $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
                 $moritori_ht = $this->_generateMoritapoDatLink();
                 $dat_response_msg = "<p>2ch info - 隊長! スレッドはhtml化されるのを待っているようです。{$marutori_ht}{$moritori_ht}</p>";
+
+            } elseif (preg_match($vip2ch_kakosoko_match, $read_response_html, $matches)) {
+            	//当座の凌ぎもう少しきれいな書き方をしたいかも
+            	$ur1test = $this->key;
+            	$ur2test = $this->key;
+            	$ur1test = substr($ur1test,0,4);
+            	$ur2test = substr($ur2test,0,5);
+            	$dat_response_status = "このスレッドは過去ログ倉庫に格納されています。";
+            	$kakolog_uri = "http://{$this->host}/{$this->bbs}/kako/{$ur1test}/{$ur2test}/{$this->key}";
+            	$kakolog_url_en = rawurlencode($kakolog_uri);
+            	$read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_url_en}&amp;kakoget=1";
+            	$dat_response_msg = "<p>2ch info - 隊長! 過去ログ倉庫で、<a href=\"{$kakolog_uri}.html\"{$_conf['bbs_win_target_at']}>スレッド {$this->key}.html</a> を発見しました。 [<a href=\"{$read_kako_url}\">rep2に取り込んで読む</a>]</p>";
 
             } else {
                 if (!empty($_GET['kakolog'])) {
@@ -1067,8 +1080,8 @@ EOP;
         global $_conf;
 
         $this->diedat = true;
-        // 2ch, bbspink ならread.cgiで確認
-        if (P2Util::isHost2chs($this->host)) {
+        // 2ch, bbspink, vip2ch ならread.cgiで確認
+        if (P2Util::isHost2chs($this->host) || P2Util::isHostVip2ch($this->host)) {
             $this->getdat_error_msg_ht = $this->get2chDatError($code);
             if (count($this->datochi_residuums)) {
                 if ($_conf['ktai']) {

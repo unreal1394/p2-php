@@ -17,7 +17,7 @@ $_conf['expack.ic2.general.cacheuri'] = './ic';
 //  SQLite2:     'sqlite:///' . $_conf['db_dir'] . '/imgcache.sqlite'
 // 注1: username,password,databaseは実際のものと読み替える。
 // 注2: MySQL,PosrgreSQLでは予めデータベースを作っておく。
-$_conf['expack.ic2.general.dsn'] = "";
+$_conf['expack.ic2.general.dsn'] = "mysql://rep2:rep2@localhost:3306/rep2";
 
 // DBで使うテーブル名
 $_conf['expack.ic2.general.table'] = "imgcache";

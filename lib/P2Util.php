@@ -54,6 +54,11 @@ class P2Util
     static private $_hostIsJbbsShitaraba = array();
 
     /**
+     * isHostVip2ch()のキャッシュ
+     */
+    static private $_hostIsVip2ch = array();
+
+    /**
      * P2Imeオブジェクト
      *
      * @var P2Ime
@@ -445,6 +450,9 @@ class P2Util
             } else {
                 $host_dir = $base_dir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $host);
             }
+        // vip.2ch.com
+        } elseif (self::isHostVip2ch($host)) {
+        	$host_dir = $base_dir . DIRECTORY_SEPARATOR . 'vip2ch';
 
         // livedoor レンタル掲示板以外でスラッシュ等の文字を含むとき
         } elseif (preg_match('/[^0-9A-Za-z.\\-_]/', $host)) {
@@ -842,6 +850,23 @@ class P2Util
         }
         return self::$_hostIs2chs[$host];
     }
+
+    // }}}
+    // {{{ isHostVip2ch()
+
+    /**
+     * host が vip2ch なら true を返す
+     *
+     * @param string $host
+     * @return bool
+     */
+     static public function isHostVip2ch($host)
+     {
+     	if (!array_key_exists($host, self::$_hostIsVip2ch)) {
+     		self::$_hostIsVip2ch[$host] = (bool)preg_match('<^\\w+\\.(?:vip2ch\\.com)$>', $host);
+     	}
+     	return self::$_hostIsVip2ch[$host];
+     }
 
     // }}}
     // {{{ isHostBe2chNet()
@@ -1850,7 +1875,7 @@ ERR;
         if ($nama_url) {
 
             // 2ch or pink - http://choco.2ch.net/test/read.cgi/event/1027770702/
-            if (preg_match('<^http://(\\w+\\.(?:2ch\\.net|bbspink\\.com))/test/read\\.(?:cgi|html)
+            if (preg_match('<^http://(\\w+\\.(?:2ch\\.net|bbspink\\.com|vip2ch\\.com))/test/read\\.(?:cgi|html)
                     /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
             {
                 $host = $matches[1];
@@ -1859,7 +1884,7 @@ ERR;
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
 
             // 2ch or pink 過去ログhtml - http://pc.2ch.net/mac/kako/1015/10153/1015358199.html
-            } elseif (preg_match('<^(http://(\\w+\\.(?:2ch\\.net|bbspink\\.com))(?:/[^/]+)?/(\\w+)
+            } elseif (preg_match('<^(http://(\\w+\\.(?:2ch\\.net|bbspink\\.com|vip2ch\\.com))(?:/[^/]+)?/(\\w+)
                     /kako/\\d+(?:/\\d+)?/(\\d+)).html>x', $nama_url, $matches))
             {
                 $host = $matches[2];
@@ -2022,6 +2047,8 @@ ERR;
             return 'machibbs';
         } elseif (self::isHostJbbsShitaraba($host)) {
             return 'shitaraba';
+        } elseif (self::isHostVip2ch($host)) {
+        	return 'vip2ch';
         } else {
             return $host;
         }
