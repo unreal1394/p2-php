@@ -793,6 +793,7 @@ class ThreadRead extends Thread
         //$kakohtml_match = "{<a href=\"\.\./\.\./\.\./\.\./([^/]+/kako/\d+(/\d+)?/(\d+)).html\">}";
         $kakohtml_match = "{/([^/]+/kako/\d+(/\d+)?/(\d+)).html\">}";
         $waithtml_match = "/html化されるのを待っているようです。/";
+        $vip2ch_kakodat_match = "{/([^/]+/kako/\d+(/\d+)?/(\d+)).dat\">}"; // vip2ch.com用
 
         //
         // <title>がこのスレッドは過去ログ倉庫に
@@ -865,14 +866,10 @@ EOP;
                 $moritori_ht = $this->_generateMoritapoDatLink();
                 $dat_response_msg = "<p>2ch info - 隊長! スレッドはhtml化されるのを待っているようです。{$marutori_ht}{$moritori_ht}</p>";
 
-            } elseif (preg_match($vip2ch_kakosoko_match, $read_response_html, $matches)) {
+            } elseif (preg_match($vip2ch_kakodat_match, $read_response_html, $matches)) {
             	//当座の凌ぎもう少しきれいな書き方をしたいかも
-            	$ur1test = $this->key;
-            	$ur2test = $this->key;
-            	$ur1test = substr($ur1test,0,4);
-            	$ur2test = substr($ur2test,0,5);
-            	$dat_response_status = "このスレッドは過去ログ倉庫に格納されています。";
-            	$kakolog_uri = "http://{$this->host}/{$this->bbs}/kako/{$ur1test}/{$ur2test}/{$this->key}";
+            	$dat_response_status = "隊長! 過去ログ倉庫で、datを発見しました。";
+            	$kakolog_uri = "http://{$this->host}/{$matches[1]}";
             	$kakolog_url_en = rawurlencode($kakolog_uri);
             	$read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_url_en}&amp;kakoget=1";
             	$dat_response_msg = "<p>2ch info - 隊長! 過去ログ倉庫で、<a href=\"{$kakolog_uri}.html\"{$_conf['bbs_win_target_at']}>スレッド {$this->key}.html</a> を発見しました。 [<a href=\"{$read_kako_url}\">rep2に取り込んで読む</a>]</p>";

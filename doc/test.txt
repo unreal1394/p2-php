@@ -1,0 +1,4 @@
+2014/07/15 (20140715.1530)
+　・vip2ch.com読み込み対応
+　・したらば掲示板移転対応
+　・composer.json変更 (pear-pear → pear-pear.php.net )

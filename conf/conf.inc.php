@@ -6,8 +6,8 @@
 
 // バージョン情報
 $_conf = array(
-    'p2name'    => 'rep2-expack',   // rep2の名前
-    'p2version' => '130331.2233',   // rep2のバージョン
+    'p2name'    => 'rep2-expack_test',   // rep2の名前
+    'p2version' => '140715.1530',   // rep2のバージョン
 );
 
 $_conf['p2ua'] = "{$_conf['p2name']}/{$_conf['p2version']}";
