@@ -387,7 +387,10 @@ class ThreadRead extends Thread
         $method = 'GET';
 
         //  GET /test/offlaw.cgi?bbs=板名&key=スレッド番号&sid=セッションID HTTP/1.1
-        $url = "http://{$this->host}/test/offlaw.cgi/{$this->bbs}/{$this->key}/?raw=0.0&sid=";
+        //$url = "http://{$this->host}/test/offlaw.cgi/{$this->bbs}/{$this->key}/?raw=0.0&sid=";
+        // 浪人対応
+        $rokkasystem = explode(".", $this->host , 2);
+        $url = "http://rokka.$rokkasystem[1]/$rokkasystem[0]/{$this->bbs}/{$this->key}/?raw=0.0&sid=";
         $url .= rawurlencode($SID2ch);
 
         $purl = parse_url($url); // URL分解
@@ -479,7 +482,7 @@ class ThreadRead extends Thread
                     if ($marudatlines = FileCtl::file_read_lines($this->keydat)) {
                         $firstline = array_shift($marudatlines);
                         // チャンクとか
-                        if (strpos($firstline, '+OK') === false) {
+                        if (strpos($firstline, 'Success') === false) {      // 浪人(rokka)対応
                             $secondline = array_shift($marudatlines);
                         }
                         $cont = '';
@@ -867,7 +870,6 @@ EOP;
                 $dat_response_msg = "<p>2ch info - 隊長! スレッドはhtml化されるのを待っているようです。{$marutori_ht}{$moritori_ht}</p>";
 
             } elseif (preg_match($vip2ch_kakodat_match, $read_response_html, $matches)) {
-            	//当座の凌ぎもう少しきれいな書き方をしたいかも
             	$dat_response_status = "隊長! 過去ログ倉庫で、datを発見しました。";
             	$kakolog_uri = "http://{$this->host}/{$matches[1]}";
             	$kakolog_url_en = rawurlencode($kakolog_uri);
