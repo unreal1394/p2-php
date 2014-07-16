@@ -72,23 +72,27 @@ class ThreadRead extends Thread
 
             // 2ch bbspink●読み
             if (P2Util::isHost2chs($this->host) && !empty($_GET['maru'])) {
-                // ログインしてなければ or ログイン後、24時間以上経過していたら自動再ログイン
-                if (!file_exists($_conf['sid2ch_php']) ||
-                    !empty($_REQUEST['relogin2ch']) ||
-                    (filemtime($_conf['sid2ch_php']) < time() - 60*60*24))
-                {
-                    if (!function_exists('login2ch')) {
-                        include P2_LIB_DIR . '/login2ch.inc.php';
+            	if ($this->host === "bbspink.com") {
+                    // ログインしてなければ or ログイン後、24時間以上経過していたら自動再ログイン
+                    if (!file_exists($_conf['sid2ch_php']) ||
+                        !empty($_REQUEST['relogin2ch']) ||
+                        (filemtime($_conf['sid2ch_php']) < time() - 60*60*24))
+                    {
+                        if (!function_exists('login2ch')) {
+                            include P2_LIB_DIR . '/login2ch.inc.php';
+                        }
+                        if (!login2ch()) {
+                            $this->getdat_error_msg_ht .= $this->get2chDatError();
+                            $this->diedat = true;
+                            return false;
+                        }
                     }
-                    if (!login2ch()) {
-                        $this->getdat_error_msg_ht .= $this->get2chDatError();
-                        $this->diedat = true;
-                        return false;
-                    }
-                }
 
-                include $_conf['sid2ch_php'];
-                $this->_downloadDat2chMaru($uaMona, $SID2ch);
+                    include $_conf['sid2ch_php'];
+                    $this->_downloadDat2chMaru($uaMona, $SID2ch);
+            	} else {
+            		$this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
+            	}
 
             // 2ch bbspink モリタポ読み
             } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['moritapodat']) &&
@@ -373,10 +377,11 @@ class ThreadRead extends Thread
      *
      * @param string $uaMona
      * @param string $SID2ch
+     * @param string $shirokuma
      * @return bool
      * @see lib/login2ch.inc.php
      */
-    protected function _downloadDat2chMaru($uaMona, $SID2ch)
+    protected function _downloadDat2chMaru($uaMona, $SID2ch, $shirokuma)
     {
         global $_conf;
 
@@ -388,11 +393,14 @@ class ThreadRead extends Thread
 
         //  GET /test/offlaw.cgi?bbs=板名&key=スレッド番号&sid=セッションID HTTP/1.1
         //$url = "http://{$this->host}/test/offlaw.cgi/{$this->bbs}/{$this->key}/?raw=0.0&sid=";
-        // 浪人対応
-        $rokkasystem = explode(".", $this->host , 2);
-        $url = "http://rokka.$rokkasystem[1]/$rokkasystem[0]/{$this->bbs}/{$this->key}/?raw=0.0&sid=";
-        $url .= rawurlencode($SID2ch);
-
+        if (!$shirokuma) {
+            // 浪人対応
+            $rokkasystem = explode(".", $this->host , 2);
+            $url = "http://rokka.$rokkasystem[1]/$rokkasystem[0]/{$this->bbs}/{$this->key}/?raw=0.0&sid=";
+            $url .= rawurlencode($SID2ch);
+        } else {
+        	$url ="http://{$this->host}/test/offlaw2.so?shiro=kuma&bbs={$this->bbs}&key={$this->key}&sid=ERROR";
+        }
         $purl = parse_url($url); // URL分解
         if (isset($purl['query'])) { // クエリー
             $purl['query'] = '?'.$purl['query'];
@@ -480,11 +488,13 @@ class ThreadRead extends Thread
 
                     // クリーニング =====
                     if ($marudatlines = FileCtl::file_read_lines($this->keydat)) {
-                        $firstline = array_shift($marudatlines);
-                        // チャンクとか
-                        if (strpos($firstline, 'Success') === false) {      // 浪人(rokka)対応
-                            $secondline = array_shift($marudatlines);
-                        }
+                    	if (!$shirokuma) {
+                            $firstline = array_shift($marudatlines);
+                            // チャンクとか
+                            if (strpos($firstline, 'Success') === false) {      // 浪人(rokka)対応
+                                $secondline = array_shift($marudatlines);
+                            }
+                    	}
                         $cont = '';
                         foreach ($marudatlines as $aline) {
                             // チャンクエンコーディングが欲しいところ(HTTP 1.0でしのぐ)
