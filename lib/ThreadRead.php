@@ -69,10 +69,10 @@ class ThreadRead extends Thread
         // 2ch系
         } else {
             $this->getDatBytesFromLocalDat(); // $aThread->length をset
+            $pinktest = "/\w+\.bbspink.com/";
 
             // 2ch bbspink●読み
             if (P2Util::isHost2chs($this->host) && !empty($_GET['maru'])) {
-            	if ($this->host === "bbspink.com") {
                     // ログインしてなければ or ログイン後、24時間以上経過していたら自動再ログイン
                     if (!file_exists($_conf['sid2ch_php']) ||
                         !empty($_REQUEST['relogin2ch']) ||
@@ -90,9 +90,6 @@ class ThreadRead extends Thread
 
                     include $_conf['sid2ch_php'];
                     $this->_downloadDat2chMaru($uaMona, $SID2ch);
-            	} else {
-            		$this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
-            	}
 
             // 2ch bbspink モリタポ読み
             } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['moritapodat']) &&
@@ -115,6 +112,8 @@ class ThreadRead extends Thread
                 $this->_downloadDat2chKako($_GET['kakolog'], $ext);
 
             // 2ch or 2ch互換
+            } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['shirokuma'])) {
+            	$this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
             } else {
                 // DATを差分DLする
                 $this->_downloadDat2ch($this->length);
@@ -778,7 +777,10 @@ class ThreadRead extends Thread
             }
             $wap_res = $wap_ua->request($wap_req);
 
-            if ($wap_res->isError()) {
+            $test403 = "/403\.dat/";
+            if ($wap_res->code == 302 || preg_match( $test403, $wap_res->content, $test403)) {
+            	$read_response_html = $wap_res->content;
+            } elseif ($wap_res->isError()) {
                 $url_t = P2Util::throughIme($wap_req->url);
                 $info_msg_ht = "<p class=\"info-msg\">Error: {$wap_res->code} {$wap_res->message}<br>";
                 $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$wap_req->url}</a> に接続できませんでした。</p>";
@@ -797,7 +799,12 @@ class ThreadRead extends Thread
 
         $vip2ch_kakosoko_match = "/格.{1,2}されています。もう書き込みできません。。/";
         $kakosoko_match = "/このスレッドは過去ログ倉庫に格.{1,2}されています/";
-
+        //$kakosoko_match = "/あなたは間違った道を歩んでいます誠に申し訳ございません。/";
+        $kakosoko_match2 = "/http:\/\/turing1000\.nttec\.com\/?(403|404|500)\.dat/";
+//memo
+//過去ログ倉庫に格納～ = sirokuma
+//あなたは間違った道を歩んでいます誠に申し訳ございません。  = ●
+//
         $naidesu_match = "/<title>そんな板orスレッドないです。<\/title>/";
         $error3939_match = "{<title>２ちゃんねる error 3939</title>}";    // 過去ログ倉庫でhtml化の時（他にもあるかも、よく知らない）
 
@@ -811,10 +818,14 @@ class ThreadRead extends Thread
         //
         // <title>がこのスレッドは過去ログ倉庫に
         //
-        if ($reason === 'datochi' || preg_match($kakosoko_match, $read_response_html, $matches)) {
+        if ($reason === 'datochi' || preg_match($kakosoko_match, $read_response_html, $matches) || preg_match($kakosoko_match2, $read_response_html, $matches)) {
             $dat_response_status = "このスレッドは過去ログ倉庫に格納されています。";
             //if (file_exists($_conf['idpw2ch_php']) || file_exists($_conf['sid2ch_php'])) {
+            if ( preg_match($kakosoko_match2, $read_response_html, $matches)) {
                 $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
+            } else {
+            	$marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
+            }
             //} else {
             //    $marutori_ht = " [<a href=\"login2ch.php\" target=\"subject\">●IDログイン</a>]";
             //}
