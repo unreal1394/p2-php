@@ -568,6 +568,7 @@ class ThreadRead extends Thread
             return $this->downloadDat();
         } else {
             $remarutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true&amp;relogin2ch=true{$_conf['k_at_a']}\">再取得を試みる</a>]";
+            $remarutori_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
             $moritori_ht = $this->_generateMoritapoDatLink();
             $this->getdat_error_msg_ht .= "<p>rep2 info: ●IDでのスレッド取得に失敗しました。{$remarutori_ht}{$moritori_ht}</p>";
             $this->diedat = true;
@@ -817,14 +818,14 @@ class ThreadRead extends Thread
         if ($reason === 'datochi' || preg_match($kakosoko_match, $read_response_html, $matches) || preg_match($kakosoko_match2, $read_response_html, $matches)) {
             $dat_response_status = "このスレッドは過去ログ倉庫に格納されています。";
             //if (file_exists($_conf['idpw2ch_php']) || file_exists($_conf['sid2ch_php'])) {
-            if ( preg_match($kakosoko_match2, $read_response_html, $matches)) {
+            //if ( preg_match($kakosoko_match2, $read_response_html, $matches)) {
                 $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
                 //$kakolog_url_en = rawurlencode("http://{$this->host}/{$this->bbs}/kako/".substr($this->key, 0, 4)."/".substr($this->key, 0, 5)."/{$this->key}");
                 //$read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_url_en}&amp;kakoget=1";
                 //$marutori_ht .= "<p>2ch info - 隊長! 過去ログ倉庫で、<a href=\"{$kakolog_uri}.html\"{$_conf['bbs_win_target_at']}>スレッド {$matches[3]}.html</a> を発見しました。 [<a href=\"{$read_kako_url}\">rep2に取り込んで読む</a>]</p>";
-            } else {
-            	$marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
-            }
+            //} else {
+            	$marutori_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
+            //}
             //} else {
             //    $marutori_ht = " [<a href=\"login2ch.php\" target=\"subject\">●IDログイン</a>]";
             //}
