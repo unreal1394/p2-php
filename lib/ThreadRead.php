@@ -799,12 +799,8 @@ class ThreadRead extends Thread
 
         $vip2ch_kakosoko_match = "/格.{1,2}されています。もう書き込みできません。。/";
         $kakosoko_match = "/このスレッドは過去ログ倉庫に格.{1,2}されています/";
-        //$kakosoko_match = "/あなたは間違った道を歩んでいます誠に申し訳ございません。/";
         $kakosoko_match2 = "/http:\/\/turing1000\.nttec\.com\/?(403|404|500)\.dat/";
-//memo
-//過去ログ倉庫に格納～ = sirokuma
-//あなたは間違った道を歩んでいます誠に申し訳ございません。  = ●
-//
+
         $naidesu_match = "/<title>そんな板orスレッドないです。<\/title>/";
         $error3939_match = "{<title>２ちゃんねる error 3939</title>}";    // 過去ログ倉庫でhtml化の時（他にもあるかも、よく知らない）
 
@@ -823,6 +819,9 @@ class ThreadRead extends Thread
             //if (file_exists($_conf['idpw2ch_php']) || file_exists($_conf['sid2ch_php'])) {
             if ( preg_match($kakosoko_match2, $read_response_html, $matches)) {
                 $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
+                //$kakolog_url_en = rawurlencode("http://{$this->host}/{$this->bbs}/kako/".substr($this->key, 0, 4)."/".substr($this->key, 0, 5)."/{$this->key}");
+                //$read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_url_en}&amp;kakoget=1";
+                //$marutori_ht .= "<p>2ch info - 隊長! 過去ログ倉庫で、<a href=\"{$kakolog_uri}.html\"{$_conf['bbs_win_target_at']}>スレッド {$matches[3]}.html</a> を発見しました。 [<a href=\"{$read_kako_url}\">rep2に取り込んで読む</a>]</p>";
             } else {
             	$marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
             }
