@@ -452,7 +452,7 @@ class P2Util
             }
         // vip.2ch.com
         } elseif (self::isHostVip2ch($host)) {
-        	$host_dir = $base_dir . DIRECTORY_SEPARATOR . 'vip2ch';
+        	$host_dir = $base_dir . DIRECTORY_SEPARATOR . 'ex14.vip2ch.com';
 
         // livedoor レンタル掲示板以外でスラッシュ等の文字を含むとき
         } elseif (preg_match('/[^0-9A-Za-z.\\-_]/', $host)) {
