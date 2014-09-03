@@ -91,6 +91,13 @@
 <?php } ?>
 
 <?php if (!$errors && $profile) { ?>
+<table>
+<tr>
+    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm0'];}?></td>
+    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm1'];}?></td>
+    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm2'];}?></td>
+</table>
+
 <!-- Result and Filter -->
 <div class="tgrep_result">
 <?php if ($htm['category'] && isset($profile['categories'][$htm['category']])) { ?>

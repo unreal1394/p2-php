@@ -156,7 +156,8 @@ if ($query) {
 
 // Šî–{•Ï”
 $htm = array();
-$htm['tgrep_url'] = p2h($_conf['expack.tgrep_url']);
+//$htm['tgrep_url'] = p2h($_conf['expack.tgrep_url']);
+$htm['tgrep_url'] = p2h($_conf['test.dig2ch_url']);
 $htm['php_self']  = 'tgrepc.php'; //p2h($_SERVER['SCRIPT_NAME']);
 $htm['query']     = (isset($_GET['Q'])) ? p2h($_GET['Q']) : '';
 $htm['query_en']  = (isset($_GET['Q'])) ? rawurlencode($_GET['Q']) : '';
@@ -336,20 +337,25 @@ exit;
 function tgrep_search($query)
 {
     global $_conf;
-    $client = new HTTP_Client();
-    $client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
-    $code = $client->get($_conf['expack.tgrep_url'] . '?' . $query);
-    if (PEAR::isError($code)) {
-        p2die($code->getMessage());
-    } elseif ($code != 200) {
-        p2die("HTTP Error - {$code}");
+    if (!$_conf['test.search_dig2ch']) {
+    	$client = new HTTP_Client();
+    	$client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
+    	$code = $client->get($_conf['expack.tgrep_url'] . '?' . $query);
+    	if (PEAR::isError($code)) {
+	        p2die($code->getMessage());
+    	} elseif ($code != 200) {
+	        p2die("HTTP Error - {$code}");
+	    }
+	    $response = $client->currentResponse();
+	    $result = unserialize($response['body']);
+	    if (!$result) {
+        	p2die('Error: ŒŸõŒ‹‰Ê‚Ì“WŠJ‚É¸”s‚µ‚Ü‚µ‚½B');
+    	}
+    	return $result;
+    } else {
+    	require_once './dig2ch.php';
+    	return dig2chsearch($query); // ’Ç‰Á
     }
-    $response = $client->currentResponse();
-    $result = unserialize($response['body']);
-    if (!$result) {
-        p2die('Error: ŒŸõŒ‹‰Ê‚Ì“WŠJ‚É¸”s‚µ‚Ü‚µ‚½B');
-    }
-    return $result;
 }
 
 // }}}
