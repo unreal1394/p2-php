@@ -20,6 +20,11 @@ if ($_conf['iphone'] && isset($_REQUEST['iq'])) {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         require_once P2_LIB_DIR . '/menu_iphone.inc.php';
         $_GET['Q'] = menu_iphone_unicode_urldecode($_POST['iq']);
+        if (isset($_POST['AndOr'])) { $_GET['AndOr'] = $_POST['AndOr'];}
+        if (isset($_POST['maxResult'])) { $_GET['maxResult'] = $_POST['maxResult'];}
+        if (isset($_POST['Sort'])) { $_GET['Sort'] = $_POST['Sort'];}
+        if (isset($_POST['Link'])) { $_GET['Link'] = $_POST['Link'];}
+        if (isset($_POST['924'])) { $_GET['924'] = $_POST['924'];}
     } else {
         $_GET['Q'] = $_GET['iq'];
     }
@@ -39,6 +44,11 @@ $query_params = array();
 if (isset($_GET['Q']) && is_string($_GET['Q']) && strlen($_GET['Q']) > 0) {
     $query_params['q'] = $_GET['Q'];
     $query_params['n'] = $limit = ($_conf['ktai'] || $_conf['iphone']) ? '25' : '100';
+    if (isset($_GET['AndOr'])) { $query_params['AndOr'] = $_GET['AndOr'];}
+    if (isset($_GET['maxResult'])) { $query_params['maxResult'] = $_GET['maxResult'];}
+    if (isset($_GET['Sort'])) { $query_params['Sort'] = $_GET['Sort'];}
+    if (isset($_GET['Link'])) { $query_params['Link'] = $_GET['Link'];}
+    if (isset($_GET['924'])) { $query_params['924'] = $_GET['924'];}
     //$query_keys = array('s', 'b', 'c', 'o', 'n', 'p');
     $query_keys = array('s', 'b', 'c', 'p');
     foreach ($query_keys as $_k) {

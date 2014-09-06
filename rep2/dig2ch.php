@@ -3,11 +3,11 @@
 function dig2chsearch($query)
 {
 	global $_conf;
-	$fp = fopen("/var/www/html/test/test/test.txt", "w");
+
 	parse_str($query, $query_arry);
 	$client = new HTTP_Client();
 	$client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
-	$code = $client->get($_conf['test.dig2ch_url'] . $query_arry['q']);
+	$code = $client->get($_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q']);
 	if (PEAR::isError($code)) {
 		p2die($code->getMessage());
 	} elseif ($code != 200) {
@@ -16,6 +16,7 @@ function dig2chsearch($query)
 	$response = $client->currentResponse();
 
 	$jsontest1 = json_decode($response['body'], true);
+
 
 	//mb_convert_variables('SHIFT-JIS','UTF-8',$jsontest1);
 	/* switch (json_last_error()) {
@@ -42,7 +43,7 @@ function dig2chsearch($query)
 			break;
 	} */
 	if ($jsontest1 === NULL) {
-		p2die('Error: ¸”s');
+		p2die("ŒŸõŒ‹‰Ê‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½");
 	}
 
 	foreach ($jsontest1[result] as $jsontest2) {

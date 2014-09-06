@@ -17,7 +17,28 @@
 <!-- Search Form -->
 <form action="<?php echo $htm['php_self']; ?>" method="get">
 <input name="Q" <?php echo $htm['search_attr']; ?>>
-<input type="submit" value="検索">
+<input type="submit" value="検索"><br>
+<select name="AndOr">
+<option value="0" selected>AND検索</option>
+<option value="1" >OR検索</option>
+</select><br>
+最大<select name="maxResult">
+<option value="10" >50</option>
+<option value="20" selected>100</option>
+<option value="30" >200</option>
+</select>件表示<br>
+<select name="Sort">
+<option value="0" >人気板順</option>
+<option value="1" >勢い順</option>
+<option value="2" >レス数順</option>
+<option value="4" >最新スレ順</option>
+<option value="3" >最古スレ順</option>
+<option value="5" selected>最新投稿順</option>
+</select><br>
+924を<select name="924">
+<option value="1" selected>出す</option>
+<option value="0" >消す</option>
+</select>
 <?php echo $_conf['detect_hint_input_ht'], $_conf['k_input_ht']; ?>
 </form>
 <hr>
