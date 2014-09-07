@@ -7,7 +7,7 @@
 // バージョン情報
 $_conf = array(
     'p2name'    => 'rep2-expack_test',   // rep2の名前
-    'p2version' => '140718.2130',   // rep2のバージョン
+    'p2version' => '1140907.1420',   // rep2のバージョン
 );
 
 $_conf['p2ua'] = "{$_conf['p2name']}/{$_conf['p2version']}";
@@ -80,7 +80,6 @@ function p2_init()
     $_conf['expack.history_url']    = 'http://page2.skr.jp/rep2/history.html';
     $_conf['expack.tgrep_url']      = 'http://page2.xrea.jp/tgrep/search';
     $_conf['test.dig2ch_url']       = 'http://dig.2ch.net/';
-    //$_conf['test.dig2ch_url']       = 'http://dig.2ch.net/?AndOr=0&maxResult=100&atLeast=1&Sort=5&Link=1&Bbs=all&924=1&json=1&keywords=';
     $_conf['expack.gate_php']       = 'http://page2.skr.jp/gate.php';
     $_conf['menu_php']              = 'menu.php';
     $_conf['subject_php']           = 'subject.php';

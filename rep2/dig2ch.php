@@ -5,6 +5,10 @@ function dig2chsearch($query)
 	global $_conf;
 
 	parse_str($query, $query_arry);
+
+	//$query_q = preg_replace('/(\s+)/' , '\+' ,$query_arry['q']);
+	$query_arry['q'] = urlencode($query_arry['q']);
+
 	$client = new HTTP_Client();
 	$client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
 	$code = $client->get($_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q']);
@@ -16,7 +20,6 @@ function dig2chsearch($query)
 	$response = $client->currentResponse();
 
 	$jsontest1 = json_decode($response['body'], true);
-
 
 	//mb_convert_variables('SHIFT-JIS','UTF-8',$jsontest1);
 	/* switch (json_last_error()) {
