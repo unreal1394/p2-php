@@ -166,7 +166,29 @@ EOP;
     // スレタイ検索
     echo <<<EOP
     <form method="GET" action="tgrepc.php" accept-charset="{$_conf['accept_charset']}" target="subject" class="inline-form">
-        <input type="search" name="Q" value="" size="16" autosave="rep2.expack.search.thread" results="{$_conf['expack.tgrep.recent2_num']}" placeholder="スレタイ検索">
+        <input type="search" name="Q" value="" size="16" autosave="rep2.expack.search.thread" results="{$_conf['expack.tgrep.recent2_num']}" placeholder="スレタイ検索"><br>
+        <select name="AndOr">
+        <option value="0" selected>AND検索</option>
+        <option value="1" >OR検索</option>
+        </select><br>
+        最大<select name="maxResult">
+        <option value="50" selected>50</option>
+        <option value="100" >100</option>
+        <option value="200" >200</option>
+        </select>件表示<br>
+        <select name="Sort">
+        <option value="0" >人気板順</option>
+        <option value="1" >勢い順</option>
+        <option value="2" >レス数順</option>
+        <option value="4" >最新スレ順</option>
+        <option value="3" >最古スレ順</option>
+        <option value="5" selected>最新投稿順</option>
+        </select><br>
+         924を<select name="924">
+         <option value="1" selected>出す</option>
+         <option value="0" >消す</option>
+         </select>
+        <input type="hidden" name="_hint" value="◎◇">
         {$_conf['detect_hint_input_ht']}{$_conf['k_input_ht']}
     </form><br>\n
 EOP;
@@ -185,7 +207,28 @@ EOP;
     // スレタイ検索
     echo <<<EOP
     <form method="GET" action="tgrepc.php" accept-charset="{$_conf['accept_charset']}" target="subject" class="inline-form" style="white-space:nowrap">
-        <input type="text" name="Q" value="" size="12"><input type="submit" value="ｽﾚ">
+        <input type="text" name="Q" value="" size="12"><input type="submit" value="ｽﾚ"><br>
+        <select name="AndOr">
+        <option value="0" selected>AND検索</option>
+        <option value="1" >OR検索</option>
+        </select><br>
+        最大<select name="maxResult">
+        <option value="50" selected>50</option>
+        <option value="100" >100</option>
+        <option value="200" >200</option>
+        </select>件表示<br>
+        <select name="Sort">
+        <option value="0" >人気板順</option>
+        <option value="1" >勢い順</option>
+        <option value="2" >レス数順</option>
+        <option value="4" >最新スレ順</option>
+        <option value="3" >最古スレ順</option>
+        <option value="5" selected>最新投稿順</option>
+        </select><br>
+         924を<select name="924">
+         <option value="1" selected>出す</option>
+         <option value="0" >消す</option>
+         </select>
         {$_conf['detect_hint_input_ht']}{$_conf['k_input_ht']}
     </form><br>\n
 EOP;

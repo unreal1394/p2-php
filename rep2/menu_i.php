@@ -186,7 +186,7 @@ if (isset($hashes) && is_array($hashes) && count($hashes)) {
 // }}}
 // {{{ エラー
 
-if (P2Util::hasInfoHtml()) { 
+if (P2Util::hasInfoHtml()) {
     echo '<div id="info_msg" class="panel" title="エラー">';
     P2Util::printInfoHtml();
     echo '</div>';
@@ -258,7 +258,7 @@ if ($_conf['expack.misc.multi_favs']) {
     // }}}
     // {{{ RSS
 
-    if ($_conf['expack.rss.enabled']) { 
+    if ($_conf['expack.rss.enabled']) {
         $rss = FavSetManager::getFavSetTitles('m_rss_set');
         if (!$rss) {
             $rss = array();
@@ -292,7 +292,7 @@ if ($_conf['expack.misc.multi_favs']) {
 } else {
     menu_iphone_show_favorite_boards('お気に板');
 
-    if ($_conf['expack.rss.enabled']) { 
+    if ($_conf['expack.rss.enabled']) {
         menu_iphone_show_feed_list('RSS');
     }
 }
@@ -382,7 +382,28 @@ EOP;
     <a class="button leftButton" type="cancel">取消</a>
     <a class="button blueButton" type="submit">検索</a>
     <label>word:</label>
-    <input type="text" name="iq" autocorrect="off" autocapitalize="off" />
+    <input type="text" name="iq" autocorrect="off" autocapitalize="off" /><br>
+    <select name="AndOr">
+    <option value="0" selected>AND検索</option>
+    <option value="1" >OR検索</option>
+    </select><br>
+    最大<select name="maxResult">
+    <option value="10" >10</option>
+    <option value="20" selected>20</option>
+    <option value="30" >30</option>
+    </select>件表示<br>
+    <select name="Sort">
+    <option value="0" >人気板順</option>
+    <option value="1" >勢い順</option>
+    <option value="2" >レス数順</option>
+    <option value="4" >最新スレ順</option>
+    <option value="3" >最古スレ順</option>
+    <option value="5" selected>最新投稿順</option>
+    </select>
+    924を<select name="924">
+    <option value="1" selected>出す</option>
+    <option value="0" >消す</option>
+    </select>
 </fieldset>
 </form>
 

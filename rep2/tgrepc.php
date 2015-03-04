@@ -20,6 +20,11 @@ if ($_conf['iphone'] && isset($_REQUEST['iq'])) {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         require_once P2_LIB_DIR . '/menu_iphone.inc.php';
         $_GET['Q'] = menu_iphone_unicode_urldecode($_POST['iq']);
+        if (isset($_POST['AndOr'])) { $_GET['AndOr'] = $_POST['AndOr'];}
+        if (isset($_POST['maxResult'])) { $_GET['maxResult'] = $_POST['maxResult'];}
+        if (isset($_POST['Sort'])) { $_GET['Sort'] = $_POST['Sort'];}
+        if (isset($_POST['Link'])) { $_GET['Link'] = $_POST['Link'];}
+        if (isset($_POST['924'])) { $_GET['924'] = $_POST['924'];}
     } else {
         $_GET['Q'] = $_GET['iq'];
     }
@@ -37,8 +42,13 @@ if ($_conf['iphone'] && isset($_REQUEST['iq'])) {
 
 $query_params = array();
 if (isset($_GET['Q']) && is_string($_GET['Q']) && strlen($_GET['Q']) > 0) {
-    $query_params['q'] = $_GET['Q'];
+     $query_params['q'] = mb_convert_kana($_GET['Q'], 's');
     $query_params['n'] = $limit = ($_conf['ktai'] || $_conf['iphone']) ? '25' : '100';
+    if (isset($_GET['AndOr'])) { $query_params['AndOr'] = $_GET['AndOr'];}
+    if (isset($_GET['maxResult'])) { $query_params['maxResult'] = $_GET['maxResult'];}
+    if (isset($_GET['Sort'])) { $query_params['Sort'] = $_GET['Sort'];}
+    if (isset($_GET['Link'])) { $query_params['Link'] = $_GET['Link'];}
+    if (isset($_GET['924'])) { $query_params['924'] = $_GET['924'];}
     //$query_keys = array('s', 'b', 'c', 'o', 'n', 'p');
     $query_keys = array('s', 'b', 'c', 'p');
     foreach ($query_keys as $_k) {
@@ -156,7 +166,8 @@ if ($query) {
 
 // Šî–{•Ï”
 $htm = array();
-$htm['tgrep_url'] = p2h($_conf['expack.tgrep_url']);
+//$htm['tgrep_url'] = p2h($_conf['expack.tgrep_url']);
+$htm['tgrep_url'] = p2h($_conf['test.dig2ch_url']);
 $htm['php_self']  = 'tgrepc.php'; //p2h($_SERVER['SCRIPT_NAME']);
 $htm['query']     = (isset($_GET['Q'])) ? p2h($_GET['Q']) : '';
 $htm['query_en']  = (isset($_GET['Q'])) ? rawurlencode($_GET['Q']) : '';
@@ -336,20 +347,25 @@ exit;
 function tgrep_search($query)
 {
     global $_conf;
-    $client = new HTTP_Client();
-    $client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
-    $code = $client->get($_conf['expack.tgrep_url'] . '?' . $query);
-    if (PEAR::isError($code)) {
-        p2die($code->getMessage());
-    } elseif ($code != 200) {
-        p2die("HTTP Error - {$code}");
+    if (!$_conf['test.search_dig2ch']) {
+    	$client = new HTTP_Client();
+    	$client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
+    	$code = $client->get($_conf['expack.tgrep_url'] . '?' . $query);
+    	if (PEAR::isError($code)) {
+	        p2die($code->getMessage());
+    	} elseif ($code != 200) {
+	        p2die("HTTP Error - {$code}");
+	    }
+	    $response = $client->currentResponse();
+	    $result = unserialize($response['body']);
+	    if (!$result) {
+        	p2die('Error: ŒŸõŒ‹‰Ê‚Ì“WŠJ‚É¸”s‚µ‚Ü‚µ‚½B');
+    	}
+    	return $result;
+    } else {
+    	require_once './dig2ch.php';
+    	return dig2chsearch($query); // ’Ç‰Á
     }
-    $response = $client->currentResponse();
-    $result = unserialize($response['body']);
-    if (!$result) {
-        p2die('Error: ŒŸõŒ‹‰Ê‚Ì“WŠJ‚É¸”s‚µ‚Ü‚µ‚½B');
-    }
-    return $result;
 }
 
 // }}}

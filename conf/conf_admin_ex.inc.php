@@ -25,6 +25,10 @@ $_conf['expack.use_pecl_http'] = 1; // (1)
 // ロードするようになっていない場合のみ 1 にする
 $_conf['expack.dl_pecl_http'] = 0; // (0)
 
+// スレタイ検索をdig.2ch.netで行う
+$_conf['test.search_dig2ch'] = 1; // (1)
+
+
 // }}}
 // {{{ スキン
 

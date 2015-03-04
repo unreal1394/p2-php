@@ -54,6 +54,11 @@ class P2Util
     static private $_hostIsJbbsShitaraba = array();
 
     /**
+     * isHostVip2ch()のキャッシュ
+     */
+    static private $_hostIsVip2ch = array();
+
+    /**
      * P2Imeオブジェクト
      *
      * @var P2Ime
@@ -445,6 +450,9 @@ class P2Util
             } else {
                 $host_dir = $base_dir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $host);
             }
+        // vip.2ch.com
+        } elseif (self::isHostVip2ch($host)) {
+        	$host_dir = $base_dir . DIRECTORY_SEPARATOR . 'ex14.vip2ch.com';
 
         // livedoor レンタル掲示板以外でスラッシュ等の文字を含むとき
         } elseif (preg_match('/[^0-9A-Za-z.\\-_]/', $host)) {
@@ -844,6 +852,23 @@ class P2Util
     }
 
     // }}}
+    // {{{ isHostVip2ch()
+
+    /**
+     * host が vip2ch なら true を返す
+     *
+     * @param string $host
+     * @return bool
+     */
+     static public function isHostVip2ch($host)
+     {
+     	if (!array_key_exists($host, self::$_hostIsVip2ch)) {
+     		self::$_hostIsVip2ch[$host] = (bool)preg_match('<^\\w+\\.(?:vip2ch\\.com)$>', $host);
+     	}
+     	return self::$_hostIsVip2ch[$host];
+     }
+
+    // }}}
     // {{{ isHostBe2chNet()
 
     /**
@@ -928,7 +953,7 @@ class P2Util
         if (!array_key_exists($in_host, self::$_hostIsJbbsShitaraba)) {
             if ($in_host == 'rentalbbs.livedoor.com') {
                 self::$_hostIsJbbsShitaraba[$in_host] = true;
-            } elseif (preg_match('<^jbbs\\.(?:shitaraba\\.com|livedoor\\.(?:com|jp))(?:/|$)>', $in_host)) {
+            } elseif (preg_match('<^jbbs\\.(?:shitaraba\\.(?:net|com)|livedoor\\.(?:com|jp))(?:/|$)>', $in_host)) {
                 self::$_hostIsJbbsShitaraba[$in_host] = true;
             } else {
                 self::$_hostIsJbbsShitaraba[$in_host] = false;
@@ -948,7 +973,7 @@ class P2Util
      */
     static public function adjustHostJbbs($in_str)
     {
-        return preg_replace('<(^|/)jbbs\\.(?:shitaraba|livedoor)\\.com(/|$)>', '\\1jbbs.livedoor.jp\\2', $in_str, 1);
+        return preg_replace('<(^|/)jbbs\\.(?:shitaraba|livedoor)\\.(?:net|com)(/|$)>', '\\1jbbs.shitaraba.net\\2', $in_str, 1);
         //return preg_replace('<(^|/)jbbs\\.(?:shitaraba\\.com|livedoor\\.(?:com|jp))(/|$)>', '\\1rentalbbs.livedoor.com\\2', $in_str, 1);
     }
 
@@ -1850,7 +1875,7 @@ ERR;
         if ($nama_url) {
 
             // 2ch or pink - http://choco.2ch.net/test/read.cgi/event/1027770702/
-            if (preg_match('<^http://(\\w+\\.(?:2ch\\.net|bbspink\\.com))/test/read\\.(?:cgi|html)
+            if (preg_match('<^http://(\\w+\\.(?:2ch\\.net|bbspink\\.com|vip2ch\\.com))/test/read\\.(?:cgi|html)
                     /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
             {
                 $host = $matches[1];
@@ -1859,7 +1884,7 @@ ERR;
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
 
             // 2ch or pink 過去ログhtml - http://pc.2ch.net/mac/kako/1015/10153/1015358199.html
-            } elseif (preg_match('<^(http://(\\w+\\.(?:2ch\\.net|bbspink\\.com))(?:/[^/]+)?/(\\w+)
+            } elseif (preg_match('<^(http://(\\w+\\.(?:2ch\\.net|bbspink\\.com|vip2ch\\.com))(?:/[^/]+)?/(\\w+)
                     /kako/\\d+(?:/\\d+)?/(\\d+)).html>x', $nama_url, $matches))
             {
                 $host = $matches[2];
@@ -1879,7 +1904,7 @@ ERR;
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
 
             // したらばJBBS - http://jbbs.livedoor.com/bbs/read.cgi/computer/2999/1081177036/-100
-            } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.com))/bbs/read\\.cgi
+            } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))/bbs/read\\.cgi
                     /(\\w+)/(\\d+)/(\\d+)/((?:\\d+)?-(?:\\d+)?)?[^"]*>x', $nama_url, $matches))
             {
                 $host = $matches[1] . '/' . $matches[2];
@@ -1894,7 +1919,7 @@ ERR;
                 $host = $matches[1];
                 list($bbs, $key, $ls) = self::parseMachiQuery($matches[2]);
 
-            } elseif (preg_match('<^http://((jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.com))(?:/(\\w+))?)/bbs/read\\.(?:pl|cgi)\\?(.+)>',
+            } elseif (preg_match('<^http://((jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))(?:/(\\w+))?)/bbs/read\\.(?:pl|cgi)\\?(.+)>',
                     $nama_url, $matches))
             {
                 $host = $matches[1];
@@ -2022,6 +2047,8 @@ ERR;
             return 'machibbs';
         } elseif (self::isHostJbbsShitaraba($host)) {
             return 'shitaraba';
+        } elseif (self::isHostVip2ch($host)) {
+        	return 'vip2ch';
         } else {
             return $host;
         }
