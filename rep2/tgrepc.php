@@ -45,7 +45,11 @@ if (isset($_GET['Q']) && is_string($_GET['Q']) && strlen($_GET['Q']) > 0) {
      $query_params['q'] = mb_convert_kana($_GET['Q'], 's');
     $query_params['n'] = $limit = ($_conf['ktai'] || $_conf['iphone']) ? '25' : '100';
     if (isset($_GET['AndOr'])) { $query_params['AndOr'] = $_GET['AndOr'];}
-    if (isset($_GET['maxResult'])) { $query_params['maxResult'] = $_GET['maxResult'];}
+    if (isset($_GET['maxResult'])) {
+        $query_params['maxResult'] = $_GET['maxResult'];
+    } else {
+        $query_params['maxResult'] = '50';
+    }
     if (isset($_GET['Sort'])) { $query_params['Sort'] = $_GET['Sort'];}
     if (isset($_GET['Link'])) { $query_params['Link'] = $_GET['Link'];}
     if (isset($_GET['924'])) { $query_params['924'] = $_GET['924'];}
@@ -348,23 +352,23 @@ function tgrep_search($query)
 {
     global $_conf;
     if (!$_conf['test.search_dig2ch']) {
-    	$client = new HTTP_Client();
-    	$client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
-    	$code = $client->get($_conf['expack.tgrep_url'] . '?' . $query);
-    	if (PEAR::isError($code)) {
-	        p2die($code->getMessage());
-    	} elseif ($code != 200) {
-	        p2die("HTTP Error - {$code}");
-	    }
-	    $response = $client->currentResponse();
-	    $result = unserialize($response['body']);
-	    if (!$result) {
-        	p2die('Error: ŒŸõŒ‹‰Ê‚Ì“WŠJ‚É¸”s‚µ‚Ü‚µ‚½B');
-    	}
-    	return $result;
+        $client = new HTTP_Client();
+        $client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
+        $code = $client->get($_conf['expack.tgrep_url'] . '?' . $query);
+        if (PEAR::isError($code)) {
+            p2die($code->getMessage());
+        } elseif ($code != 200) {
+            p2die("HTTP Error - {$code}");
+        }
+        $response = $client->currentResponse();
+        $result = unserialize($response['body']);
+        if (!$result) {
+            p2die('Error: ŒŸõŒ‹‰Ê‚Ì“WŠJ‚É¸”s‚µ‚Ü‚µ‚½B');
+        }
+        return $result;
     } else {
-    	require_once './dig2ch.php';
-    	return dig2chsearch($query); // ’Ç‰Á
+        require_once './dig2ch.php';
+        return dig2chsearch($query); // ’Ç‰Á
     }
 }
 
