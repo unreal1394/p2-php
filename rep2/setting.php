@@ -90,6 +90,7 @@ echo <<<EOP
 <ul id="setting_menu">
     <li><a href="login.php{$_conf['k_at_q']}">rep2ログイン管理</a></li>
     <li><a href="login2ch.php{$_conf['k_at_q']}">2chログイン管理</a></li>
+    <li><a href="auth2chapi.php{$_conf['k_at_q']}">2ch API認証管理</a></li>
 </ul>
 EOP;
 

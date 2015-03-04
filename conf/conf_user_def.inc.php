@@ -384,11 +384,22 @@ $conf_user_rad['2chapi_use'] = array('1' => 'する', '0' => 'しない');
 $conf_user_def['2chapi_rounin'] = 0; // (0)
 $conf_user_rad['2chapi_rounin'] = array('1' => 'する', '0' => 'しない');
 
+// 2ch API 認証する間隔(単位:時間)
+$conf_user_def['2chapi_interval'] = 1; // (1)
+$conf_user_rules['2chapi_interval'] = array('emptyToDef', 'notIntExceptMinusToDef');
+
 // APPKey
 $conf_user_def['2chapi_appkey'] = ""; // ("")
 
 // HMKey
 $conf_user_def['2chapi_hmkey'] = ""; // ("")
+
+// AppName
+$conf_user_def['2chapi_appname'] = ""; // ("")
+
+// デバッグ用の情報を出力する
+$conf_user_def['2chapi_debug_print'] = 0; // (0)
+$conf_user_rad['2chapi_debug_print'] = array('1' => 'する', '0' => 'しない');
 
 // }}}
 // {{{ ETC

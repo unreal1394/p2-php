@@ -371,8 +371,15 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
     $conflist = array(
         array('2chapi_use','2ch API を使用する'),
         array('2chapi_rounin','2ch API 認証時に●(浪人)IDを送信する(人柱機能)'),
+        array('2chapi_interval','2ch API 認証する間隔(単位:時間)'),
+        //'API キー',
+        'API認証情報',
         array('2chapi_appkey','AppKey'),
         array('2chapi_hmkey','HMkey'),
+        array('2chapi_appname','AppName APIに送信するアプリケーション名 例:Hoge/1.00'),
+        'デバッグ用',
+        array('2chapi_debug_print','デバッグ用の情報を出力する'),
+        '認証情報を変更した場合再認証してください',
     );
     printEditConfGroupHtml($groupname, $conflist, $flags);
 }

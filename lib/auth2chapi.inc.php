@@ -11,15 +11,23 @@
 *
 * @return mix 取得できた場合はSIDを返す
 */
-    function authenticate_2chapi($AppKey, $HMKey)
+    function authenticate_2chapi()
     {
     	global $_conf;
         $url = 'https://api.2ch.net/v1/auth/';
         $CT = time();
+        $AppKey = $_conf['2chapi_appkey'];
+        $AppName = $_conf['2chapi_appname'];
+        $HMKey  = $_conf['2chapi_hmkey'];
         $login2chID = "";
         $login2chPW = "";
         $message = $AppKey.$CT;
         $HB = hash_hmac("sha256", $message, $HMKey);
+        
+        if(empty($AppKey) || empty($AppName) || empty($HMKey)) {
+            P2Util::pushInfoHtml("<p>p2 Error: 2ch API の認証に必要な情報が設定されていません。</p>");
+            return '';
+        }
         
         if ($_conf['2chapi_rounin'] == 1&& $array = P2Util::readIdPw2ch()) {
             list($login2chID, $login2chPW, $autoLogin2ch) = $array;
@@ -37,7 +45,7 @@
             'method' => 'POST',
             'header' => implode("\r\n", array(
                 'User-Agent: Monazilla/1.3',
-                'X-2ch-UA: JaneStyle/3.80',
+                'X-2ch-UA: '.$AppName,
                 'Content-Type: application/x-www-form-urlencoded',
             )),
             'content' => http_build_query($values),
@@ -60,7 +68,10 @@
         {
             $sid = explode(':', $response);
             
-            P2Util::pushInfoHtml($response);
+            if($_conf['2chapi_debug_print']==1)
+            {
+                P2Util::pushInfoHtml($response);
+            }
             
             if($sid[0]!='SESSION-ID=Monazilla/1.00') {
                 P2Util::pushInfoHtml("<p>p2 Error: 2ch API のSessionIDを取得出来ませんでした。</p>");

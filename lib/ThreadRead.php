@@ -116,18 +116,16 @@ class ThreadRead extends Thread
                 $this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
             //2ch はAPI経由で落とす
             } elseif (P2Util::isHost2chs($this->host) && $_conf['2chapi_use'] == 1 && empty($_GET['olddat'])) {
-                $AppKey = $_conf['2chapi_appkey'];
-                $HMKey  = $_conf['2chapi_hmkey'];
                 
-                // ログインしてなければ or ログイン後、55分以上経過していたら自動再ログイン
+                // ログインしてなければ or ログイン後、設定した時間経過していたら自動再ログイン
                 if (!file_exists($_conf['sid2chapi_php']) ||
                     !empty($_REQUEST['relogin2chapi']) ||
-                    (filemtime($_conf['sid2chapi_php']) < time() - 60*55))
+                    (filemtime($_conf['sid2chapi_php']) < time() - 60*60*$_conf['2chapi_interval']))
                 {
                     if (!function_exists('authenticate_2chapi')) {
                         include P2_LIB_DIR . '/auth2chapi.inc.php';
                     }
-                    if (!authenticate_2chapi($AppKey,$HMKey)) {
+                    if (!authenticate_2chapi()) {
                         $this->getdat_error_msg_ht .= $this->get2chDatError();
                         $this->diedat = true;
                         return false;
@@ -135,7 +133,7 @@ class ThreadRead extends Thread
                 }
 
                 include $_conf['sid2chapi_php'];
-                $this->_downloadDat2chAPI($AppKey,$HMKey,$SID2chAPI,$this->length);
+                $this->_downloadDat2chAPI($SID2chAPI,$this->length);
             } else {
                 //2ch 以外の外部板
                 // DATを差分DLする
@@ -152,11 +150,14 @@ class ThreadRead extends Thread
      *
      * @return mix 取得できたか、更新がなかった場合はtrueを返す
      */
-    protected function _downloadDat2chAPI($AppKey,$HMKey,$sid,$from_bytes)
+    protected function _downloadDat2chAPI($sid,$from_bytes)
     {
         global $_conf;
         global $debug;
 
+        $AppKey = $_conf['2chapi_appkey'];
+        $AppName = $_conf['2chapi_appname'];
+        $HMKey  = $_conf['2chapi_hmkey'];
         if (!($this->host && $this->bbs && $this->key)) {
             return false;
         }
@@ -181,7 +182,7 @@ class ThreadRead extends Thread
         $message = '/v1/'.$serverName[0].'/'.$this->bbs.'/'.$this->key.$sid.$AppKey;
         $HB = hash_hmac("sha256", $message, $HMKey);
 
-        $headers = "User-Agent: Mozilla/3.0 (compatible; JaneStyle/3.80β)\r\n";
+        $headers = "User-Agent: Mozilla/3.0 (compatible; ${AppName})\r\n";
         $headers .= "Connection: close\r\n";
         $headers .= "Content-Type: application/x-www-form-urlencoded\r\n";
         
@@ -278,7 +279,7 @@ class ThreadRead extends Thread
                             fclose($fp);
                             $this->onbytes = 0;
                             $this->modified = null;
-                            return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,0); // あぼーん検出。全部取り直し。
+                            return $this->_downloadDat2chAPI($sid,0); // あぼーん検出。全部取り直し。
                         }
                         $body = substr($body, 1);
                     }
@@ -299,7 +300,7 @@ class ThreadRead extends Thread
                             $this->modified = null;
                             P2Util::pushInfoHtml("<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>");
                             //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
-                            return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,0); //datサイズは不正。全部取り直し。
+                            return $this->_downloadDat2chAPI($sid,0); //datサイズは不正。全部取り直し。
 
                         // サイズが同じならそのまま
                         } elseif ($this->onbytes == $this->length) {
@@ -336,7 +337,7 @@ class ThreadRead extends Thread
                                 fclose($fp);
                                 $this->old_host = $this->host;
                                 $this->host = $new_host;
-                                return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,$from_bytes);
+                                return $this->_downloadDat2chAPI($sid,$from_bytes);
                             } else {
                                 fclose($fp);
                                 return $this->_downloadDat2chNotFound($code);
@@ -352,7 +353,7 @@ class ThreadRead extends Thread
                             fclose($fp);
                             $this->onbytes = 0;
                             $this->modified = null;
-                            return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,0); // あぼーん検出。全部取り直し。
+                            return $this->_downloadDat2chAPI($sid,0); // あぼーん検出。全部取り直し。
 
                         } else {
                             fclose($fp);
