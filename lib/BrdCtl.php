@@ -30,8 +30,9 @@ class BrdCtl
      */
     static public function read_brd_dir()
     {
+        global $_conf;
         $brd_menus = array();
-        $brd_dir = './board';
+        $brd_dir = $_conf['data_dir'] . '/board';
 
         if ($cdir = @dir($brd_dir)) {
             // ディレクトリ走査
