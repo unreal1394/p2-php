@@ -113,12 +113,282 @@ class ThreadRead extends Thread
 
             // 2ch or 2ch互換
             } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['shirokuma'])) {
-            	$this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
+                $this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
+            //2ch はAPI経由で落とす
+            } elseif (P2Util::isHost2chs($this->host) && $_conf['2chapi_use'] == 1 && empty($_GET['olddat'])) {
+                $AppKey = $_conf['2chapi_appkey'];
+                $HMKey  = $_conf['2chapi_hmkey'];
+                
+                // ログインしてなければ or ログイン後、55分以上経過していたら自動再ログイン
+                if (!file_exists($_conf['sid2chapi_php']) ||
+                    !empty($_REQUEST['relogin2chapi']) ||
+                    (filemtime($_conf['sid2chapi_php']) < time() - 60*55))
+                {
+                    if (!function_exists('authenticate_2chapi')) {
+                        include P2_LIB_DIR . '/auth2chapi.inc.php';
+                    }
+                    if (!authenticate_2chapi($AppKey,$HMKey)) {
+                        $this->getdat_error_msg_ht .= $this->get2chDatError();
+                        $this->diedat = true;
+                        return false;
+                    }
+                }
+
+                include $_conf['sid2chapi_php'];
+                $this->_downloadDat2chAPI($AppKey,$HMKey,$SID2chAPI,$this->length);
             } else {
+                //2ch 以外の外部板
                 // DATを差分DLする
                 $this->_downloadDat2ch($this->length);
             }
+        }
+    }
 
+    // }}}
+    // {{{ _downloadDat2chAPI()
+    
+    /**
+     * 2chAPIで DAT を差分ダウンロードする
+     *
+     * @return mix 取得できたか、更新がなかった場合はtrueを返す
+     */
+    protected function _downloadDat2chAPI($AppKey,$HMKey,$sid,$from_bytes)
+    {
+        global $_conf;
+        global $debug;
+
+        if (!($this->host && $this->bbs && $this->key)) {
+            return false;
+        }
+        
+        if ($sid == '') {
+            return false;
+        }
+
+        $from_bytes = intval($from_bytes);
+
+        if ($from_bytes == 0) {
+            $zero_read = true;
+        } else {
+            $zero_read = false;
+            $from_bytes = $from_bytes - 1;
+        }
+
+        $serverName = explode('.', $this->host);
+        //$url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
+        //$url="http://news2.2ch.net/test/read.cgi?bbs=newsplus&key=1038486598";
+        $url = 'https://api.2ch.net/v1/'.$serverName[0].'/'.$this->bbs.'/'.$this->key;
+        $message = '/v1/'.$serverName[0].'/'.$this->bbs.'/'.$this->key.$sid.$AppKey;
+        $HB = hash_hmac("sha256", $message, $HMKey);
+
+        $headers = "User-Agent: Mozilla/3.0 (compatible; JaneStyle/3.80β)\r\n";
+        $headers .= "Connection: close\r\n";
+        $headers .= "Content-Type: application/x-www-form-urlencoded\r\n";
+        
+        $purl = parse_url($url); // URL分解
+
+        if (!$zero_read) {
+            $headers .= "Range: bytes={$from_bytes}-\r\n";
+        }
+
+        if ($this->modified) {
+            $headers .= "If-Modified-Since: {$this->modified}\r\n";
+        }
+
+        // Basic認証用のヘッダ
+        if (isset($purl['user']) && isset($purl['pass'])) {
+            $headers .= "Authorization: Basic ".base64_encode($purl['user'].":".$purl['pass'])."\r\n";
+        }
+        
+        $post_values = array(
+            'sid' => $sid,
+            'hobo' => $HB,
+            'appkey' => $AppKey,
+        );
+        
+        $http = array(
+            'method' => 'POST',
+            'header' => $headers,
+            'ignore_errors'=> true,
+            'content' => http_build_query($post_values),
+        );
+        
+        // プロキシ
+        if ($_conf['proxy_use']) {
+            $http += array('proxy' => 'tcp://'.$_conf['proxy_host'].":".$_conf['proxy_port']);
+            $http += array('request_fulluri' => true);
+        }
+
+        $options = array('http' => $http);
+        
+        // WEBサーバへ接続
+        $fp = @fopen($url, 'r', false, stream_context_create($options));
+        if (!$fp) {
+            self::_pushInfoConnectFailed($url, $errno, $errstr);
+            $this->diedat = true;
+            return false;
+        }
+        stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
+
+        $body = '';
+        $code = null;
+        $start_here = false;
+
+        while (!p2_stream_eof($fp, $timed_out)) {
+
+            if ($start_here) {
+
+                if ($code == '200' || $code == '206') {
+
+                    while (!p2_stream_eof($fp, $timed_out)) {
+                        $body .= fread($fp, 4096);
+                    }
+
+                    if ($timed_out) {
+                        self::_pushInfoReadTimedOut($url);
+                        $this->diedat = true;
+                        fclose($fp);
+                        return false;
+                    }
+                    //1行目を少し切り出す
+                    $firstmsg = substr($body, 0, 50);
+                    if(strstr($firstmsg, 'ng')) {
+                        //ngで始まってたらapiのエラー
+                        fclose($fp);
+                        if (strstr($firstmsg, "not valid")) {
+                            //sidが無効になった可能性。もう一回認証するため最初からやり直し。
+                            if (empty($_REQUEST['relogin2chapi'])) {
+                                $_REQUEST['relogin2chapi'] = true;
+                                return $this->downloadDat();
+                            }
+                        }
+                        $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。".trim($firstmsg)."</p>";
+                        $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
+                        $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
+                        $this->diedat = true;
+                        return false;
+                        
+                    }
+                    unset($firstmsg);
+
+                    // 末尾の改行であぼーんチェック
+                    if (!$zero_read) {
+                        if (substr($body, 0, 1) != "\n") {
+                            //echo "あぼーん検出";
+                            fclose($fp);
+                            $this->onbytes = 0;
+                            $this->modified = null;
+                            return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,0); // あぼーん検出。全部取り直し。
+                        }
+                        $body = substr($body, 1);
+                    }
+
+                    $file_append = ($zero_read) ? 0 : FILE_APPEND;
+
+                    if (FileCtl::file_write_contents($this->keydat, $body, $file_append) === false) {
+                        p2die('cannot write file.');
+                    }
+
+                    //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("dat_size_check");
+                    // 取得後サイズチェック
+                    if ($zero_read == false && $this->onbytes) {
+                        $this->getDatBytesFromLocalDat(); // $aThread->length をset
+                        if ($this->onbytes != $this->length) {
+                            fclose($fp);
+                            $this->onbytes = 0;
+                            $this->modified = null;
+                            P2Util::pushInfoHtml("<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>");
+                            //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
+                            return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,0); //datサイズは不正。全部取り直し。
+
+                        // サイズが同じならそのまま
+                        } elseif ($this->onbytes == $this->length) {
+                            fclose($fp);
+                            $this->isonline = true;
+                            //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
+                            return true;
+                        }
+                    }
+                    //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
+
+                // スレッドがないと判断
+                } else {
+                    fclose($fp);
+                    return $this->_downloadDat2chNotFound($code);
+                }
+
+            } else {
+                $meta = stream_get_meta_data($fp);
+                foreach($meta['wrapper_data'] as $l)
+                {
+                    // ex) HTTP/1.1 304 Not Modified
+                    if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@i', $l, $matches)) {
+                        $code = $matches[1];
+
+                        if ($code == '200' || $code == '206') { // Partial Content
+                            ;
+
+                        } elseif ($code == '302') { // Found
+
+                            // ホストの移転を追跡
+                            $new_host = BbsMap::getCurrentHost($this->host, $this->bbs);
+                            if ($new_host != $this->host) {
+                                fclose($fp);
+                                $this->old_host = $this->host;
+                                $this->host = $new_host;
+                                return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,$from_bytes);
+                            } else {
+                                fclose($fp);
+                                return $this->_downloadDat2chNotFound($code);
+                            }
+
+                        } elseif ($code == '304') { // Not Modified
+                            fclose($fp);
+                            $this->isonline = true;
+                            return '304 Not Modified';
+
+                        } elseif ($code == '416') { // Requested Range Not Satisfiable
+                            //echo "あぼーん検出";
+                            fclose($fp);
+                            $this->onbytes = 0;
+                            $this->modified = null;
+                            return $this->_downloadDat2chAPI($AppKey,$HMKey,$sid,0); // あぼーん検出。全部取り直し。
+
+                        } else {
+                            fclose($fp);
+                            return $this->_downloadDat2chNotFound($code);
+                        }
+                    }
+
+                    if ($zero_read) {
+                        if (preg_match('/^Content-Length: ([0-9]+)/i', $l, $matches)) {
+                            $this->onbytes = intval($matches[1]);
+                        }
+                    } else {
+
+                        if (preg_match('@^Content-Range: bytes ([^/]+)/([0-9]+)@i', $l, $matches)) {
+                            $this->onbytes = intval($matches[2]);
+                        }
+
+                    }
+
+                    if (preg_match('/^Last-Modified: (.+)/i', $l, $matches)) {
+                        //echo $matches[1] . '<br />'; //debug
+                        $this->modified = $matches[1];
+                    }
+                }
+                $start_here = true;
+            }
+        }
+
+        fclose($fp);
+        if ($timed_out) {
+            self::_pushInfoReadTimedOut($url);
+            $this->diedat = true;
+            return false;
+        } else {
+            $this->isonline = true;
+            return true;
         }
     }
 
@@ -760,6 +1030,9 @@ class ThreadRead extends Thread
                     $reason = 'kakohtml';
                 }
             }
+        } elseif (P2Util::isHost2chs($this->host) && $code == '404') {
+            //APIの為404だったら過去ログと決めつけとく（fix Here）
+            $reason = 'datochi';
         }
 
         $read_url = "http://{$this->host}/test/read.cgi/{$this->bbs}/{$this->key}/";

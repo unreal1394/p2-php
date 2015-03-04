@@ -360,6 +360,24 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
 }
 
 // }}}
+// {{{ '2ch API'
+
+$groupname = '2ch API';
+$groups[] = $groupname;
+$flags = getGroupShowFlags($groupname);
+if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
+    $keep_old = true;
+} else {
+    $conflist = array(
+        array('2chapi_use','2ch API を使用する'),
+        array('2chapi_rounin','2ch API 認証時に●(浪人)IDを送信する(人柱機能)'),
+        array('2chapi_appkey','AppKey'),
+        array('2chapi_hmkey','HMkey'),
+    );
+    printEditConfGroupHtml($groupname, $conflist, $flags);
+}
+
+// }}}
 // {{{ ETC
 
 $groupname = 'ETC';
