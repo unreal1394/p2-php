@@ -860,6 +860,12 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
 	$keep_old = true;
 } else {
 	$conflist = array(
+        array('live.livebbs_list', '実況板(カンマ区切り)'),
+        '実況用表示へのリンク',
+        array('live.livelink_subject', 'スレッド一覧に実況用表示へのリンクを表示する'),
+        array('live.livelink_thread', 'レス表示のヘッダとフッターに実況用表示へのリンクを表示する'),
+        array('live.livebbs_forcelive', '実況板のスレッドを常に実況用表示で開く'),
+        'レス表示',
 		array('live.view_type', 'レス表示の種類'),
 		array('live.id_b', 'ID末尾の O (携帯) P (公式p2) Q (フルブラウザ) i (iPhone)を太字に'),
 		array('live.highlight_chain', '連鎖ハイライト (連鎖範囲は ngaborn_chain_all にて設定)'),

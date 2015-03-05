@@ -4,6 +4,20 @@
 */
 
 // {{{ ■表示設定
+// 実況板
+$conf_user_def['live.livebbs_list'] = "livesaturn,livevenus,liveuranus,endless,weekly,livewar,livefield,liveelection,livewkwest,livenhk,liveetv,liventv,livetbs,livecx,liveanb,livetx,livemx,livebs,livebs2,livewowow,liveskyp,liveradio,liveanime,kokkai,dome,livebase,livefoot,oonna,ootoko,dancesite,festival,jasmine,liveanarchy,livesangyou,livemarket1,livemarket2"; // ("livesaturn,livevenus,liveuranus,endless,weekly,livewar,livefield,liveelection,livewkwest,livenhk,liveetv,liventv,livetbs,livecx,liveanb,livetx,livemx,livebs,livebs2,livewowow,liveskyp,liveradio,liveanime,kokkai,dome,livebase,livefoot,oonna,ootoko,dancesite,festival,jasmine,liveanarchy,livesangyou,livemarket1,livemarket2")
+
+// スレッド一覧に実況表示へのリンクを表示する
+$conf_user_def['live.livelink_subject'] = "2"; // ("2")
+$conf_user_sel['live.livelink_subject'] = array('2' => '全ての板で表示', '1' => '実況板のみ表示', '0' => '表示しない');
+
+// 'レス表示のヘッダとフッターに実況表示へのリンクを表示
+$conf_user_def['live.livelink_thread'] = "2"; // ("2")
+$conf_user_sel['live.livelink_thread'] = array('2' => '全ての板で表示', '1' => '実況板のみ表示', '0' => '表示しない');
+
+// 実況板のスレッドを常に実況用表示で開く
+$conf_user_def['live.livebbs_forcelive'] = 0; // (0)
+$conf_user_rad['live.livebbs_forcelive'] = array('1' => 'する', '0' => 'しない');
 
 // レス表示の種類
 $conf_user_def['live.view_type'] = "1"; // ("1")
