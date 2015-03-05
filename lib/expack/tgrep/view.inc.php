@@ -61,6 +61,10 @@
     <td class="toolbar-filter">
         <form id="searchForm" name="searchForm" action="<?php echo $htm['php_self']; ?>" method="get" accept-charset="<?php echo $_conf['accept_charset']; ?>">
         <input id="Q" name="Q" <?php echo $htm['search_attr']; ?> />
+        <input type="hidden" name="maxResult" value="<?php echo $_GET['maxResult']; ?>">
+        <input type="hidden" name="AndOr" value="<?php echo $_GET['AndOr']; ?>">
+        <input type="hidden" name="Sort" value="<?php echo $_GET['Sort']; ?>">
+        <input type="hidden" name="924" value="<?php echo $_GET['924']; ?>">
         <input type="submit" value="ŒŸõ" />
         <?php echo $_conf['detect_hint_input_xht'], $_conf['k_input_ht']; ?>
         </form>
@@ -91,12 +95,6 @@
 <?php } ?>
 
 <?php if (!$errors && $profile) { ?>
-<table>
-<tr>
-    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm0'];}?></td>
-    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm1'];}?></td>
-    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm2'];}?></td>
-</table>
 
 <!-- Result and Filter -->
 <div class="tgrep_result">
@@ -179,6 +177,13 @@ foreach ($threads as $o => $t) {
 </tfoot>
 <?php } ?>
 </table>
+<table>
+<tr>
+    <!--dig2ch‚ÌŽg—pðŒ‚Ì‚½‚ß•\Ž¦-->
+    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm0'];}?></td>
+    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm1'];}?></td>
+    <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm2'];}?></td>
+</table>
 <?php } ?>
 
 <?php if ($threads) { ?>
@@ -189,6 +194,10 @@ foreach ($threads as $o => $t) {
     <td class="toolbar-filter">
         <form id="searchForm2" name="searchForm2" action="<?php echo $htm['php_self']; ?>" method="get" accept-charset="<?php echo $_conf['accept_charset']; ?>">
         <input id="Q2" name="Q" <?php echo $htm['search_attr']; ?> />
+        <input type="hidden" name="maxResult" value="<?php echo $_GET['maxResult']; ?>">
+        <input type="hidden" name="AndOr" value="<?php echo $_GET['AndOr']; ?>">
+        <input type="hidden" name="Sort" value="<?php echo $_GET['Sort']; ?>">
+        <input type="hidden" name="924" value="<?php echo $_GET['924']; ?>">
         <input type="submit" value="ŒŸõ" />
         <?php echo $_conf['detect_hint_input_xht'], $_conf['k_input_ht']; ?>
         </form>
