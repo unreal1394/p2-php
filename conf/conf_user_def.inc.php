@@ -101,6 +101,14 @@ $conf_user_rad['cmp_dayres_midoku'] = array('1' => 'する', '0' => 'しない');
 $conf_user_def['cmp_title_norm'] = 0; // (0)
 $conf_user_rad['cmp_title_norm'] = array('1' => 'する', '0' => 'しない');
 
+// スレッドのタイトルから著作権表記を削除する
+$conf_user_def['delete_copyright'] = 0; // (0)
+$conf_user_rad['delete_copyright'] = array('1' => 'する', '0' => 'しない');
+
+//削除する著作権表記の文字列(カンマ区切り)
+$conf_user_def['delete_copyright.list'] = "[転載禁止],&copy;2ch.net";
+$conf_user_rules['delete_copyright.list'] = array('emptyToDef');
+
 // 携帯閲覧時、一度に表示するスレの数
 $conf_user_def['mobile.sb_disp_range'] = 30; // (30)
 $conf_user_rules['mobile.sb_disp_range'] = array('emptyToDef', 'notIntExceptMinusToDef');

@@ -156,6 +156,14 @@ class Thread
      */
     public function setTtitle($ttitle)
     {
+        global $_conf;
+
+        //’˜ìŒ •\‹L‚ðœ‹Ž
+        if ($_conf['delete_copyright']==1) {
+            foreach (explode (',',$_conf['delete_copyright.list']) as $value) {
+                 $ttitle = str_replace($value,'',$ttitle);
+            }
+        }
         $this->ttitle = $ttitle;
     }
 
