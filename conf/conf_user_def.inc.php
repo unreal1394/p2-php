@@ -385,7 +385,7 @@ $conf_user_rad['ngaborn_purge_aborn'] = array('1' => 'はい', '0' => 'いいえ');
 // {{{ 2ch API
 
 // 2ch API を使用する
-$conf_user_def['2chapi_use'] = 1; // (1)
+$conf_user_def['2chapi_use'] = 0; // (0)
 $conf_user_rad['2chapi_use'] = array('1' => 'する', '0' => 'しない');
 
 // 2ch API 認証時に●(浪人)IDを送信する

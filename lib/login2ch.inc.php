@@ -25,9 +25,19 @@ function login2ch()
 
     $auth2ch_url    = 'https://2chv.tora3.net/futen.cgi';
     $postf          = 'ID=' . $login2chID . '&PW=' . $login2chPW;
-    $x_2ch_ua       = 'X-2ch-UA: ' . $_conf['p2ua'];
     $dolib2ch       = 'DOLIB/1.00';
     $tempfile       = $_conf['tmp_dir'] . '/p2temp.php';
+
+    if($_conf['2chapi_use'] == 1) {
+        if($_conf['2chapi_appname'] != "") {
+            $x_2ch_ua = 'X-2ch-UA: ' . $_conf['2chapi_appname'];
+        } else {
+            P2Util::pushInfoHtml("<p>p2 error: 2chと通信するために必要な情報が設定されていません。</p>");
+            return false;
+        }
+    } else {
+        $x_2ch_ua = 'X-2ch-UA: ' . $_conf['p2ua'];
+    }
 
     // 念のためあらかじめtempファイルを除去しておく
     if (file_exists($tempfile)) {

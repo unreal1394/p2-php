@@ -400,7 +400,19 @@ function postIt($host, $bbs, $key, $post)
 
     $request = "{$method} {$send_path} HTTP/1.0\r\n";
     $request .= "Host: {$URL['host']}\r\n";
-    $request .= "User-Agent: Monazilla/1.00 ({$_conf['p2ua']})\r\n";
+
+    // APIを使用する設定で相手が2chだったらAPIのUAを送る
+    if(P2Util::isHost2chs($URL['host']) && $_conf['2chapi_use'] == 1) {
+        if($_conf['2chapi_appname'] != "") {
+            $request .= "User-Agent: Monazilla/1.00 ({$_conf['2chapi_appname']})\r\n";
+        } else {
+            showPostMsg(false, "p2 Error: 2chと通信するために必要な情報が設定されていません。</p>", false);
+            return false;
+        }
+    } else {
+        $request .= "User-Agent: Monazilla/1.00 ({$_conf['p2ua']})\r\n";
+    }
+
     $request .= "Referer: http://{$host}/{$bbs}/{$key}/\r\n";
 
     // クッキー
