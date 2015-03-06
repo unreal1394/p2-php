@@ -180,6 +180,28 @@ $toolbar_right_ht = <<<EOTOOLBAR
             <a href="{$_conf['subject_php']}?{$host_bbs_key_q}{$similar_q}" target="subject" title="タイトルが似ているスレッドを検索">{$siml_thre_st}</a>
 EOTOOLBAR;
 
+// +live 実況リンク表示
+
+// 実況表示では無いときのみ表示
+if(empty($_GET['live'])) {
+    $livebbs_bool = false;
+    // 実況板のみ発動か確認
+    if($_conf['live.livelink_thread']==1) {
+        foreach (explode (',',$_conf['live.livebbs_list']) as $value) {
+             if(strpos($aThread->bbs, $value) !== false) {
+                 $livebbs_bool = true;
+                 break;
+             }
+        }
+    }
+    //実況板or全ての板で表示する設定になってたら表示
+    if($_conf['live.livelink_thread']==2||$livebbs_bool)
+    {
+        $toolbar_right_ht .= <<<EOTOOLBAR
+ <a href="live_frame.php?{$host_bbs_key_q}{$ttitle_en_q}&amp;ls={$aThread->rescount}-{$word_q}{$anum_ht}">実況</a>
+EOTOOLBAR;
+    }
+}
 //=====================================
 echo $_conf['doctype'];
 echo <<<EOP
@@ -460,7 +482,7 @@ $htm['p2frame'] = <<<live
 <script type="text/javascript">
 //<![CDATA[
 if (top == self) {
-	<a href="live_frame.php?{$host_bbs_key_q}{$ttitle_en_q}{$rescount_q}{$word_q}{$anum_ht}">実況フレーム 2ペインで開く</a> |
+    document.writeln('<a href="live_frame.php?{$host_bbs_key_q}{$ttitle_en_q}&amp;ls={$aThread->rescount}-{$word_q}{$anum_ht}">実況フレーム 2ペインで開く<' + '/a> |');
 }
 //]]>
 </script>\n
