@@ -45,6 +45,17 @@ function sb_print($aThreadList)
         $ita_name_bool = false;
     }
 
+    // 実況版のみ発動する機能がONの時は板が実況板かどうか判断
+    $livebbs_bool = false;
+    if($_conf['live.livelink_subject']==1||$_conf['live.livebbs_forcelive']==1) {
+        foreach (explode (',',$_conf['live.livebbs_list']) as $value) {
+             if(strpos($aThreadList->bbs, $value) !== false) {
+                 $livebbs_bool = true;
+                 break;
+             }
+        }
+    }
+
     $norefresh_q = '&amp;norefresh=true';
 
     $td = array('edit' => '', 'offrec' => '', 'unum' => '', 'rescount' => '',
@@ -362,12 +373,16 @@ EOP;
         }
         $thre_url = "{$_conf['read_php']}?{$host_bbs_key_q}{$rescount_q}{$offline_q}{$word_q}{$anum_ht}";
 
-		// +live リンク表示切替
-		$ttitle_en = UrlSafeBase64::encode($aThread->ttitle);
-		$ttitle_urlen = rawurlencode($ttitle_en);
-		$ttitle_en_q ="&amp;ttitle_en=".$ttitle_urlen;
+        // +live リンク表示切替
+        if($_conf['live.livelink_subject']==2||$livebbs_bool)
+        {
+            $ttitle_en = UrlSafeBase64::encode($aThread->ttitle);
+            $ttitle_urlen = rawurlencode($ttitle_en);
+            $ttitle_en_q ="&amp;ttitle_en=".$ttitle_urlen;
 
-		$live_url = "live_frame.php?{$host_bbs_key_q}&amp;live=1{$ttitle_en_q}{$rescount_q}{$anum_ht}";
+            $live_url = "live_frame.php?{$host_bbs_key_q}&amp;live=1{$ttitle_en_q}{$rescount_q}{$anum_ht}";
+            
+        }
 
         // オンリー>>1
         if ($only_one_bool) {
@@ -441,22 +456,31 @@ EOP;
         $birthday = date('y/m/d', $aThread->key); // (y/m/d H:i)
         $td['birth'] = "<td{$class_t}>{$birthday}</td>\n";
 
+        // +live 実況ボタンの処理
+        // +live スレのリンク先を実況に書き換える
+        if($_conf['live.livebbs_forcelive']==1&&$livebbs_bool) {
+            $thre_url = $live_url;
+        } elseif (isset($live_url)) {
+            // +live 実況中ic2のサムネイル作成をonoff
+            if ($_conf['expack.ic2.enabled']
+            && (!$_conf['live.ic2_onoff'])) {
+                $live_ic2_off = "onclick=\"javascript:parent.menu.ic2_menu_switch(0);\"";
+            }
+            $livelink_body = <<<EOP
+<a href="{$live_url}" title="別窓で実況" target="_blank" {$live_ic2_off}><img src ="./img/live.png" alt="+live"></a>&nbsp;
+EOP;
+        }
+
         //====================================================================================
         // スレッド一覧 table ボディ HTMLプリント <tr></tr>
         //====================================================================================
-
-		// +live 実況中ic2のサムネイル作成をonoff
-		if ($_conf['expack.ic2.enabled']
-		&& (!$_conf['live.ic2_onoff'])) {
-			$live_ic2_off = "onclick=\"javascript:parent.menu.ic2_menu_switch(0);\"";
-		}
 
         // ボディ
         echo <<<EOR
 <tr class="{$row_class}">
 {$td['edit']}{$td['offrec']}{$td['unum']}{$td['rescount']}{$td['one']}{$td['checkbox']}<td{$class_to}>{$torder_ht}</td>
 <td{$class_tl}><div class="el">{$moto_thre_ht}
-<a href="{$live_url}" title="別窓で実況" target="_blank" {$live_ic2_off}><img src ="./img/live.png" alt="+live"></a>&nbsp;
+{$livelink_body}
 <a id="tt{$i}" href="{$thre_url}" class="{$title_class}">{$ttitle_ht}</a></div></td>
 {$td['ita']}{$td['spd']}{$td['ikioi']}{$td['birth']}{$td['fav']}</tr>\n
 EOR;
