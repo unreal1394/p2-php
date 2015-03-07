@@ -1,15 +1,15 @@
-﻿# rep2 expack +live
+﻿# rep2 expack 全部入り by 2ch774
 
-rskさん作 rep2expack を元に、実況用機能を追加しています。
+rep2-expack https://github.com/rsky/p2-php
+rep2-expack +live https://github.com/pluslive/p2-php
+rep2-expack test https://github.com/orzisun/p2-php
+上記やスレに上げられた修正を取り込んで全部入りを目指す闇鍋バージョンです。
+独自の改良も行っています。
 
 
 ### 追加機能
 
-* 実況用表示
-* オートリロード/スクロール
-* ハイライトワード/連鎖ハイライト
-
-その他基本機能はベースとなっている rep2expack と同じです。
+各機能の説明はdocディレクトリのREADMEファイルを見てください。
 
 
 ## セットアップ
