@@ -1323,7 +1323,7 @@ EOJS;
 
         // http://www.youtube.com/watch?v=Mn8tiFnAUAI
         // http://m.youtube.com/watch?v=OhcX0xJsDK8&client=mv-google&gl=JP&hl=ja&guid=ON&warned=True
-        if (preg_match('{^http://(www|jp|m)\\.youtube\\.com/watch\\?(?:.+&amp;)?v=([0-9a-zA-Z_\\-]+)}', $url, $m)) {
+        if (preg_match('{^https?://(www|jp|m)\\.youtube\\.com/watch\\?(?:.+&amp;)?v=([0-9a-zA-Z_\\-]+)}', $url, $m)) {
             // ime
             if ($_conf['through_ime']) {
                 $link_url = P2Util::throughIme($url);
@@ -1351,9 +1351,9 @@ EOP;
                 return <<<EOP
 {$link}<div class="preview-video preview-video-youtuve">
 <object {$youtube_winsize}>
-<param name="movie" value="http://www.youtube.com/v/{$id}" valuetype="ref" type="application/x-shockwave-flash">
+<param name="movie" value="https://www.youtube.com/v/{$id}" valuetype="ref" type="application/x-shockwave-flash">
 <param name="wmode" value="transparent">
-<embed src="http://www.youtube.com/v/{$id}" type="application/x-shockwave-flash" wmode="transparent" {$youtube_winsize}>
+<embed src="https://www.youtube.com/v/{$id}" type="application/x-shockwave-flash" wmode="transparent" {$youtube_winsize}>
 </object>
 </div>
 EOP;
