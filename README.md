@@ -1,9 +1,11 @@
 ﻿# rep2 expack 全部入り by 2ch774
 
-rep2-expack https://github.com/rsky/p2-php
-rep2-expack +live https://github.com/pluslive/p2-php
-rep2-expack test https://github.com/orzisun/p2-php
+* rep2-expack https://github.com/rsky/p2-php
+* rep2-expack +live https://github.com/pluslive/p2-php
+* rep2-expack test https://github.com/orzisun/p2-php
+
 上記やスレに上げられた修正を取り込んで全部入りを目指す闇鍋バージョンです。
+
 独自の改良も行っています。
 
 
