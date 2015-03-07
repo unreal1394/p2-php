@@ -23,9 +23,9 @@
 <option value="1" >ORŒŸõ</option>
 </select><br>
 Å‘å<select name="maxResult">
-<option value="50" >50</option>
-<option value="100" selected>100</option>
-<option value="200" >200</option>
+<option value="10" >10</option>
+<option value="20" selected>20</option>
+<option value="30" >30</option>
 </select>Œ•\Ž¦<br>
 <select name="Sort">
 <option value="0" >l‹C”Â‡</option>
