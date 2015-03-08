@@ -257,4 +257,4 @@ http://twitpic\.com/\w+	$EXTRACT	$&/full	$EXTRACT	src="(http://[^"]+)
 http://skm\.vip2ch\.com/-/hirame/([^/]+\.(?:jpe?g|png|gif|bmp))	http://skm.vip2ch.com/hirame/$1
 (http://www\.fastpic\.jp/)images\.php\?file=\d+\.(?:jpe?g|png|gif)	$1$EXTRACT1	$&	$EXTRACT	src="(images/\d+/\d+\.(?:jpe?g|png|gif))"
 (http://www\.fastpic\.jp/)viewer\.php\?file=\d+\.(?:jpe?g|png|gif)	$1$EXTRACT1	$&	$EXTRACT	src="(images/\d+/\d+\.(?:jpe?g|png|gif))"
-
+https?://pbs\.twimg\.com/(.*):.*	https://pbs.twimg.com/$1					

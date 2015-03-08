@@ -1323,7 +1323,8 @@ EOJS;
 
         // http://www.youtube.com/watch?v=Mn8tiFnAUAI
         // http://m.youtube.com/watch?v=OhcX0xJsDK8&client=mv-google&gl=JP&hl=ja&guid=ON&warned=True
-        if (preg_match('{^https?://(www|jp|m)\\.youtube\\.com/watch\\?(?:.+&amp;)?v=([0-9a-zA-Z_\\-]+)}', $url, $m)) {
+        if (preg_match('{^https?://(youtu\\.be|(www|jp|m)\\.youtube\\.com)/(watch\\?(?:.+&amp;)?v=|)([0-9a-zA-Z_\\-]+)}', $url, $m)) {
+            $url = preg_replace('{^http:}', 'https:', $url); 
             // ime
             if ($_conf['through_ime']) {
                 $link_url = P2Util::throughIme($url);
@@ -1341,7 +1342,7 @@ EOJS;
             }
 
             $subd = $m[1];
-            $id = $m[2];
+            $id = $m[4];
 
             if ($_conf['link_youtube'] == 2) {
                 return <<<EOP
@@ -1380,7 +1381,8 @@ EOP;
         // http://www.nicovideo.jp/watch?v=utbrYUJt9CSl0
         // http://www.nicovideo.jp/watch/utvWwAM30N0No
         // http://m.nicovideo.jp/watch/sm7044684
-        if (preg_match('{^http://(?:www|m)\\.nicovideo\\.jp/watch(?:/|(?:\\?v=))([0-9a-zA-Z_-]+)}', $url, $m)) {
+        if (preg_match('{^http://(?:www|m)\\.nicovideo\\.jp/watch(?:/|(?:\\?v=))([0-9a-zA-Z_-]+)}', $url, $m) ||
+        preg_match('{^http://nico\\.(?:ms|sc)/([0-9a-zA-Z_-]+)}', $url, $m)) {
             // ime
             if ($_conf['through_ime']) {
                 $link_url = P2Util::throughIme($purl[0]);
