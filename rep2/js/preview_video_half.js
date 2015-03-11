@@ -16,35 +16,13 @@ function preview_video_youtube(id, placeholder)
 	var container = document.createElement('div');
 	container.className = 'preview-video preview-video-youtube';
 
-	var embed = document.createElement('embed');
-	embed.setAttribute('src', 'http://www.youtube.com/v/' + id);
-	embed.setAttribute('type', 'application/x-shockwave-flash');
-	embed.setAttribute('wmode', 'transparent');
-	embed.setAttribute('width', '212');
-	embed.setAttribute('height', '175');
-
-	if (document.all) {
-		container.appendChild(embed);
-	} else {
-		var preview = document.createElement('object');
-		preview.setAttribute('width', '212');
-		preview.setAttribute('height', '175');
-
-		var param1 = document.createElement('param');
-		param1.setAttribute('name', 'movie');
-		param1.setAttribute('value', 'http://www.youtube.com/v/' + id);
-		param1.setAttribute('valuetype', 'ref');
-		param1.setAttribute('type', 'application/x-shockwave-flash');
-
-		var param2 = document.createElement('param');
-		param2.setAttribute('name', 'wmode');
-		param2.setAttribute('value', 'transparent');
-
-		preview.appendChild(param1);
-		preview.appendChild(param2);
-		preview.appendChild(embed);
-		container.appendChild(preview);
-	}
+	var preview = document.createElement('iframe');
+	preview.setAttribute('width', '212');
+	preview.setAttribute('height', '175');
+	preview.setAttribute('src', 'https://www.youtube.com/embed/' + id);
+	preview.setAttribute('frameborder', '0');
+	preview.setAttribute('allowfullscreen','');
+	container.appendChild(preview);
 
 	if (placeholder && placeholder.parentNode) {
 		placeholder.parentNode.replaceChild(container, placeholder);

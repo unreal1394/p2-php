@@ -1351,11 +1351,7 @@ EOP;
             } else {
                 return <<<EOP
 {$link}<div class="preview-video preview-video-youtuve">
-<object {$youtube_winsize}>
-<param name="movie" value="https://www.youtube.com/v/{$id}" valuetype="ref" type="application/x-shockwave-flash">
-<param name="wmode" value="transparent">
-<embed src="https://www.youtube.com/v/{$id}" type="application/x-shockwave-flash" wmode="transparent" {$youtube_winsize}>
-</object>
+<iframe {$youtube_winsize} src="https://www.youtube.com/embed/{$id}" frameborder="0" allowfullscreen></iframe>
 </div>
 EOP;
             }
