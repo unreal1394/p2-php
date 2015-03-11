@@ -1323,7 +1323,7 @@ EOJS;
 
         // http://www.youtube.com/watch?v=Mn8tiFnAUAI
         // http://m.youtube.com/watch?v=OhcX0xJsDK8&client=mv-google&gl=JP&hl=ja&guid=ON&warned=True
-        if (preg_match('{^https?://(youtu\\.be|(www|jp|m)\\.youtube\\.com)/(watch\\?(?:.+&amp;)?v=|)([0-9a-zA-Z_\\-]+)}', $url, $m)) {
+        if (preg_match('{^https?://(youtu\\.be/|(www|jp|m)\\.youtube\\.com/watch\\?(?:.+&amp;)?v=)([0-9a-zA-Z_\\-]+)}', $url, $m)) {
             $url = preg_replace('{^http:}', 'https:', $url); 
             // ime
             if ($_conf['through_ime']) {
@@ -1342,7 +1342,7 @@ EOJS;
             }
 
             $subd = $m[1];
-            $id = $m[4];
+            $id = $m[3];
 
             if ($_conf['link_youtube'] == 2) {
                 return <<<EOP
