@@ -1,6 +1,6 @@
 <?php
 /**
- * rep2expack - コマンドラインでsubject.txtを並列ダウンロード
+ * rep2expack - コマンドラインでdatをダウンロード
  */
 
 // {{{ 初期設定
@@ -157,14 +157,14 @@ for ($x = 0; $x < $linesize; $x++) {
         $aThread->rescount = $aThread->gotnum;
     }
 
-    // 新着あり
-    if ($aThread->unum > 0) {
+    // 新着ありandスレッドの総レス数が既得レス数より多いとき
+    if ($aThread->unum > 0 && $aThread->rescount > $aThread->gotnum) {
         //ダウンロードする
         fwrite(STDOUT, 'Downloading ' . $aThread->host . '/' . $aThread->bbs . '/' . $aThread->key . PHP_EOL);
         $aThread->downloadDat();
         
         //===========================================================
-        // idxの値を設定、記録
+        // idxの値を更新
         //===========================================================
         if ($aThread->rescount) {
             if ($idx_lines = FileCtl::file_read_lines($aThread->keyidx, FILE_IGNORE_NEW_LINES)) {
