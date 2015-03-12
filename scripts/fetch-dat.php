@@ -167,8 +167,8 @@ for ($x = 0; $x < $linesize; $x++) {
         // idx‚Ì’l‚ðÝ’èA‹L˜^
         //===========================================================
         if ($aThread->rescount) {
-            if ($lines = FileCtl::file_read_lines($aThread->keyidx, FILE_IGNORE_NEW_LINES)) {
-                $data = explode('<>', $lines[0]);
+            if ($idx_lines = FileCtl::file_read_lines($aThread->keyidx, FILE_IGNORE_NEW_LINES)) {
+                $data = explode('<>', $idx_lines[0]);
             } else {
                 $data = array_fill(0, 12, '');
             }
