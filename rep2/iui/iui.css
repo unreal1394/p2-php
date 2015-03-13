@@ -30,7 +30,7 @@ body[orient="landscape"] > *:not(.toolbar) {
 body > *[selected="true"] {
     display: block;
 }
-
+/*
 a[selected], a:active {
     background-color: #194fdb !important;
     background-image: url(listArrowSel.png), url(selection.png) !important;
@@ -42,7 +42,7 @@ a[selected], a:active {
 a[selected="progress"] {
     background-image: url(loading.gif), url(selection.png) !important;
 }
-
+*/
 /************************************************************************************************/
 
 body > .toolbar {
@@ -50,10 +50,10 @@ body > .toolbar {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     border-bottom: 1px solid #2d3642;
-    border-top: 1px solid #6d84a2;
-    padding: 10px;
+    border-top: 1px solid #333; /* ‰Šú’l #6d84a2 */
+    padding: 6px;
     height: 45px;
-    background: url(toolbar.png) #6d84a2 repeat-x;
+    background: #333; /* url(toolbar.png) #6d84a2 repeat-x; */
 }
 
 .toolbar > h1 {
@@ -84,9 +84,10 @@ body[orient="landscape"] > .toolbar > h1 {
     right: 6px;
     margin: 0;
     border-width: 0 5px;
-    padding: 0 3px;
+    padding: 1px 4px 0 4px;
     width: auto;
     height: 30px;
+
     line-height: 30px;
     font-family: inherit;
     font-size: 12px;
@@ -96,14 +97,18 @@ body[orient="landscape"] > .toolbar > h1 {
     text-overflow: ellipsis;
     text-decoration: none;
     white-space: nowrap;
-    background: none;
-    -webkit-border-image: url(toolButton.png) 0 5 0 5;
+    background: #444; border-radius: 5px;
+    /* background: none;
+    -webkit-border-image: url(toolButton.png) 0 5 0 5; */
+        display:block;
 }
 
+/*
 .blueButton {
     -webkit-border-image: url(blueButton.png) 0 5 0 5;
     border-width: 0 5px;
 }
+*/
 
 .leftButton {
     left: 6px;
@@ -112,10 +117,10 @@ body[orient="landscape"] > .toolbar > h1 {
 
 #backButton {
     display: none;
-    left: 6px;
-    right: auto;
-    padding: 0;
-    max-width: 55px;
+    left: 6px; right: auto;
+    padding-right: 0px; padding-left: 0px;
+    width: auto; max-width: 55px;
+    font-family: Helvetica;
     border-width: 0 8px 0 14px;
     -webkit-border-image: url(backButton.png) 0 8 0 14;
 }
@@ -163,13 +168,13 @@ body > ul > li {
 
 body > ul > li.group {
     position: relative;
-    top: -1px;
-    margin-bottom: -2px;
+    /* top: -1px;
+    margin-bottom: -2px; */
     border-top: 1px solid #7d7d7d;
     border-bottom: 1px solid #999999;
-    padding: 1px 10px;
-    background: url(listGroup.png) repeat-x;
-    font-size: 17px;
+    padding: 2px 10px 0px 10px;
+    /* background: url(listGroup.png) repeat-x; */ background:#aaa;
+    font-size: 16px;
     font-weight: bold;
     text-shadow: rgba(0, 0, 0, 0.4) 0 1px 0;
     color: #FFFFFF;
@@ -220,12 +225,12 @@ body > .dialog {
     border: none;
     border-top: 1px solid #6d84a2;
     padding: 10px 6px;
-    background: url(toolbar.png) #7388a5 repeat-x;
+    background: #333;
 }
 
 .dialog > fieldset > h1 {
     margin: 0 10px 0 10px;
-    padding: 0;
+    padding-top: 2px;
     font-size: 20px;
     font-weight: bold;
     color: #FFFFFF;
@@ -238,14 +243,16 @@ body > .dialog {
     margin: 16px 0 0 6px;
     font-size: 14px;
     color: #999999;
+    text-align: left;
+    width: 5em;
 }
 
-input:not(input[type|=radio]):not(input[type|=checkbox]) {
+input:not([type|="submit"]):not([type|="radio"]):not([type|="checkbox"]) {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     width: 100%;
     margin: 8px 0 0 0;
-    padding: 6px 6px 6px 44px;
+    padding: 6px 6px 6px 5em;
     font-size: 16px;
     font-weight: normal;
 }
