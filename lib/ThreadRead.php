@@ -265,9 +265,11 @@ class ThreadRead extends Thread
                         }
                         $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。".trim($firstmsg)."</p>";
                         $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
+                        $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
                         $this->diedat = true;
                         return false;
                     } elseif (strpos($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２")===0) {
+                        fclose($fp);
                         $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
                         $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
                         $marutori_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
@@ -508,6 +510,18 @@ class ThreadRead extends Thread
                         $this->diedat = true;
                         fclose($fp);
                         return false;
+                    }
+
+                    //ホストが2chの時にDATを利用できない旨のメッセージが出たらエラーとする（DAT破損対策）
+                    if (P2Util::isHost2chs($this->host))
+                    {
+                        $firstmsg = substr($body, 0, 100);
+                        if (strpos($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２")===0) {
+                            $this->getdat_error_msg_ht .= "<p>rep2 error: 2ちゃんねるのDAT提供は終了しました。</p>";
+                            $this->diedat = true;
+                            fclose($fp);
+                            return false;
+                        }
                     }
 
                     // 末尾の改行であぼーんチェック
