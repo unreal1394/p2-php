@@ -307,23 +307,13 @@ if ($_conf['ktai']) {
         }
 
         $res1 = $aShowThread->quoteOne(); // >>1ポップアップ用
-        if ($_conf['coloredid.enable'] > 0 && $_conf['coloredid.click'] > 0 &&
-            $_conf['coloredid.rate.type'] > 0) {
-            if ($_GET['showbl']) {
-                $mainhtml = $aShowThread->datToHtml_resFrom(true);
-            } else {
-                $mainhtml .= $aShowThread->datToHtml(true);
-            }
-            $mainhtml .= $res1['q'];
-        } else {
-            if ($_GET['showbl']) {
-                $aShowThread->datToHtml_resFrom();
-            } else {
-                $aShowThread->datToHtml();
-            }
-            echo $res1['q'];
-        }
 
+        if ($_GET['showbl']) {
+            $mainhtml = $aShowThread->datToHtml_resFrom(true);
+        } else {
+            $mainhtml .= $aShowThread->datToHtml(true);
+        }
+        $mainhtml .= $res1['q'];
 
         // レス追跡カラー
         if ($_conf['backlink_coloring_track']) {
@@ -333,10 +323,11 @@ if ($_conf['ktai']) {
         // IDカラーリング
         if ($_conf['coloredid.enable'] > 0 && $_conf['coloredid.click'] > 0) {
             echo $aShowThread->getIdColorJs();
-            // ブラウザ負荷軽減のため、CSS書き換えスクリプトの後でコンテンツを
-            // レンダリングさせる
-            echo $mainhtml;
         }
+
+        // ブラウザ負荷軽減のため、CSS書き換えスクリプトの後でコンテンツを
+        // レンダリングさせる
+        echo $mainhtml;
 
         // 外部ツール
         $pluswiki_js = '';

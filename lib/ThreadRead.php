@@ -522,6 +522,7 @@ class ThreadRead extends Thread
                             fclose($fp);
                             return false;
                         }
+                        unset($firstmsg);
                     }
 
                     // 末尾の改行であぼーんチェック

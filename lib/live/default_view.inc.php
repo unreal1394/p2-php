@@ -45,11 +45,6 @@ if ($_GET['live']) {
             }
         }
 
-        // IDフィルタ
-        if ($_conf['flex_idpopup'] == 1 && $id && $this->thread->idcount[$id] > 1) {
-            $date_id = str_replace($idstr, $this->idFilter($idstr, $id), $date_id);
-        }
-
         $tores .= $date_id; // 日付とID
         if ($this->am_side_of_id) {
             $tores .= ' ' . $this->activeMona->getMona($msg_id);
