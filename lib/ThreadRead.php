@@ -58,13 +58,13 @@ class ThreadRead extends Thread
 
         // まちBBS
         if (P2Util::isHostMachiBbs($this->host)) {
-            DownloadDatMachiBbs::invoke($this);
+            return DownloadDatMachiBbs::invoke($this);
         // JBBS@したらば
         } elseif (P2Util::isHostJbbsShitaraba($this->host)) {
             if (!function_exists('shitarabaDownload')) {
                 include P2_LIB_DIR . '/read_shitaraba.inc.php';
             }
-            shitarabaDownload($this);
+            return shitarabaDownload($this);
 
         // 2ch系
         } else {
@@ -89,7 +89,7 @@ class ThreadRead extends Thread
                     }
 
                     include $_conf['sid2ch_php'];
-                    $this->_downloadDat2chMaru($uaMona, $SID2ch);
+                    return $this->_downloadDat2chMaru($uaMona, $SID2ch);
 
             // 2ch bbspink モリタポ読み
             } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['moritapodat']) &&
@@ -100,7 +100,7 @@ class ThreadRead extends Thread
                 {
                     p2die('不正なリクエストです');
                 }
-                $this->_downloadDat2chMoritapo();
+                return $this->_downloadDat2chMoritapo();
 
             // 2chの過去ログ倉庫読み
             } elseif (!empty($_GET['kakolog']) && !empty($_GET['kakoget'])) {
@@ -109,11 +109,11 @@ class ThreadRead extends Thread
                 } elseif ($_GET['kakoget'] == 2) {
                     $ext = '.dat';
                 }
-                $this->_downloadDat2chKako($_GET['kakolog'], $ext);
+                return $this->_downloadDat2chKako($_GET['kakolog'], $ext);
 
             // 2ch or 2ch互換
             } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['shirokuma'])) {
-                $this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
+                return $this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
             //2ch はAPI経由で落とす
             } elseif (P2Util::isHost2chs($this->host) && $_conf['2chapi_use'] == 1 && empty($_GET['olddat'])) {
                 
@@ -133,11 +133,11 @@ class ThreadRead extends Thread
                 }
 
                 include $_conf['sid2chapi_php'];
-                $this->_downloadDat2chAPI($SID2chAPI,$this->length);
+                return $this->_downloadDat2chAPI($SID2chAPI,$this->length);
             } else {
                 //2ch 以外の外部板
                 // DATを差分DLする
-                $this->_downloadDat2ch($this->length);
+                return $this->_downloadDat2ch($this->length);
             }
         }
     }
@@ -252,8 +252,8 @@ class ThreadRead extends Thread
                         return false;
                     }
                     //1行目を少し切り出す
-                    $firstmsg = substr($body, 0, 50);
-                    if(strstr($firstmsg, 'ng')) {
+                    $firstmsg = substr($body, 0, 100);
+                    if(strpos($firstmsg, 'ng ')===0) {
                         //ngで始まってたらapiのエラー
                         fclose($fp);
                         if (strstr($firstmsg, "not valid")) {
@@ -265,10 +265,17 @@ class ThreadRead extends Thread
                         }
                         $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。".trim($firstmsg)."</p>";
                         $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
-                        $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
                         $this->diedat = true;
                         return false;
-                        
+                    } elseif (strpos($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２")===0) {
+                        $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
+                        $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
+                        $marutori_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
+                        $plugin_ht = $this->_generateWikiDatLink();
+                        $moritori_ht = $this->_generateMoritapoDatLink();
+                        $this->getdat_error_msg_ht .= "{$marutori_ht}{$moritori_ht}{$plugin_ht}";
+                        $this->diedat = true;
+                        return false;
                     }
                     unset($firstmsg);
 
@@ -1104,42 +1111,7 @@ class ThreadRead extends Thread
             //    $marutori_ht = " [<a href=\"login2ch.php\" target=\"subject\">●IDログイン</a>]";
             //}
 
-            // +Wiki
-            if ($_GET['plugin']) {
-                $datPlugin = new DatPluginCtl();
-                $datPlugin->load();
-                foreach ($datPlugin->getData() as $v){
-                    if (preg_match('{'. $v['match'] . '}', $read_url)) {
-                        $replace = @preg_replace('{'. $v['match'] . '}', $v['replace'], $read_url);
-                        $code = P2UtilWiki::getResponseCode($replace);
-                        if($code == 200) {
-                            $code = '○' . $code;
-                        } else {
-                            $code = '×' . $code;
-                        }
-                        $plugin_ht .= "    <option value=\"{$replace}\">{$code}:{$v['title']}</option>\n";
-                    }
-                }
-                if ($plugin_ht) {
-                    $plugin_ht = '<select size=1 name="kakolog">'. $plugin_ht . '</select>';
-                } else {
-                    $plugin_ht = '<input type="text" name="kakolog" size="64">';
-                }
-                $plugin_ht .= 'から<input type="submit" name="kakoget" value="取得">';
-            } else {
-                $plugin_ht = '<input type="submit" name="plugin" value="DATを探す">';
-            }
-            $plugin_ht = <<<EOP
-<form method="get" action="{$_conf['read_php']}">
-    <input type="hidden" name="host" value="{$this->host}">
-    <input type="hidden" name="bbs" value="{$this->bbs}">
-    <input type="hidden" name="key" value="{$this->key}">
-    <input type="hidden" name="ls" value="{$this->ls}">
-    <input type="hidden" name="kakoget" value="2">
-    {$_conf['k_input_ht']}
-{$plugin_ht}
-</form>
-EOP;
+            $plugin_ht = $this->_generateWikiDatLink();
             $moritori_ht = $this->_generateMoritapoDatLink();
             $dat_response_msg = "<p>2ch info - このスレッドは過去ログ倉庫に格納されています。{$marutori_ht}{$moritori_ht}{$plugin_ht}</p>";
 
@@ -2076,6 +2048,60 @@ EOF;
     }
 
     // }}}
+    // {{{ _generateWikiDatLink()
+
+    /**
+     * +WikiのDAT取得プラグインでdatを取得するためのリンクを生成する。
+     *
+     * @param void
+     * @return string
+     */
+    protected function _generateWikiDatLink()
+    {
+        global $_conf;
+
+        // +Wiki
+        if ($_GET['plugin']) {
+            $datPlugin = new DatPluginCtl();
+            $datPlugin->load();
+            foreach ($datPlugin->getData() as $v){
+                if (preg_match('{'. $v['match'] . '}', $read_url)) {
+                    $replace = @preg_replace('{'. $v['match'] . '}', $v['replace'], $read_url);
+                    $code = P2UtilWiki::getResponseCode($replace);
+                    if($code == 200) {
+                        $code = '○' . $code;
+                    } else {
+                        $code = '×' . $code;
+                    }
+                    $plugin_ht .= "    <option value=\"{$replace}\">{$code}:{$v['title']}</option>\n";
+                }
+            }
+            if ($plugin_ht) {
+                $plugin_ht = '<select size=1 name="kakolog">'. $plugin_ht . '</select>';
+            } else {
+                $plugin_ht = '<input type="text" name="kakolog" size="64">';
+            }
+            $plugin_ht .= 'から<input type="submit" name="kakoget" value="取得">';
+        } else {
+            $plugin_ht = '<input type="submit" name="plugin" value="DATを探す">';
+        }
+        $plugin_ht = <<<EOP
+<form method="get" action="{$_conf['read_php']}">
+    <input type="hidden" name="host" value="{$this->host}">
+    <input type="hidden" name="bbs" value="{$this->bbs}">
+    <input type="hidden" name="key" value="{$this->key}">
+    <input type="hidden" name="ls" value="{$this->ls}">
+    <input type="hidden" name="kakoget" value="2">
+    {$_conf['k_input_ht']}
+{$plugin_ht}
+</form>
+EOP;
+
+        return $plugin_ht;
+    }
+
+    // }}}
+
 }
 
 // }}}
