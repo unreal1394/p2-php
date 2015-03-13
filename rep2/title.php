@@ -168,6 +168,9 @@ echo <<<EOP
 <br>
 <div class="container">
     {$newversion_found}
+    <table border="0" cellspacing="0" cellpadding="0"><tr><td>
+        <img src="img/rep2.gif?140123" alt="rep2" width="120" height="63">
+    </td><td style="padding-left:30px;">
     <p>{$_conf['p2name']} ver.{$_conf['p2version']} +live<br>
     <a href="{$expack_url_r}"{$_conf['ext_win_target_at']}>{$_conf['expack.web_url']}</a><br>
     <a href="{$p2web_url_r}"{$_conf['ext_win_target_at']}>{$_conf['p2web_url']}</a></p>
@@ -178,6 +181,8 @@ echo <<<EOP
         <li><a href="{$expack_hist_url_r}"{$_conf['ext_win_target_at']}>拡張パック 更新記録</a></li>
         <!-- <li><a href="viewtxt.php?file=doc/ChangeLog.txt">ChangeLog（rep2 更新記録）</a></li> -->
     </ul>
+
+    </td></tr></table>
     {$htm['auth_user']}
     {$htm['ktai_url']}
     {$htm['last_login']}

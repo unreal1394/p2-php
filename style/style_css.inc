@@ -69,7 +69,7 @@ img, object{border:none;}
 hr{height:1px; color:#ccc;}
 
 div.container{
-	width:76%;
+	width:95%;
 	margin:8px auto;
 	padding:0px 16px;
 	text-align:left;

@@ -32,6 +32,8 @@ $htm['urlform'] = <<<EOP
     </form>\n
 EOP;
 
+$bookmarkletUrl = "javascript:location='" . rtrim(dirname(P2Util::getMyUrl()), '/') . "/" . $_conf['read_php'] . "?url='+escape(location);";
+
 // }}}
 // {{{ HTMLプリント
 
@@ -46,30 +48,15 @@ echo <<<EOP
     <title>rep2</title>
     <link rel="stylesheet" type="text/css" href="css.php?css=style&amp;skin={$skin_en}">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-    <style type="text/css">
-    h1#rep2logo, #urlform {
-        line-height: 100%;
-        margin: 10px 0;
-        padding: 0;
-    }
-    h1#rep2logo span {
-        display: inline-block;
-        height: 63px;
-        background-color: #fff;
-        padding: 10px 15px;
-        border-radius: 12px;
-        -moz-border-radius: 12px;
-        -opera-border-radius: 12px;
-        -webkit-border-radius: 12px;
-    }
-    </style>
 </head>
 <body>
 <br>
 <div class="container">
     {$htm['urlform']}
     <hr>
-    <h1 id="rep2logo"><span><img src="img/rep2.gif" alt="rep2" title="rep2" width="131" height="63"></span></h1>
+    <ul>
+        <li><a href="http://akid.s17.xrea.com/p2puki/pukiwiki.php?Bookmarklet" target="_blank">ブックマークレット</a> 「<a href="$bookmarkletUrl">p2で読む</a>」</li>
+    </ul>
 </div>
 </body>
 </html>
