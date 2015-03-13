@@ -19,7 +19,7 @@
 ### Git & Composerで
 
 1. 本体をclone
-  <pre>git clone git://github.com/pluslive/p2-php.git
+  <pre>git clone git://github.com/2ch774/p2-php.git
   cd p2-php</pre>
 
 2. 依存ライブラリをダウンロード
@@ -103,6 +103,7 @@ Webブラウザから変更できない項目は [conf/conf_admin.inc.php](https
 * **unpush** https://github.com/unpush/p2-php/
 * **thermon** https://github.com/thermon/p2-php/
 * **part32の892** *(+live)* https://github.com/pluslive/p2-php/
+* **orzisun** https://github.com/orzisun/p2-php
 * **2ch p2/rep2スレの>>1-1000**
 
 
