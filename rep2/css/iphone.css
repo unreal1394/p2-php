@@ -602,7 +602,7 @@ div.ntoolbar {
 	min-width: 320px;
 	margin: 0;
 	padding: 0;
-	background-color: #000;
+	background-color: #333;
 	color: #fff;
 }
 
@@ -720,7 +720,7 @@ div.ntoolbar a:visited {
 }
 
 div.ntoolbar a.inactive {
-	color: #888;
+	color: #fff;
 }
 
 div.ntoolbar span.unavailable {
@@ -731,7 +731,7 @@ div.ntoolbar a.hover,
 div.ntoolbar a.active,
 div.ntoolbar a:hover,
 div.ntoolbar a:active {
-	color: #9cf;
+	color: #b4b4b4;
 }
 
 div.ntoolbar td > a > span.badge {
@@ -776,24 +776,28 @@ div.ntoolbar td > a:active > span.badge {
 	background-color: #36f;
 }
 
-div.ntoolbar a:link > img,
-div.ntoolbar a:visited > img {
-	background-color: #fff;
-}
-
 div.ntoolbar a.inactive > img {
-	background-color: #888;
+	filter: alpha(opacity=50);
+	-ms-filter: "alpha(opacity=50)";
+	-moz-opacity:0.5;
+	opacity:0.5;
 }
 
 div.ntoolbar span.unavailable > img {
-	background-color: #555;
+	filter: alpha(opacity=20);
+	-ms-filter: "alpha(opacity=20)";
+	-moz-opacity:0.2;
+	opacity:0.2;
 }
 
 div.ntoolbar a.hover > img,
 div.ntoolbar a.active > img,
 div.ntoolbar a:hover > img,
 div.ntoolbar a:active > img {
-	background-color: #9cf;
+	filter: alpha(opacity=70);
+	-ms-filter: "alpha(opacity=70)";
+	-moz-opacity:0.7;
+	opacity:0.7;
 }
 
 div.ntoolbar td > select {
