@@ -207,7 +207,7 @@ class ThreadRead extends Thread
             'appkey' => $AppKey,
         );
         
-        $http = array(
+        $options['http'] = array(
             'method' => 'POST',
             'header' => $headers,
             'ignore_errors'=> true,
@@ -216,12 +216,11 @@ class ThreadRead extends Thread
         
         // プロキシ
         if ($_conf['proxy_use']) {
-            $http += array('proxy' => 'tcp://'.$_conf['proxy_host'].":".$_conf['proxy_port']);
-            $http += array('request_fulluri' => true);
+            $options['http'] += array('proxy' => 'tcp://'.$_conf['proxy_host'].":".$_conf['proxy_port']);
+            $options['http'] += array('request_fulluri' => true);
+            $options['ssl'] = array('SNI_enabled' => false);
         }
 
-        $options = array('http' => $http);
-        
         // WEBサーバへ接続
         $fp = @fopen($url, 'r', false, stream_context_create($options));
         if (!$fp) {

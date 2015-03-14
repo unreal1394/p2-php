@@ -123,7 +123,13 @@ if (!empty($_POST['newthread'])) {
     $location_ht = "{$_conf['subject_php']}?host={$host}&amp;bbs={$bbs}{$_conf['k_at_a']}";
 } else {
     unset($post[$subject_k]);
-    $location_ht = "{$_conf['read_php']}?host={$host}&amp;bbs={$bbs}&amp;key={$key}&amp;ls={$rescount}-&amp;refresh=1&amp;nt={$newtime}{$_conf['k_at_a']}";
+    if (empty($_POST['live'])) {
+        $location_ht = "{$_conf['read_php']}?host={$host}&amp;bbs={$bbs}&amp;key={$key}&amp;ls={$rescount}-&amp;refresh=1&amp;nt={$newtime}{$_conf['k_at_a']}";
+    } else {
+        $ttitle_urlen = rawurlencode($ttitle_en);
+        $ttitle_en_q = "&amp;ttitle_en=" . $ttitle_urlen;
+        $location_ht = "live_post_form.php?host={$host}&amp;bbs={$bbs}&amp;key={$key}{$ttitle_en_q}&amp;w_reg=1{$_conf['k_at_a']}";
+    }
     if (!$_conf['iphone']) {
         $location_ht .= "#r{$rescount}";
     }
@@ -413,23 +419,36 @@ function postIt($host, $bbs, $key, $post)
     $request .= "Referer: http://{$host}/{$bbs}/{$key}/\r\n"; 
 
     // クッキー
-    $cookies_to_send = '';
+    $cookies_to_send = array();
     if ($p2cookies) {
         foreach ($p2cookies as $cname => $cvalue) {
             if ($cname != 'expires') {
-                $cookies_to_send .= " {$cname}={$cvalue};";
+                $cookies_to_send[$cname] = $cvalue;
             }
         }
     }
 
     // be.2ch.net 認証クッキー
     if (P2Util::isHostBe2chNet($host) || !empty($_REQUEST['beres'])) {
-        $cookies_to_send .= ' MDMD='.$_conf['be_2ch_code'].';';    // be.2ch.netの認証コード(パスワードではない)
-        $cookies_to_send .= ' DMDM='.$_conf['be_2ch_mail'].';';    // be.2ch.netの登録メールアドレス
+        if ($_conf['be_2ch_DMDM'] && $_conf['be_2ch_MDMD']) {
+            $cookies_to_send['DMDM'] = urlencode(rawurldecode($_conf['be_2ch_DMDM']));
+            $cookies_to_send['MDMD'] = urlencode(rawurldecode($_conf['be_2ch_MDMD']));
+        } else {
+            $ar = P2Util::getBe2chCodeWithUserConf(); // urlencodeされたままの状態
+            if (is_array($ar)) {
+                $cookies_to_send['DMDM'] = $ar['DMDM'];
+                $cookies_to_send['MDMD'] = $ar['MDMD'];
+            }
+        }
     }
 
-    if (!$cookies_to_send) { $cookies_to_send = ' ;'; }
-    $request .= 'Cookie:'.$cookies_to_send."\r\n";
+    if ($cookies_to_send) {
+        $cstrs = array();
+        foreach ($cookies_to_send as $k => $v) {
+            $cstrs[] = "$k=$v";
+        }
+        $request .= 'Cookie: ' . implode('; ', $cstrs) . "\r\n";
+    }
     //$request .= 'Cookie: PON='.$SPID.'; NAME='.$FROM.'; MAIL='.$mail."\r\n";
 
     $request .= "Connection: Close\r\n";

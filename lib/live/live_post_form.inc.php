@@ -118,7 +118,7 @@ EOP;
 $htm['post_form'] = <<<EOP
 <!--//{$htm['disable_js']}-->
 <!--//{$htm['resform_ttitle']}-->
-<form id="resform" method="POST" action="./live_post.php" accept-charset="{$_conf['accept_charset']}"{$onsubmit_at}>
+<form id="resform" method="POST" action="./post.php" accept-charset="{$_conf['accept_charset']}"{$onsubmit_at}>
 <!--//{$htm['subject']}-->
 <b class="thre_title" title="{$ttitle}">&nbsp;{$ttitle_pfi}&nbsp;</b>
 {$htm['maru_post']}
@@ -156,6 +156,7 @@ $htm['post_form'] = <<<EOP
 <input type="hidden" name="rescount" value="{$rescount}">
 <input type="hidden" name="ttitle_en" value="{$ttitle_en}">
 <input type="hidden" name="csrfid" value="{$csrfid}">
+<input type="hidden" name="live" value="1">
 {$newthread_hidden_ht}{$readnew_hidden_ht}
 {$_conf['detect_hint_input_ht']}
 </form>

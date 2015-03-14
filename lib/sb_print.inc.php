@@ -347,7 +347,7 @@ EOP;
         // å≥ÉXÉå
         $moto_thre_ht = '';
         if ($_conf['sb_show_motothre']) {
-            if (!$aThread->isKitoku()) {
+            if ($_conf['sb_show_motothre'] == 2 || !$aThread->isKitoku()) {
                 $moto_thre_ht = '<a class="thre_title moto_thre" href="'
                               . p2h($aThread->getMotoThread(false, ''))
                               . '">ÅE</a>';

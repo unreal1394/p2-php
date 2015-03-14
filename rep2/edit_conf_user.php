@@ -227,8 +227,12 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
     $keep_old = true;
 } else {
     $conflist = array(
-        array('be_2ch_code', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>の認証コード(パスワードではない)', P2_EDIT_CONF_USER_LONGTEXT),
+        'be',
         array('be_2ch_mail', 'be.2ch.netの登録メールアドレス', P2_EDIT_CONF_USER_LONGTEXT),
+        array('be_2ch_password', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>のパスワード(認証コードは使えなくなりました)', P2_EDIT_CONF_USER_LONGTEXT),
+        array('be_2ch_DMDM', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>のDMDM(手動設定する場合のみ入力)', P2_EDIT_CONF_USER_LONGTEXT),
+        array('be_2ch_MDMD', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>のMDMD(手動設定する場合のみ入力)', P2_EDIT_CONF_USER_LONGTEXT),
+        '公式p2',
         array('p2_2ch_host', '公式p2 (<a href="http://p2.2ch.net/" target="_blank">p2.2ch.net</a>) で割り当てられているサーバー', P2_EDIT_CONF_USER_LONGTEXT),
         array('p2_2ch_mail', '公式p2の登録メールアドレス', P2_EDIT_CONF_USER_LONGTEXT),
         array('p2_2ch_pass', '公式p2のログインパスワード', P2_EDIT_CONF_USER_LONGTEXT | P2_EDIT_CONF_USER_PASSWORD),
@@ -374,10 +378,9 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('2chapi_use','2ch API を使用する'),
         array('2chapi_rounin','2ch API 認証時に●(浪人)IDを送信する(人柱機能)'),
         array('2chapi_interval','2ch API 認証する間隔(単位:時間)'),
-        //'API キー',
         'API認証情報(全て必須)',
-        array('2chapi_appkey','AppKey'),
-        array('2chapi_hmkey','HMkey'),
+        array('2chapi_appkey','AppKey', P2_EDIT_CONF_USER_LONGTEXT),
+        array('2chapi_hmkey','HMkey', P2_EDIT_CONF_USER_LONGTEXT),
         array('2chapi_appname','AppName APIに送信するアプリケーション名 例:Hoge/1.00'),
         'デバッグ用',
         array('2chapi_debug_print','デバッグ用の情報を出力する'),

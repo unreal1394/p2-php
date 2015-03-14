@@ -55,6 +55,7 @@
         if ($_conf['proxy_use']) {
             $options['http'] += array('proxy' => 'tcp://'.$_conf['proxy_host'].":".$_conf['proxy_port']);
             $options['http'] += array('request_fulluri' => true);
+            $options['ssl'] = array('SNI_enabled' => false);
         }
         
         $response = '';

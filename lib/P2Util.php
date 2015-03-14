@@ -2098,6 +2098,132 @@ ERR;
     }
 
     // }}}
+    // {{{
+    /**
+     * beが使用可能な設定か調べる
+     * @access  public
+     * @return  boolean
+     */
+    function isEnableBe2ch()
+    {
+        global $_conf;
+        
+        if (
+            strlen($_conf['be_2ch_password']) && $_conf['be_2ch_mail']
+            || strlen($_conf['be_2ch_DMDM']) && $_conf['be_2ch_MDMD']
+            //|| isset($_COOKIE['DMDM']) && isset($_COOKIE['MDMD'])
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    // }}}
+    // {{{
+    /**
+     * ユーザー設定したアカウントで、be.2ch.netにログインしてDMDM, MDMDを取得する
+     * （認証コードはurlencodeされたままの状態）
+     *
+     * @access  public
+     * @return  array|false|null  認証コード配列|認証できなかった|無設定だった
+     */
+    function getBe2chCodeWithUserConf()
+    {
+        global $_conf;
+
+        if ($_conf['be_2ch_mail'] && strlen($_conf['be_2ch_password'])) {
+            $r = P2Util::getBe2chCodeByMailPass($_conf['be_2ch_mail'], $_conf['be_2ch_password']);
+            if (is_array($r)) {
+                return $r;
+            }
+            return false;
+        }
+        return null;
+    }
+
+    // }}}
+    // {{{
+    /**
+     * be.2ch.netにログインしてDMDM, MDMDを取得する
+     * （認証コードはurlencodeされたままの状態）
+     *
+     * @access  private
+     * @return  array|string 成功|エラーメッセージ
+     */
+    function getBe2chCodeByMailPass($mail, $pass)
+    {
+        global $_conf;
+
+        //require_once 'HTTP/Request.php';
+
+        $params = array('timeout' => $_conf['fsockopen_timeout']);
+
+        if (!empty($GLOBALS['_conf']['proxy_use'])) {
+            $params['proxy_host'] = $GLOBALS['_conf']['proxy_host'];
+            $params['proxy_port'] = $GLOBALS['_conf']['proxy_port'];
+        }
+
+        $req = new HTTP_Request('http://be.2ch.net/index.php', $params);
+
+        $req->setMethod(HTTP_REQUEST_METHOD_POST);
+        $req->addPostData('mail', $mail);
+        $req->addPostData('pass', $pass);
+        $req->addPostData('login', 'ログインする');
+
+        //var_dump($req);
+        // If-Modified-Since => gmdate('D, d M Y H:i:s', time()) . ' GMT';
+
+        /*
+        if ($headers) {
+            foreach ($headers as $k => $v) {
+                $req->addHeader($k, $v);
+            }
+        }
+        */
+        $response = $req->sendRequest(); // $saveBody = true
+//var_dump($req->getResponseHeader());
+//var_dump($req->getResponseCookies());
+//var_dump($req->getResponseCode());
+//var_dump(mb_convert_encoding($req->getResponseBody(), 'SJIS-win', 'eucJP-win'));
+
+        if (PEAR::isError($response)) {
+            $error_msg = $response->getMessage();
+
+        } else {
+            $code = $req->getResponseCode();
+            // 成功とみなすコード
+            if ($code == 302) {
+                //return $req->getResponseBody();
+                if ($cookies = $req->getResponseCookies()) { // urlencodeされた状態
+                    $r = array();
+                    foreach ($cookies as $cookie) {
+                        if (in_array($cookie['name'], array('DMDM', 'MDMD'))) {
+                            $r[$cookie['name']] = $cookie['value'];
+                        }
+                    }
+                    if (!empty($r['DMDM']) && !empty($r['MDMD'])) {
+                        return $r;
+                    }
+                }
+
+                //$error_msg = mb_convert_encoding($req->getResponseBody(), 'SJIS-win', 'eucJP-win');
+
+            /*
+            // 更新がなければnullを返す
+            } elseif ($code == 304) {
+                // 304の時は、$req->getResponseBody() は空文字""となる
+                return null;
+            */
+            } else {
+                //var_dump($req->getResponseHeader());
+                $error_msg = $code;
+            }
+        }
+
+        return false; // $error_msg
+    }
+
+    // }}}
     // {{{ debug()
     /*
     static public function debug()

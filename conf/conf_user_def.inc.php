@@ -7,11 +7,17 @@
 
 // {{{ be.2ch.netアカウント
 
-// be.2ch.netの認証コード(パスワードではない)
-$conf_user_def['be_2ch_code'] = ""; // ("")
+// be.2ch.netの認証パスワード(認証コードは使えなくなりました)
+$conf_user_def['be_2ch_password'] = ""; // ("")
 
 // be.2ch.netの登録メールアドレス
 $conf_user_def['be_2ch_mail'] = ""; // ("")
+
+// be.2ch.netのDMDM(手動設定する場合のみ入力)
+$conf_user_def['be_2ch_DMDM'] = ""; // ("")
+
+// be.2ch.netのMDMD(手動設定する場合のみ入力)
+$conf_user_def['be_2ch_MDMD'] = ""; // ("")
 
 // }}}
 // {{{ p2.2ch.netアカウント
@@ -59,9 +65,9 @@ $conf_user_rules['brdfile_online'] = array('emptyToDef', 'invalidUrlToDef');
 // スレッド一覧の自動更新間隔。（分指定。0なら自動更新しない。）
 $conf_user_def['refresh_time'] = 0; // (0)
 
-// スレッド一覧で未取得スレに対して元スレへのリンク（・）を表示 (する:1, しない:0)
+// スレッド一覧で未取得スレに対して元スレへのリンク（・）を表示 (する:1, しない:0, 既取得スレでもする:2)
 $conf_user_def['sb_show_motothre'] = 1; // (1)
-$conf_user_rad['sb_show_motothre'] = array('1' => 'する', '0' => 'しない');
+$conf_user_rad['sb_show_motothre'] = array('1' => 'する', '0' => 'しない', '2' => '既取得スレでも');
 
 // PC閲覧時、スレッド一覧（板表示）で ﾌﾟﾚﾋﾞｭｰ>>1 を表示 (する:1, しない:0, ニュース系のみ:2)
 $conf_user_def['sb_show_one'] = 0; // (0)
