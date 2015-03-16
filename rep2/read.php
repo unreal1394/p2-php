@@ -122,6 +122,11 @@ if (!empty($_GET['one'])) {
 
     include READ_HEADER_INC_PHP;
     echo $preview;
+    echo <<<EOP
+<div class="res"><div class="message">
+<a href="{$_conf['read_php']}?{$host_bbs_key_q}">‘±‚«‚ð“Ç‚Þ</a>
+</div></div>
+EOP;
     include READ_FOOTER_INC_PHP;
 
     return;

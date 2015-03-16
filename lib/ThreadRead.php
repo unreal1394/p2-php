@@ -161,7 +161,12 @@ class ThreadRead extends Thread
         if (!($this->host && $this->bbs && $this->key)) {
             return false;
         }
-        
+
+        //>>1プレビューの時は差分取得しなくて良いので常にtrue(新着無し)を返す
+        if (is_readable($this->keydat) && !empty($_GET['one'])) {
+            return true;
+        }
+
         if ($sid == '') {
             return false;
         }
@@ -188,7 +193,10 @@ class ThreadRead extends Thread
         
         $purl = parse_url($url); // URL分解
 
-        if (!$zero_read) {
+        if(!empty($_GET['one'])) {
+            //>>1プレビューの時はサーバーに最初の部分だけ請求
+            $headers .= "Range: bytes=0-8192\r\n";
+        } elseif (!$zero_read) {
             $headers .= "Range: bytes={$from_bytes}-\r\n";
         }
 
@@ -241,7 +249,16 @@ class ThreadRead extends Thread
                 if ($code == '200' || $code == '206') {
 
                     while (!p2_stream_eof($fp, $timed_out)) {
-                        $body .= fread($fp, 4096);
+                        //>>1をプレビューする用
+                        if (!empty($_GET['one'])) {
+                            $line = fgets($fp, 32800); //改行単位で読込み
+                            if (strstr($line, "\n")) {//改行が有れば保存;
+                                $body .= $line;
+                            }
+                            unset($line);
+                        } else {
+                            $body .= fread($fp, 4096); //通常取得はあぼーん判定を行うためこっちで保存する
+                        }
                     }
 
                     if ($timed_out) {
@@ -418,6 +435,11 @@ class ThreadRead extends Thread
             return false;
         }
 
+        //>>1プレビューの時は差分取得しなくて良いので常にtrue(新着無し)を返す
+        if (is_readable($this->keydat) && !empty($_GET['one'])) {
+            return true;
+        }
+
         $from_bytes = intval($from_bytes);
 
         if ($from_bytes == 0) {
@@ -461,9 +483,14 @@ class ThreadRead extends Thread
         //$request .= "Accept-Encoding: gzip, deflate\r\n";
         $request .= "Accept-Language: ja, en\r\n";
         $request .= "User-Agent: Monazilla/1.00 ({$_conf['p2ua']})\r\n";
-        if (!$zero_read) {
+
+        if(!empty($_GET['one'])) {
+            //>>1プレビューの時はサーバーに最初の部分だけ請求
+            $headers .= "Range: bytes=0-8192\r\n";
+        } elseif (!$zero_read) {
             $request .= "Range: bytes={$from_bytes}-\r\n";
         }
+
         $request .= "Referer: http://{$purl['host']}/{$this->bbs}/\r\n";
 
         if ($this->modified) {
@@ -501,7 +528,16 @@ class ThreadRead extends Thread
                 if ($code == '200' || $code == '206') {
 
                     while (!p2_stream_eof($fp, $timed_out)) {
-                        $body .= fread($fp, 4096);
+                        //>>1をプレビューする用
+                        if (!empty($_GET['one'])) {
+                            $line = fgets($fp, 32800); //改行単位で読込み
+                            if (strstr($line, "\n")) {//改行が有れば保存;
+                                $body .= $line;
+                            }
+                            unset($line);
+                        } else {
+                            $body .= fread($fp, 4096); //通常取得はあぼーん判定を行うためこっちで保存する
+                        }
                     }
 
                     if ($timed_out) {
@@ -1198,6 +1234,9 @@ class ThreadRead extends Thread
 
         if (!($this->host && $this->bbs && $this->key)) { return false; }
 
+        //通常と同じようにDATの取得を試みる。$_GET['one']がセットされていれば2ch互換は>>1だけ落とす
+        $this->downloadDat();
+
         // ローカルdatから取得
         if (is_readable($this->keydat)) {
             $fd = fopen($this->keydat, 'rb');
@@ -1220,114 +1259,8 @@ class ThreadRead extends Thread
             $this->setTtitle($d[4]);
         }
 
-        // ローカルdatなければオンラインから
-        if (!$first_line) {
-
-            $method = 'GET';
-            $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
-
-            $purl = parse_url($url); // URL分解
-            if (isset($purl['query'])) { // クエリー
-                $purl['query'] = '?' . $purl['query'];
-            } else {
-                $purl['query'] = '';
-            }
-
-            // プロキシ
-            if ($_conf['proxy_use']) {
-                $send_host = $_conf['proxy_host'];
-                $send_port = $_conf['proxy_port'];
-                $send_path = $url;
-            } else {
-                $send_host = $purl['host'];
-                $send_port = $purl['port'];
-                $send_path = $purl['path'] . $purl['query'];
-            }
-
-            if (!$send_port) {$send_port = 80;} // デフォルトを80
-
-            $request = "{$method} {$send_path} HTTP/1.0\r\n";
-            $request .= "Host: {$purl['host']}\r\n";
-            $request .= "User-Agent: Monazilla/1.00 ({$_conf['p2ua']})\r\n";
-            // $request .= "Range: bytes={$from_bytes}-\r\n";
-
-            // Basic認証用のヘッダ
-            if (isset($purl['user']) && isset($purl['pass'])) {
-                $request .= "Authorization: Basic ".base64_encode($purl['user'].":".$purl['pass'])."\r\n";
-            }
-
-            $request .= "Connection: Close\r\n";
-            $request .= "\r\n";
-
-            // WEBサーバへ接続
-            $fp = @fsockopen($send_host, $send_port, $errno, $errstr, $_conf['http_conn_timeout']);
-            if (!$fp) {
-                self::_pushInfoConnectFailed($url, $errno, $errstr);
-                $this->diedat = true;
-                return false;
-            }
-            stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
-
-            fputs($fp, $request);
-
-            $code = null;
-            $start_here = false;
-
-            while (!p2_stream_eof($fp, $timed_out)) {
-
-                if ($start_here) {
-
-                    if ($code == '200') {
-                        $first_line = fgets($fp, 32800);
-                        break;
-                    } else {
-                        fclose($fp);
-                        return $this->previewOneNotFound($code);
-                    }
-                } else {
-                    $l = rtrim(fgets($fp, 32800), "\r\n");
-                    //echo $l."<br>";// for debug
-                    if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@i', $l, $matches)) { // ex) HTTP/1.1 304 Not Modified
-                        $code = $matches[1];
-
-                        if ($code == '200') {
-                            ;
-                        } else {
-                            fclose($fp);
-                            return $this->previewOneNotFound($code);
-                        }
-
-                    } elseif ($l === '') {
-                        $start_here = true;
-                    }
-                }
-
-            }
-            fclose($fp);
-
-            // be.2ch.net ならEUC→SJIS変換
-            if (P2Util::isHostBe2chNet($this->host)) {
-                $first_line = mb_convert_encoding($first_line, 'CP932', 'CP51932');
-            }
-
-            $first_datline = rtrim($first_line);
-
-            if (strpos($first_datline, '<>') !== false) {
-                $datline_sepa = '<>';
-            } else {
-                $datline_sepa = ',';
-                $this->dat_type = '2ch_old';
-            }
-            $d = explode($datline_sepa, $first_datline);
-            $this->setTtitle($d[4]);
-
-            $this->onthefly = true;
-
-        } else {
-            // 便宜上
-            if (!$this->readnum) {
-                $this->readnum = 1;
-            }
+        if (!$this->readnum) {
+            $this->readnum = 1;
         }
 
         if ($_conf['ktai']) {
@@ -1338,9 +1271,6 @@ class ThreadRead extends Thread
         }
 
         $body = '';
-        if ($this->onthefly) {
-            $body .= "<div><span class=\"onthefly\">on the fly</span></div>\n";
-        }
         $body .= "<div class=\"thread\">\n";
         $res = $aShowThread->transRes($first_line, 1); // 1を表示
         $body .= is_array($res) ? $res['body'] . $res['q'] : $res;
