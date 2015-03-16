@@ -402,6 +402,7 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('frame_menu_width', 'フレーム左 板メニュー の表示幅'),
         array('frame_subject_width', 'フレーム右上 スレ一覧 の表示幅'),
         array('frame_read_width', 'フレーム右下 スレ本文 の表示幅'),
+        array('pane_mode', '3ペイン画面のフレームの並べ方'),
 
         array('my_FROM', 'レス書き込み時のデフォルトの名前'),
         array('my_mail', 'レス書き込み時のデフォルトのmail'),

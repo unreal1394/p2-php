@@ -52,8 +52,14 @@ if ($_conf['ktai']) {
     }
 
     // デフォルトのペイン分割
-    $panes = 'default';
-    $direction = 'rows';
+    if(!$_conf['pane_mode'])
+    {
+        $panes = 'default';
+        $direction = 'rows';
+    } else {
+        $panes = 'v3';
+        $direction = 'cols';
+    }
     $_SESSION['use_narrow_toolbars'] = false;
 
     // index.php?panes={v3,v2,h2} or index.php?sidebar=1 でペイン指定

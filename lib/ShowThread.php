@@ -695,6 +695,19 @@ abstract class ShowThread
     }
 
     // }}}
+    // {{{ replaceSsspIcon()
+
+    /**
+     * BE＆絵文字アイコンリンク変換
+     */
+    public function replaceSsspIcon($msg)
+    {
+        //sssp://img.2ch.net/ico/miyabi.gif
+        //sssp://img.2ch.net/emoji/2ch-cry.gif
+        return preg_replace("{sssp(://[-_.!~*()0-9A-Za-z;/:@&=+\$,%]+?\.(?:gif|png|jpe|jpe?g|ico|bmp|tif|mng|j2k)(?:[?#][-_.!~*()0-9A-Za-z;/?:@&=+\$,%#]*|))}", "<a href=\"http$1\"><img src=\"http$1\" /></a>", $msg);
+    }
+
+    // }}}
     // {{{ _ngAbornCheck()
 
     /**

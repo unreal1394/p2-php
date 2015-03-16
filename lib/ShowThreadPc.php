@@ -224,6 +224,9 @@ class ShowThreadPc extends ShowThread
         // BEプロファイルリンク変換
         $date_id = $this->replaceBeId($date_id, $i);
 
+        // BE＆絵文字アイコンリンク変換
+        $msg = $this->replaceSsspIcon($msg);
+
         // HTMLポップアップ
         if ($_conf['iframe_popup']) {
             $date_id = preg_replace_callback("{<a href=\"(http://[-_.!~*()0-9A-Za-z;/?:@&=+\$,%#]+)\"({$_conf['ext_win_target_at']})>((\?#*)|(Lv\.\d+))</a>}", array($this, 'iframePopupCallback'), $date_id);
@@ -387,6 +390,9 @@ EOJS;
 
         // BEプロファイルリンク変換
         $date_id = $this->replaceBeId($date_id, $i);
+
+        // BE＆絵文字アイコンリンク変換
+        $msg = $this->replaceSsspIcon($msg);
 
         // HTMLポップアップ
         if ($_conf['iframe_popup']) {

@@ -523,6 +523,9 @@ $conf_user_def['frame_subject_width'] = "40%"; // ("40%")
 // フレーム右下 スレ本文 の表示幅
 $conf_user_def['frame_read_width'] = "60%"; // ("40%") 
 
+// 3ペイン画面のフレームの並べ方
+$conf_user_def['pane_mode'] = 0;  // (0)
+$conf_user_rad['pane_mode'] = array('0' => '標準（に形）', '1' => '横一列（川形）');
 
 // ●ログインを、まずはopensslで試みる。※PHP 4.3.0以降で、OpenSSLが静的にリンクされている必要がある
 $conf_user_def['precede_openssl'] = 0;  // (0)
