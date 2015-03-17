@@ -858,6 +858,14 @@ function showCookieConfirmation($host, $response)
         $form->appendChild($elem);
     }
 
+    // 実況モード
+    if (!empty($_POST['live'])) {
+        $elem = $hidden->cloneNode();
+        $elem->setAttribute('name', 'live');
+        $elem->setAttribute('value', '1');
+        $form->appendChild($elem);
+    }
+
     // 強制ビュー指定
     if ($_conf['b'] != $_conf['client_type']) {
         $elem = $hidden->cloneNode();

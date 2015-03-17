@@ -1,6 +1,6 @@
 <?php
 /**
- * rep2 - スレッド表示スクリプト
+ * rep2 - スレッド表示スクリプト（実況専用）
  * フレーム分割画面、右下部分
  */
 
@@ -100,32 +100,6 @@ if ($lines = FileCtl::file_read_lines($aThread->keyidx, FILE_IGNORE_NEW_LINES)) 
     $idx_data = array_fill(0, 12, '');
 }
 $aThread->getThreadInfoFromIdx();
-
-//==========================================================
-// preview >>1
-//==========================================================
-
-//if (!empty($_GET['onlyone'])) {
-if (!empty($_GET['one'])) {
-    $aThread->ls = '1';
-    $aThread->resrange = array('start' => 1, 'to' => 1, 'nofirst' => false);
-
-    // 必ずしも正確ではないが便宜的に
-    //if (!isset($aThread->rescount) && !empty($_GET['rc'])) {
-    if (!isset($aThread->rescount) && !empty($_GET['rescount'])) {
-        //$aThread->rescount = $_GET['rc'];
-        $aThread->rescount = (int)$_GET['rescount'];
-    }
-
-    $preview = $aThread->previewOne();
-    $ptitle_ht = p2h($aThread->itaj) . ' / ' . $aThread->ttitle_hd;
-
-    include READ_HEADER_INC_PHP;
-    echo $preview;
-    include READ_FOOTER_INC_PHP;
-
-    return;
-}
 
 //===========================================================
 // DATのダウンロード
@@ -284,99 +258,10 @@ if ($_conf['ktai']) {
     //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("datToHtml");
 
     if ($aThread->rescount) {
-        $mainhtml = '';
-		require_once P2_LIB_DIR . '/live/live_ShowThreadPc.php';
-        $aShowThread = new ShowThreadPc($aThread);
-
-        if ($_conf['expack.spm.enabled']) {
-            echo $aShowThread->getSpmObjJs();
-        }
-
-        $res1 = $aShowThread->quoteOne(); // >>1ポップアップ用
-        if ($_conf['coloredid.enable'] > 0 && $_conf['coloredid.click'] > 0 &&
-            $_conf['coloredid.rate.type'] > 0) {
-            if ($_GET['showbl']) {
-                $mainhtml = $aShowThread->datToHtml_resFrom(true);
-            } else {
-                $mainhtml .= $aShowThread->datToHtml(true);
-            }
-            $mainhtml .= $res1['q'];
-        } else {
-            if ($_GET['showbl']) {
-                $aShowThread->datToHtml_resFrom();
-            } else {
-                $aShowThread->datToHtml();
-            }
-            echo $res1['q'];
-        }
-
-
-        // レス追跡カラー
-        if ($_conf['backlink_coloring_track']) {
-            echo $aShowThread->getResColorJs();
-        }
-
-        // IDカラーリング
-        if ($_conf['coloredid.enable'] > 0 && $_conf['coloredid.click'] > 0) {
-            echo $aShowThread->getIdColorJs();
-            // ブラウザ負荷軽減のため、CSS書き換えスクリプトの後でコンテンツを
-            // レンダリングさせる
-            echo $mainhtml;
-        }
-
-        // 外部ツール
-        $pluswiki_js = '';
-
-        if ($_conf['wiki.idsearch.spm.mimizun.enabled']) {
-            if (!class_exists('Mimizun', false)) {
-                require P2_PLUGIN_DIR . '/mimizun/Mimizun.php';
-            }
-            $mimizun = new Mimizun();
-            $mimizun->host = $aThread->host;
-            $mimizun->bbs  = $aThread->bbs;
-            if ($mimizun->isEnabled()) {
-                $pluswiki_js .= "WikiTools.addMimizun({$aShowThread->spmObjName});";
-            }
-        }
-
-        if ($_conf['wiki.idsearch.spm.hissi.enabled']) {
-            if (!class_exists('Hissi', false)) {
-                require P2_PLUGIN_DIR . '/hissi/Hissi.php';
-            }
-            $hissi = new Hissi();
-            $hissi->host = $aThread->host;
-            $hissi->bbs  = $aThread->bbs;
-            if ($hissi->isEnabled()) {
-                $pluswiki_js .= "WikiTools.addHissi({$aShowThread->spmObjName});";
-            }
-        }
-
-        if ($_conf['wiki.idsearch.spm.stalker.enabled']) {
-            if (!class_exists('Stalker', false)) {
-                require P2_PLUGIN_DIR . '/stalker/Stalker.php';
-            }
-            $stalker = new Stalker();
-            $stalker->host = $aThread->host;
-            $stalker->bbs  = $aThread->bbs;
-            if ($stalker->isEnabled()) {
-                $pluswiki_js .= "WikiTools.addStalker({$aShowThread->spmObjName});";
-            }
-        }
-
-        if ($pluswiki_js !== '') {
-            echo <<<EOP
-<script type="text/javascript">
-//<![CDATA[
-{$pluswiki_js}
-//]]>
-</script>
-EOP;
-        }
+        echo '<div id="live_view"></div>';
 
     } elseif ($aThread->diedat && count($aThread->datochi_residuums) > 0) {
-        require_once P2_LIB_DIR . '/ShowThreadPc.php';
-        $aShowThread = new ShowThreadPc($aThread);
-        echo $aShowThread->getDatochiResiduums();
+        echo '過去ログ又はDATを取得出来ないスレッドは実況できません';
     }
 
     //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("datToHtml");
@@ -404,37 +289,6 @@ EOP;
 }
 flush();
 
-//===========================================================
-// idxの値を設定、記録
-//===========================================================
-if ($aThread->rescount) {
-
-    // 検索の時は、既読数を更新しない
-    if ((isset($GLOBALS['word']) && strlen($GLOBALS['word']) > 0) || $is_ajax) {
-        $aThread->readnum = $idx_data[5];
-    } else {
-        $aThread->readnum = min($aThread->rescount, max(0, $idx_data[5], $aThread->resrange['to']));
-    }
-    $newline = $aThread->readnum + 1; // $newlineは廃止予定だが、旧互換用に念のため
-
-    $sar = array($aThread->ttitle, $aThread->key, $idx_data[2], $aThread->rescount, '',
-                 $aThread->readnum, $idx_data[6], $idx_data[7], $idx_data[8], $newline,
-                 $idx_data[10], $idx_data[11], $aThread->datochiok);
-    P2Util::recKeyIdx($aThread->keyidx, $sar); // key.idxに記録
-}
-
-//===========================================================
-// 履歴を記録
-//===========================================================
-if ($aThread->rescount && !$is_ajax) {
-    recRecent(implode('<>', array($aThread->ttitle, $aThread->key, $idx_data[2], '', '',
-                                  $aThread->readnum, $idx_data[6], $idx_data[7], $idx_data[8], $newline,
-                                  $aThread->host, $aThread->bbs)));
-}
-
-// NGあぼーんを記録
-NgAbornCtl::saveNgAborns();
-
 // 以上 ---------------------------------------------------------------
 exit;
 
@@ -460,63 +314,6 @@ function detectThread()
             p2die('スレッドの指定が変です。');
         }
     }
-}
-
-// }}}
-// {{{ recRecent()
-
-/**
- * 履歴を記録する
- */
-function recRecent($data)
-{
-    global $_conf;
-
-    $lock = new P2Lock($_conf['recent_idx'], false);
-
-    // $_conf['recent_idx'] ファイルがなければ生成
-    FileCtl::make_datafile($_conf['recent_idx']);
-
-    $lines = FileCtl::file_read_lines($_conf['recent_idx'], FILE_IGNORE_NEW_LINES);
-    $neolines = array();
-
-    // {{{ 最初に重複要素を削除しておく
-
-    if (is_array($lines)) {
-        foreach ($lines as $l) {
-            $lar = explode('<>', $l);
-            $data_ar = explode('<>', $data);
-            if ($lar[1] == $data_ar[1]) { continue; } // keyで重複回避
-            if (!$lar[1]) { continue; } // keyのないものは不正データ
-            $neolines[] = $l;
-        }
-    }
-
-    // }}}
-
-    // 新規データ追加
-    array_unshift($neolines, $data);
-
-    while (sizeof($neolines) > $_conf['rct_rec_num']) {
-        array_pop($neolines);
-    }
-
-    // {{{ 書き込む
-
-    if ($neolines) {
-        $cont = '';
-        foreach ($neolines as $l) {
-            $cont .= $l . "\n";
-        }
-
-        if (FileCtl::file_write_contents($_conf['recent_idx'], $cont) === false) {
-            p2die('cannot write file.');
-        }
-    }
-
-    // }}}
-
-    return true;
 }
 
 // }}}
