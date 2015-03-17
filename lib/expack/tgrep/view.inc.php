@@ -183,6 +183,7 @@ foreach ($threads as $o => $t) {
     <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm0'];}?></td>
     <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm1'];}?></td>
     <td><?php if ($_conf['test.search_dig2ch']) { echo $profile['cm2'];}?></td>
+</tr>
 </table>
 <?php } ?>
 

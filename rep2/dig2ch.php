@@ -50,6 +50,7 @@ function dig2chsearch($query)
 	}
 
 	foreach ($jsontest1[result] as $jsontest2) {
+        $result['threads'][$n1] = new stdClass;
 		$result['threads'][$n1]->title = $jsontest2[subject];
 		$result['threads'][$n1]->host = $jsontest2[server];
 		$result['threads'][$n1]->bbs = $jsontest2[bbs];
@@ -59,7 +60,7 @@ function dig2chsearch($query)
 		$result['threads'][$n1]->dayres = $jsontest2[ikioi];
 		$n1++;
 	}
-	$result['modified'] = $response['body']['date'];
+	$result['modified'] = isset($response['body']['date'])? $response['body']['date'] : '';
 	$result['profile']['regex'] = '/(' . $jsontest1[query] .')/i';
 	$result['profile']['hits'] = $jsontest1[found];
 	$result['profile']['cm0'] = str_replace("a href=" , "a target=\"_blank\" href=", $jsontest1[cm0]);
