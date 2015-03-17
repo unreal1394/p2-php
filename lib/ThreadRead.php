@@ -137,6 +137,8 @@ class ThreadRead extends Thread {
         $AppKey = $_conf ['2chapi_appkey'];
         $AppName = $_conf ['2chapi_appname'];
         $HMKey = $_conf ['2chapi_hmkey'];
+        $ReadUA = sprintf($_conf['2chapi_ua.read'],$AppName);
+        
         if (! ($this->host && $this->bbs && $this->key)) {
             return false;
         }
@@ -166,7 +168,7 @@ class ThreadRead extends Thread {
         $message = '/v1/' . $serverName [0] . '/' . $this->bbs . '/' . $this->key . $sid . $AppKey;
         $HB = hash_hmac ( "sha256", $message, $HMKey );
         
-        $headers = "User-Agent: Mozilla/3.0 (compatible; ${AppName})\r\n";
+        $headers = "User-Agent: ${ReadUA}\r\n";
         $headers .= "Connection: close\r\n";
         $headers .= "Content-Type: application/x-www-form-urlencoded\r\n";
         
@@ -233,7 +235,6 @@ class ThreadRead extends Thread {
                 if ($code == '200' || $code == '206') { // Partial Content
                     ;
                 } elseif ($code == '302') { // Found
-                                            
                     // ƒzƒXƒg‚ÌˆÚ“]‚ð’ÇÕ
                     $new_host = BbsMap::getCurrentHost ( $this->host, $this->bbs );
                     if ($new_host != $this->host) {

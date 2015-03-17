@@ -197,6 +197,8 @@ class Thread
         if ($this->_ttitle_hd === null) {
             // HTML表示用に htmlspecialchars() したもの
             $this->_ttitle_hd = p2h($this->ttitle, false);
+            // <mark>[隔離病棟]</mark>などをデコード
+            $this->_ttitle_hd = str_replace('&lt;/mark&gt;', '</mark>', str_replace('&lt;mark&gt;', '<mark>', $this->_ttitle_hd));
         }
         return $this->_ttitle_hd;
     }

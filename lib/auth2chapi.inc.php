@@ -18,7 +18,8 @@
         $CT = time();
         $AppKey = $_conf['2chapi_appkey'];
         $AppName = $_conf['2chapi_appname'];
-        $HMKey  = $_conf['2chapi_hmkey'];
+        $HMKey = $_conf['2chapi_hmkey'];
+        $AuthUA = sprintf($_conf['2chapi_ua.auth'],$AppName);
         $login2chID = "";
         $login2chPW = "";
         $message = $AppKey.$CT;
@@ -44,7 +45,7 @@
             'ignore_errors' => true,
             'method' => 'POST',
             'header' => implode("\r\n", array(
-                'User-Agent: Monazilla/1.3',
+                'User-Agent: '.$AuthUA,
                 'X-2ch-UA: '.$AppName,
                 'Content-Type: application/x-www-form-urlencoded',
             )),
@@ -71,7 +72,7 @@
             
             if($_conf['2chapi_debug_print']==1)
             {
-                P2Util::pushInfoHtml($response);
+                P2Util::pushInfoHtml($response."<br>".$AuthUA);
             }
             
             if($sid[0]!='SESSION-ID=Monazilla/1.00') {
