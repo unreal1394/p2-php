@@ -11,137 +11,117 @@ require_once P2_LIB_DIR . '/wiki/DatPluginCtl.php';
 /**
  * スレッドリードクラス
  */
-class ThreadRead extends Thread
-{
+class ThreadRead extends Thread {
     // {{{ properties
-
     public $datlines; // datから読み込んだラインを格納する配列
-
     public $resrange; // array('start' => i, 'to' => i, 'nofirst' => bool)
-
     public $onbytes; // サーバから取得したdatサイズ
     public $diedat; // サーバからdat取得しようとしてできなかった時にtrueがセットされる
     public $onthefly; // ローカルにdat保存しないオンザフライ読み込みならtrue
-
-    public $idp;     // レス番号をキー、IDの前の文字列 ("ID:", " " 等) を値とする連想配列
-    public $ids;     // レス番号をキー、IDを値とする連想配列
+    public $idp; // レス番号をキー、IDの前の文字列 ("ID:", " " 等) を値とする連想配列
+    public $ids; // レス番号をキー、IDを値とする連想配列
     public $idcount; // IDをキー、出現回数を値とする連想配列
-
     public $getdat_error_msg_ht; // dat取得に失敗した時に表示されるメッセージ（HTML）
-
-    public $old_host;  // ホスト移転検出時、移転前のホストを保持する
-
+    public $old_host; // ホスト移転検出時、移転前のホストを保持する
     private $getdat_error_body; // dat取得に失敗した時に203で取得できたBODY
     public $datochi_residuums; // dat取得に失敗した時に203で取得できたdatlineの配列（レス番=>datline）
 
     // }}}
     // {{{ constructor
-
+    
     /**
      * コンストラクタ
      */
-    public function __construct()
-    {
-        parent::__construct();
+    public function __construct() {
+        parent::__construct ();
         $this->getdat_error_msg_ht = "";
     }
-
+    
     // }}}
     // {{{ downloadDat()
-
+    
     /**
      * DATをダウンロードする
      */
-    public function downloadDat()
-    {
+    public function downloadDat() {
         global $_conf;
-
+        
         // まちBBS
-        if (P2Util::isHostMachiBbs($this->host)) {
-            return DownloadDatMachiBbs::invoke($this);
-        // JBBS@したらば
-        } elseif (P2Util::isHostJbbsShitaraba($this->host)) {
-            if (!function_exists('shitarabaDownload')) {
+        if (P2Util::isHostMachiBbs ( $this->host )) {
+            return DownloadDatMachiBbs::invoke ( $this );
+            // JBBS@したらば
+        } elseif (P2Util::isHostJbbsShitaraba ( $this->host )) {
+            if (! function_exists ( 'shitarabaDownload' )) {
                 include P2_LIB_DIR . '/read_shitaraba.inc.php';
             }
-            return shitarabaDownload($this);
-
-        // 2ch系
+            return shitarabaDownload ( $this );
+            
+            // 2ch系
         } else {
-            $this->getDatBytesFromLocalDat(); // $aThread->length をset
+            $this->getDatBytesFromLocalDat (); // $aThread->length をset
             $pinktest = "/\w+\.bbspink.com/";
-
+            
             // 2ch bbspink●読み
-            if (P2Util::isHost2chs($this->host) && !empty($_GET['maru'])) {
-                    // ログインしてなければ or ログイン後、24時間以上経過していたら自動再ログイン
-                    if (!file_exists($_conf['sid2ch_php']) ||
-                        !empty($_REQUEST['relogin2ch']) ||
-                        (filemtime($_conf['sid2ch_php']) < time() - 60*60*24))
-                    {
-                        if (!function_exists('login2ch')) {
-                            include P2_LIB_DIR . '/login2ch.inc.php';
-                        }
-                        if (!login2ch()) {
-                            $this->getdat_error_msg_ht .= $this->get2chDatError();
-                            $this->diedat = true;
-                            return false;
-                        }
+            if (P2Util::isHost2chs ( $this->host ) && ! empty ( $_GET ['maru'] )) {
+                // ログインしてなければ or ログイン後、24時間以上経過していたら自動再ログイン
+                if (! file_exists ( $_conf ['sid2ch_php'] ) || ! empty ( $_REQUEST ['relogin2ch'] ) || (filemtime ( $_conf ['sid2ch_php'] ) < time () - 60 * 60 * 24)) {
+                    if (! function_exists ( 'login2ch' )) {
+                        include P2_LIB_DIR . '/login2ch.inc.php';
                     }
-
-                    include $_conf['sid2ch_php'];
-                    return $this->_downloadDat2chMaru($uaMona, $SID2ch);
-
-            // 2ch bbspink モリタポ読み
-            } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['moritapodat']) &&
-                      $_conf['p2_2ch_mail'] && $_conf['p2_2ch_pass'])
-            {
-                if (!array_key_exists('csrfid', $_GET) ||
-                    $this->_getCsrfIdForMoritapoDat() != $_GET['csrfid'])
-                {
-                    p2die('不正なリクエストです');
-                }
-                return $this->_downloadDat2chMoritapo();
-
-            // 2chの過去ログ倉庫読み
-            } elseif (!empty($_GET['kakolog']) && !empty($_GET['kakoget'])) {
-                if ($_GET['kakoget'] == 1) {
-                    $ext = '.dat.gz';
-                } elseif ($_GET['kakoget'] == 2) {
-                    $ext = '.dat';
-                }
-                return $this->_downloadDat2chKako($_GET['kakolog'], $ext);
-
-            // 2ch or 2ch互換
-            } elseif (P2Util::isHost2chs($this->host) && !empty($_GET['shirokuma'])) {
-                return $this->_downloadDat2chMaru($uaMona, $SID2ch, 'shirokuma');
-            //2ch はAPI経由で落とす
-            } elseif (P2Util::isHost2chs($this->host) && $_conf['2chapi_use'] == 1 && empty($_GET['olddat'])) {
-                
-                // ログインしてなければ or ログイン後、設定した時間経過していたら自動再ログイン
-                if (!file_exists($_conf['sid2chapi_php']) ||
-                    !empty($_REQUEST['relogin2chapi']) ||
-                    (filemtime($_conf['sid2chapi_php']) < time() - 60*60*$_conf['2chapi_interval']))
-                {
-                    if (!function_exists('authenticate_2chapi')) {
-                        include P2_LIB_DIR . '/auth2chapi.inc.php';
-                    }
-                    if (!authenticate_2chapi()) {
-                        $this->getdat_error_msg_ht .= $this->get2chDatError();
+                    if (! login2ch ()) {
+                        $this->getdat_error_msg_ht .= $this->get2chDatError ();
                         $this->diedat = true;
                         return false;
                     }
                 }
-
-                include $_conf['sid2chapi_php'];
-                return $this->_downloadDat2chAPI($SID2chAPI,$this->length);
+                
+                include $_conf ['sid2ch_php'];
+                return $this->_downloadDat2chMaru ( $uaMona, $SID2ch );
+                
+                // 2ch bbspink モリタポ読み
+            } elseif (P2Util::isHost2chs ( $this->host ) && ! empty ( $_GET ['moritapodat'] ) && $_conf ['p2_2ch_mail'] && $_conf ['p2_2ch_pass']) {
+                if (! array_key_exists ( 'csrfid', $_GET ) || $this->_getCsrfIdForMoritapoDat () != $_GET ['csrfid']) {
+                    p2die ( '不正なリクエストです' );
+                }
+                return $this->_downloadDat2chMoritapo ();
+                
+                // 2chの過去ログ倉庫読み
+            } elseif (! empty ( $_GET ['kakolog'] ) && ! empty ( $_GET ['kakoget'] )) {
+                if ($_GET ['kakoget'] == 1) {
+                    $ext = '.dat.gz';
+                } elseif ($_GET ['kakoget'] == 2) {
+                    $ext = '.dat';
+                }
+                return $this->_downloadDat2chKako ( $_GET ['kakolog'], $ext );
+                
+                // 2ch or 2ch互換
+            } elseif (P2Util::isHost2chs ( $this->host ) && ! empty ( $_GET ['shirokuma'] )) {
+                return $this->_downloadDat2chMaru ( $uaMona, $SID2ch, 'shirokuma' );
+                // 2ch はAPI経由で落とす
+            } elseif (P2Util::isHost2chs ( $this->host ) && $_conf ['2chapi_use'] == 1 && empty ( $_GET ['olddat'] )) {
+                
+                // ログインしてなければ or ログイン後、設定した時間経過していたら自動再ログイン
+                if (! file_exists ( $_conf ['sid2chapi_php'] ) || ! empty ( $_REQUEST ['relogin2chapi'] ) || (filemtime ( $_conf ['sid2chapi_php'] ) < time () - 60 * 60 * $_conf ['2chapi_interval'])) {
+                    if (! function_exists ( 'authenticate_2chapi' )) {
+                        include P2_LIB_DIR . '/auth2chapi.inc.php';
+                    }
+                    if (! authenticate_2chapi ()) {
+                        $this->getdat_error_msg_ht .= $this->get2chDatError ();
+                        $this->diedat = true;
+                        return false;
+                    }
+                }
+                
+                include $_conf ['sid2chapi_php'];
+                return $this->_downloadDat2chAPI ( $SID2chAPI, $this->length );
             } else {
-                //2ch 以外の外部板
+                // 2ch 以外の外部板
                 // DATを差分DLする
-                return $this->_downloadDat2ch($this->length);
+                return $this->_downloadDat2ch ( $this->length );
             }
         }
     }
-
+    
     // }}}
     // {{{ _downloadDat2chAPI()
     
@@ -150,266 +130,257 @@ class ThreadRead extends Thread
      *
      * @return mix 取得できたか、更新がなかった場合はtrueを返す
      */
-    protected function _downloadDat2chAPI($sid,$from_bytes)
-    {
+    protected function _downloadDat2chAPI($sid, $from_bytes) {
         global $_conf;
         global $debug;
-
-        $AppKey = $_conf['2chapi_appkey'];
-        $AppName = $_conf['2chapi_appname'];
-        $HMKey  = $_conf['2chapi_hmkey'];
-        if (!($this->host && $this->bbs && $this->key)) {
+        
+        $AppKey = $_conf ['2chapi_appkey'];
+        $AppName = $_conf ['2chapi_appname'];
+        $HMKey = $_conf ['2chapi_hmkey'];
+        if (! ($this->host && $this->bbs && $this->key)) {
             return false;
         }
-
-        //>>1プレビューの時は差分取得しなくて良いので常にtrue(新着無し)を返す
-        if (is_readable($this->keydat) && !empty($_GET['one'])) {
+        
+        // >>1プレビューの時は差分取得しなくて良いので常にtrue(新着無し)を返す
+        if (is_readable ( $this->keydat ) && ! empty ( $_GET ['one'] )) {
             return true;
         }
-
+        
         if ($sid == '') {
             return false;
         }
-
-        $from_bytes = intval($from_bytes);
-
+        
+        $from_bytes = intval ( $from_bytes );
+        
         if ($from_bytes == 0) {
             $zero_read = true;
         } else {
             $zero_read = false;
             $from_bytes = $from_bytes - 1;
         }
-
-        $serverName = explode('.', $this->host);
-        //$url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
-        //$url="http://news2.2ch.net/test/read.cgi?bbs=newsplus&key=1038486598";
-        $url = 'https://api.2ch.net/v1/'.$serverName[0].'/'.$this->bbs.'/'.$this->key;
-        $message = '/v1/'.$serverName[0].'/'.$this->bbs.'/'.$this->key.$sid.$AppKey;
-        $HB = hash_hmac("sha256", $message, $HMKey);
-
+        
+        $serverName = explode ( '.', $this->host );
+        // $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
+        // $url="http://news2.2ch.net/test/read.cgi?bbs=newsplus&key=1038486598";
+        $url = 'https://api.2ch.net/v1/' . $serverName [0] . '/' . $this->bbs . '/' . $this->key;
+        $message = '/v1/' . $serverName [0] . '/' . $this->bbs . '/' . $this->key . $sid . $AppKey;
+        $HB = hash_hmac ( "sha256", $message, $HMKey );
+        
         $headers = "User-Agent: Mozilla/3.0 (compatible; ${AppName})\r\n";
         $headers .= "Connection: close\r\n";
         $headers .= "Content-Type: application/x-www-form-urlencoded\r\n";
         
-        $purl = parse_url($url); // URL分解
-
-        if(!empty($_GET['one'])) {
-            //>>1プレビューの時はサーバーに最初の部分だけ請求
+        $purl = parse_url ( $url ); // URL分解
+        
+        if (! empty ( $_GET ['one'] )) {
+            // >>1プレビューの時はサーバーに最初の部分だけ請求
             $headers .= "Range: bytes=0-8192\r\n";
-        } elseif (!$zero_read) {
+        } elseif (! $zero_read) {
             $headers .= "Range: bytes={$from_bytes}-\r\n";
         }
-
+        
         if ($this->modified) {
             $headers .= "If-Modified-Since: {$this->modified}\r\n";
         }
-
+        
         // Basic認証用のヘッダ
-        if (isset($purl['user']) && isset($purl['pass'])) {
-            $headers .= "Authorization: Basic ".base64_encode($purl['user'].":".$purl['pass'])."\r\n";
+        if (isset ( $purl ['user'] ) && isset ( $purl ['pass'] )) {
+            $headers .= "Authorization: Basic " . base64_encode ( $purl ['user'] . ":" . $purl ['pass'] ) . "\r\n";
         }
         
-        $post_values = array(
-            'sid' => $sid,
-            'hobo' => $HB,
-            'appkey' => $AppKey,
+        $post_values = array (
+                'sid' => $sid,
+                'hobo' => $HB,
+                'appkey' => $AppKey 
         );
         
-        $options['http'] = array(
-            'method' => 'POST',
-            'header' => $headers,
-            'ignore_errors'=> true,
-            'content' => http_build_query($post_values),
+        $options ['http'] = array (
+                'method' => 'POST',
+                'header' => $headers,
+                'ignore_errors' => true,
+                'content' => http_build_query ( $post_values ) 
         );
         
         // プロキシ
-        if ($_conf['proxy_use']) {
-            $options['http'] += array('proxy' => 'tcp://'.$_conf['proxy_host'].":".$_conf['proxy_port']);
-            $options['http'] += array('request_fulluri' => true);
-            $options['ssl'] = array('SNI_enabled' => false);
+        if ($_conf ['proxy_use']) {
+            $options ['http'] += array (
+                    'proxy' => 'tcp://' . $_conf ['proxy_host'] . ":" . $_conf ['proxy_port'] 
+            );
+            $options ['http'] += array (
+                    'request_fulluri' => true 
+            );
+            $options ['ssl'] = array (
+                    'SNI_enabled' => false 
+            );
         }
-
+        
         // WEBサーバへ接続
-        $fp = @fopen($url, 'r', false, stream_context_create($options));
-        if (!$fp) {
-            self::_pushInfoConnectFailed($url, $errno, $errstr);
+        $fp = @fopen ( $url, 'r', false, stream_context_create ( $options ) );
+        if (! $fp) {
+            self::_pushInfoConnectFailed ( $url, $errno, $errstr );
             $this->diedat = true;
             return false;
         }
-        stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
-
-        $body = '';
+        stream_set_timeout ( $fp, $_conf ['http_read_timeout'], 0 );
+        
         $code = null;
-        $start_here = false;
-
-        while (!p2_stream_eof($fp, $timed_out)) {
-
-            if ($start_here) {
-
-                if ($code == '200' || $code == '206') {
-
-                    while (!p2_stream_eof($fp, $timed_out)) {
-                        //>>1をプレビューする用
-                        if (!empty($_GET['one'])) {
-                            $line = fgets($fp, 32800); //改行単位で読込み
-                            if (strstr($line, "\n")) {//改行が有れば保存;
-                                $body .= $line;
-                            }
-                            unset($line);
-                        } else {
-                            $body .= fread($fp, 4096); //通常取得はあぼーん判定を行うためこっちで保存する
-                        }
-                    }
-
-                    if ($timed_out) {
-                        self::_pushInfoReadTimedOut($url);
-                        $this->diedat = true;
-                        fclose($fp);
-                        return false;
-                    }
-                    //1行目を少し切り出す
-                    $firstmsg = substr($body, 0, 100);
-                    if(strpos($firstmsg, 'ng ')===0) {
-                        //ngで始まってたらapiのエラー
-                        fclose($fp);
-                        if (strstr($firstmsg, "not valid")) {
-                            //sidが無効になった可能性。もう一回認証するため最初からやり直し。
-                            if (empty($_REQUEST['relogin2chapi'])) {
-                                $_REQUEST['relogin2chapi'] = true;
-                                return $this->downloadDat();
-                            }
-                        }
-                        $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。".trim($firstmsg)."</p>";
-                        $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
-                        $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
-                        $this->diedat = true;
-                        return false;
-                    } elseif (strpos($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２")===0) {
-                        fclose($fp);
-                        $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
-                        $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
-                        $marutori_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
-                        $plugin_ht = $this->_generateWikiDatLink();
-                        $moritori_ht = $this->_generateMoritapoDatLink();
-                        $this->getdat_error_msg_ht .= "{$marutori_ht}{$moritori_ht}{$plugin_ht}";
-                        $this->diedat = true;
-                        return false;
-                    }
-                    unset($firstmsg);
-
-                    // 末尾の改行であぼーんチェック
-                    if (!$zero_read) {
-                        if (substr($body, 0, 1) != "\n") {
-                            //echo "あぼーん検出";
-                            fclose($fp);
-                            $this->onbytes = 0;
-                            $this->modified = null;
-                            return $this->_downloadDat2chAPI($sid,0); // あぼーん検出。全部取り直し。
-                        }
-                        $body = substr($body, 1);
-                    }
-
-                    $file_append = ($zero_read) ? 0 : FILE_APPEND;
-
-                    if (FileCtl::file_write_contents($this->keydat, $body, $file_append) === false) {
-                        p2die('cannot write file.');
-                    }
-
-                    //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("dat_size_check");
-                    // 取得後サイズチェック
-                    if ($zero_read == false && $this->onbytes) {
-                        $this->getDatBytesFromLocalDat(); // $aThread->length をset
-                        if ($this->onbytes != $this->length) {
-                            fclose($fp);
-                            $this->onbytes = 0;
-                            $this->modified = null;
-                            P2Util::pushInfoHtml("<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>");
-                            //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
-                            return $this->_downloadDat2chAPI($sid,0); //datサイズは不正。全部取り直し。
-
-                        // サイズが同じならそのまま
-                        } elseif ($this->onbytes == $this->length) {
-                            fclose($fp);
-                            $this->isonline = true;
-                            //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
-                            return true;
-                        }
-                    }
-                    //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
-
-                // スレッドがないと判断
-                } else {
-                    fclose($fp);
-                    return $this->_downloadDat2chNotFound($code);
-                }
-
-            } else {
-                $meta = stream_get_meta_data($fp);
-                foreach($meta['wrapper_data'] as $l)
-                {
-                    // ex) HTTP/1.1 304 Not Modified
-                    if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@i', $l, $matches)) {
-                        $code = $matches[1];
-
-                        if ($code == '200' || $code == '206') { // Partial Content
-                            ;
-
-                        } elseif ($code == '302') { // Found
-
-                            // ホストの移転を追跡
-                            $new_host = BbsMap::getCurrentHost($this->host, $this->bbs);
-                            if ($new_host != $this->host) {
-                                fclose($fp);
-                                $this->old_host = $this->host;
-                                $this->host = $new_host;
-                                return $this->_downloadDat2chAPI($sid,$from_bytes);
-                            } else {
-                                fclose($fp);
-                                return $this->_downloadDat2chNotFound($code);
-                            }
-
-                        } elseif ($code == '304') { // Not Modified
-                            fclose($fp);
-                            $this->isonline = true;
-                            return '304 Not Modified';
-
-                        } elseif ($code == '416') { // Requested Range Not Satisfiable
-                            //echo "あぼーん検出";
-                            fclose($fp);
-                            $this->onbytes = 0;
-                            $this->modified = null;
-                            return $this->_downloadDat2chAPI($sid,0); // あぼーん検出。全部取り直し。
-
-                        } else {
-                            fclose($fp);
-                            return $this->_downloadDat2chNotFound($code);
-                        }
-                    }
-
-                    if ($zero_read) {
-                        if (preg_match('/^Content-Length: ([0-9]+)/i', $l, $matches)) {
-                            $this->onbytes = intval($matches[1]);
-                        }
+        $meta = stream_get_meta_data ( $fp );
+        foreach ( $meta ['wrapper_data'] as $l ) {
+            // ex) HTTP/1.1 304 Not Modified
+            if (preg_match ( '@^HTTP/1\\.\\d (\\d+) (.+)@i', $l, $matches )) {
+                $code = $matches [1];
+                
+                if ($code == '200' || $code == '206') { // Partial Content
+                    ;
+                } elseif ($code == '302') { // Found
+                                            
+                    // ホストの移転を追跡
+                    $new_host = BbsMap::getCurrentHost ( $this->host, $this->bbs );
+                    if ($new_host != $this->host) {
+                        fclose ( $fp );
+                        $this->old_host = $this->host;
+                        $this->host = $new_host;
+                        return $this->_downloadDat2chAPI ( $sid, $from_bytes );
                     } else {
-
-                        if (preg_match('@^Content-Range: bytes ([^/]+)/([0-9]+)@i', $l, $matches)) {
-                            $this->onbytes = intval($matches[2]);
-                        }
-
+                        fclose ( $fp );
+                        return $this->_downloadDat2chNotFound ( $code );
                     }
-
-                    if (preg_match('/^Last-Modified: (.+)/i', $l, $matches)) {
-                        //echo $matches[1] . '<br />'; //debug
-                        $this->modified = $matches[1];
-                    }
+                } elseif ($code == '304') { // Not Modified
+                    fclose ( $fp );
+                    $this->isonline = true;
+                    return '304 Not Modified';
+                } elseif ($code == '416') { // Requested Range Not Satisfiable
+                    // echo "あぼーん検出";
+                    fclose ( $fp );
+                    $this->onbytes = 0;
+                    $this->modified = null;
+                    return $this->_downloadDat2chAPI ( $sid, 0 ); // あぼーん検出。全部取り直し。
+                } else {
+                    fclose ( $fp );
+                    return $this->_downloadDat2chNotFound ( $code );
                 }
-                $start_here = true;
+            }
+            
+            if ($zero_read) {
+                if (preg_match ( '/^Content-Length: ([0-9]+)/i', $l, $matches )) {
+                    $this->onbytes = intval ( $matches [1] );
+                }
+            } else {
+                
+                if (preg_match ( '@^Content-Range: bytes ([^/]+)/([0-9]+)@i', $l, $matches )) {
+                    $this->onbytes = intval ( $matches [2] );
+                }
+            }
+            
+            if (preg_match ( '/^Last-Modified: (.+)/i', $l, $matches )) {
+                // echo $matches[1] . '<br />'; //debug
+                $this->modified = $matches [1];
             }
         }
-
-        fclose($fp);
+        
+        $body = '';
+        
+        if ($code == '200' || $code == '206') {
+            
+            while ( ! p2_stream_eof ( $fp, $timed_out ) ) {
+                // >>1をプレビューする用
+                if (! empty ( $_GET ['one'] )) {
+                    $line = fgets ( $fp, 32800 ); // 改行単位で読込み
+                    if (strstr ( $line, "\n" )) { // 改行が有れば保存;
+                        $body .= $line;
+                    }
+                    unset ( $line );
+                } else {
+                    $body .= fread ( $fp, 4096 ); // 通常取得はあぼーん判定を行うためこっちで保存する
+                }
+            }
+            
+            if ($timed_out) {
+                self::_pushInfoReadTimedOut ( $url );
+                $this->diedat = true;
+                fclose ( $fp );
+                return false;
+            }
+            // 1行目を少し切り出す
+            $firstmsg = trim ( substr ( $body, 0, 100 ) );
+            if (strpos ( $firstmsg, 'ng ' ) === 0) {
+                // ngで始まってたらapiのエラーの可能性
+                if (preg_match ( "/^ng \((.*)\)$/", $firstmsg )) {
+                    // 誤判定防止のためpreg_matchで二重チェックする
+                    fclose ( $fp );
+                    if (strstr ( $firstmsg, "not valid" )) {
+                        // sidが無効になった可能性。もう一回認証するため最初からやり直し。
+                        if (empty ( $_REQUEST ['relogin2chapi'] )) {
+                            $_REQUEST ['relogin2chapi'] = true;
+                            return $this->downloadDat ();
+                        }
+                    }
+                    $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。" . $firstmsg . "</p>";
+                    $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
+                    $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
+                    $this->diedat = true;
+                    return false;
+                }
+            } elseif (strpos ( $firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２" ) === 0) {
+                fclose ( $fp );
+                $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
+                $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$_conf['k_at_a']}\">●IDでrep2に取り込む</a>]";
+                $marutori_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;shirokuma=true{$_conf['k_at_a']}\">offlaw経由でrep2に取り込む</a>]";
+                $plugin_ht = $this->_generateWikiDatLink ();
+                $moritori_ht = $this->_generateMoritapoDatLink ();
+                $this->getdat_error_msg_ht .= "{$marutori_ht}{$moritori_ht}{$plugin_ht}";
+                $this->diedat = true;
+                return false;
+            }
+            unset ( $firstmsg );
+            
+            // 末尾の改行であぼーんチェック
+            if (! $zero_read) {
+                if (substr ( $body, 0, 1 ) != "\n") {
+                    // echo "あぼーん検出";
+                    fclose ( $fp );
+                    $this->onbytes = 0;
+                    $this->modified = null;
+                    return $this->_downloadDat2chAPI ( $sid, 0 ); // あぼーん検出。全部取り直し。
+                }
+                $body = substr ( $body, 1 );
+            }
+            
+            $file_append = ($zero_read) ? 0 : FILE_APPEND;
+            
+            if (FileCtl::file_write_contents ( $this->keydat, $body, $file_append ) === false) {
+                p2die ( 'cannot write file.' );
+            }
+            
+            // $GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("dat_size_check");
+            // 取得後サイズチェック
+            if ($zero_read == false && $this->onbytes) {
+                $this->getDatBytesFromLocalDat (); // $aThread->length をset
+                if ($this->onbytes != $this->length) {
+                    fclose ( $fp );
+                    $this->onbytes = 0;
+                    $this->modified = null;
+                    P2Util::pushInfoHtml ( "<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>" );
+                    // $GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
+                    return $this->_downloadDat2chAPI ( $sid, 0 ); // datサイズは不正。全部取り直し。
+                                                                      
+                    // サイズが同じならそのまま
+                } elseif ($this->onbytes == $this->length) {
+                    fclose ( $fp );
+                    $this->isonline = true;
+                    // $GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
+                    return true;
+                }
+            }
+        } else {
+            // スレッドがないと判断
+            fclose ( $fp );
+            return $this->_downloadDat2chNotFound ( $code );
+        }
+        
+        fclose ( $fp );
         if ($timed_out) {
-            self::_pushInfoReadTimedOut($url);
+            self::_pushInfoReadTimedOut ( $url );
             $this->diedat = true;
             return false;
         } else {
@@ -418,6 +389,83 @@ class ThreadRead extends Thread
         }
     }
 
+    // }}}
+    // {{{ _freadHttpHeader()
+    /**
+     * HTTPヘッダレスポンスを読み込む
+     *
+     * @access  private
+     * @param   resource  $fp  fsockopen で開いたファイルポインタ
+     * @return  array|false
+     */
+    function _freadHttpHeader($fp)
+    {
+        $h = array();
+    
+        while (!feof($fp)) {
+            $l = fgets($fp, 8192);
+    
+            // ex) HTTP/1.1 304 Not Modified
+            if (preg_match("|HTTP/1\.\d (\d+) (.+)\r\n|", $l, $matches)) {
+                $h['code']      = $matches[1];
+                $h['message']   = $matches[2];
+                $h['HTTP']      = rtrim($l);
+            }
+    
+            if (preg_match('/^(.+?): (.+)\r\n/', $l, $matches)) {
+                $h['headers'][$matches[1]] = $matches[2];
+    
+            } elseif ($l == "\r\n") {
+                if (!isset($h['code'])) {
+                    return false;
+                }
+                return $h;
+            }
+        }
+    
+        return false;
+    }
+    // }}}
+    // {{{ _pushInfoHtmlFreadHttpHeaderError()
+    /**
+     * HTTPヘッダレスポンスの取得エラーを P2Util::pushInfoHtml() する
+     *
+     * @access  private
+     * @return  void
+     */
+    function _pushInfoHtmlFreadHttpHeaderError($url)
+    {
+        P2Util::pushInfoHtml(sprintf('<p>p2 info: %s からヘッダレスポンスを取得できませんでした。</p>',$url));
+    }
+    // }}}
+    // {{{ _getOnbytesFromHeader()
+    /**
+     * HTTPヘッダレスポンスからファイルサイズを取得する
+     *
+     * @access  private
+     * @param   array    $headers
+     * @param   boolean  $zero_read
+     * @return  integer|false
+     */
+    function _getOnbytesFromHeader($headers, $zero_read = true)
+    {
+        if ($zero_read) {
+            if (isset($headers['Content-Length'])) {
+                if (preg_match("/^([0-9]+)/", $headers['Content-Length'], $matches)) {
+                    return $onbytes = $matches[1];
+                }
+            }
+    
+        } else {
+            if (isset($headers['Content-Range'])) {
+                if (preg_match("/^bytes ([^\/]+)\/([0-9]+)/", $headers['Content-Range'], $matches)) {
+                    return $onbytes = $matches[2];
+                }
+            }
+        }
+    
+        return false;
+    }
     // }}}
     // {{{ _downloadDat2ch()
 
@@ -517,156 +565,142 @@ class ThreadRead extends Thread
 
         fputs($fp, $request);
 
-        $body = '';
         $code = null;
-        $start_here = false;
-
-        while (!p2_stream_eof($fp, $timed_out)) {
-
-            if ($start_here) {
-
-                if ($code == '200' || $code == '206') {
-
-                    while (!p2_stream_eof($fp, $timed_out)) {
-                        //>>1をプレビューする用
-                        if (!empty($_GET['one'])) {
-                            $line = fgets($fp, 32800); //改行単位で読込み
-                            if (strstr($line, "\n")) {//改行が有れば保存;
-                                $body .= $line;
-                            }
-                            unset($line);
-                        } else {
-                            $body .= fread($fp, 4096); //通常取得はあぼーん判定を行うためこっちで保存する
-                        }
-                    }
-
-                    if ($timed_out) {
-                        self::_pushInfoReadTimedOut($url);
-                        $this->diedat = true;
-                        fclose($fp);
-                        return false;
-                    }
-
-                    //ホストが2chの時にDATを利用できない旨のメッセージが出たらエラーとする（DAT破損対策）
-                    if (P2Util::isHost2chs($this->host))
-                    {
-                        $firstmsg = substr($body, 0, 100);
-                        if (strpos($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２")===0) {
-                            $this->getdat_error_msg_ht .= "<p>rep2 error: 2ちゃんねるのDAT提供は終了しました。</p>";
-                            $this->diedat = true;
-                            fclose($fp);
-                            return false;
-                        }
-                        unset($firstmsg);
-                    }
-
-                    // 末尾の改行であぼーんチェック
-                    if (!$zero_read) {
-                        if (substr($body, 0, 1) != "\n") {
-                            //echo "あぼーん検出";
-                            fclose($fp);
-                            $this->onbytes = 0;
-                            $this->modified = null;
-                            return $this->_downloadDat2ch(0); // あぼーん検出。全部取り直し。
-                        }
-                        $body = substr($body, 1);
-                    }
-
-                    $file_append = ($zero_read) ? 0 : FILE_APPEND;
-
-                    if (FileCtl::file_write_contents($this->keydat, $body, $file_append) === false) {
-                        p2die('cannot write file.');
-                    }
-
-                    //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("dat_size_check");
-                    // 取得後サイズチェック
-                    if ($zero_read == false && $this->onbytes) {
-                        $this->getDatBytesFromLocalDat(); // $aThread->length をset
-                        if ($this->onbytes != $this->length) {
-                            fclose($fp);
-                            $this->onbytes = 0;
-                            $this->modified = null;
-                            P2Util::pushInfoHtml("<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>");
-                            //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
-                            return $this->_downloadDat2ch(0); //datサイズは不正。全部取り直し。
-
-                        // サイズが同じならそのまま
-                        } elseif ($this->onbytes == $this->length) {
-                            fclose($fp);
-                            $this->isonline = true;
-                            //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
-                            return true;
-                        }
-                    }
-                    //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
-
-                // スレッドがないと判断
-                } else {
-                    fclose($fp);
-                    return $this->_downloadDat2chNotFound($code);
-                }
-
+        
+        // HTTPヘッダレスポンスを取得する
+        $h = $this->_freadHttpHeader($fp);
+        if ($h === false) {
+            fclose($fp);
+            $this->_pushInfoHtmlFreadHttpHeaderError($url);
+            $this->diedat = true;
+            return false;
+        }
+        $code = $h['code'];
+        
+        if ($code == '200' || $code == '206') { // Partial Content
+            ;
+        
+        } elseif ($code == '302') { // Found
+        
+            // ホストの移転を追跡
+            $new_host = BbsMap::getCurrentHost($this->host, $this->bbs);
+            if ($new_host != $this->host) {
+                fclose($fp);
+                $this->old_host = $this->host;
+                $this->host = $new_host;
+                return $this->_downloadDat2ch($from_bytes);
             } else {
-                $l = rtrim(fgets($fp, 32800), "\r\n");
-                // ex) HTTP/1.1 304 Not Modified
-                if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@i', $l, $matches)) {
-                    $code = $matches[1];
-
-                    if ($code == '200' || $code == '206') { // Partial Content
-                        ;
-
-                    } elseif ($code == '302') { // Found
-
-                        // ホストの移転を追跡
-                        $new_host = BbsMap::getCurrentHost($this->host, $this->bbs);
-                        if ($new_host != $this->host) {
-                            fclose($fp);
-                            $this->old_host = $this->host;
-                            $this->host = $new_host;
-                            return $this->_downloadDat2ch($from_bytes);
-                        } else {
-                            fclose($fp);
-                            return $this->_downloadDat2chNotFound($code);
-                        }
-
-                    } elseif ($code == '304') { // Not Modified
-                        fclose($fp);
-                        $this->isonline = true;
-                        return '304 Not Modified';
-
-                    } elseif ($code == '416') { // Requested Range Not Satisfiable
-                        //echo "あぼーん検出";
-                        fclose($fp);
-                        $this->onbytes = 0;
-                        $this->modified = null;
-                        return $this->_downloadDat2ch(0); // あぼーん検出。全部取り直し。
-
-                    } else {
-                        fclose($fp);
-                        return $this->_downloadDat2chNotFound($code);
+                fclose($fp);
+                return $this->_downloadDat2chNotFound($code);
+            }
+        
+        } elseif ($code == '304') { // Not Modified
+            fclose($fp);
+            $this->isonline = true;
+            return '304 Not Modified';
+        
+        } elseif ($code == '416') { // Requested Range Not Satisfiable
+            //echo "あぼーん検出";
+            fclose($fp);
+            $this->onbytes = 0;
+            $this->modified = null;
+            return $this->_downloadDat2ch(0); // あぼーん検出。全部取り直し。
+        
+        } else {
+            fclose($fp);
+            return $this->_downloadDat2chNotFound($code);
+        }
+        
+        $r = $this->_getOnbytesFromHeader($h['headers'], $zero_read);
+        if ($r !== false) {
+            $this->onbytes = $r;
+        }
+        
+        if (isset($h['headers']['Last-Modified'])) {
+            $this->modified = $h['headers']['Last-Modified'];
+        }
+        
+        // bodyを読む
+        $body = '';
+        if ($code == '200' || $code == '206') {
+        
+            while (!p2_stream_eof($fp, $timed_out)) {
+                //>>1をプレビューする用
+                if (!empty($_GET['one'])) {
+                    $line = fgets($fp, 32800); //改行単位で読込み
+                    if (strstr($line, "\n")) {//改行が有れば保存;
+                        $body .= $line;
                     }
-                }
-
-                if ($zero_read) {
-                    if (preg_match('/^Content-Length: ([0-9]+)/i', $l, $matches)) {
-                        $this->onbytes = intval($matches[1]);
-                    }
+                    unset($line);
                 } else {
-
-                    if (preg_match('@^Content-Range: bytes ([^/]+)/([0-9]+)@i', $l, $matches)) {
-                        $this->onbytes = intval($matches[2]);
-                    }
-
-                }
-
-                if (preg_match('/^Last-Modified: (.+)/i', $l, $matches)) {
-                    //echo $matches[1] . '<br />'; //debug
-                    $this->modified = $matches[1];
-
-                } elseif ($l === '') {
-                    $start_here = true;
+                    $body .= fread($fp, 4096); //通常取得はあぼーん判定を行うためこっちで保存する
                 }
             }
+        
+            if ($timed_out) {
+                self::_pushInfoReadTimedOut($url);
+                $this->diedat = true;
+                fclose($fp);
+                return false;
+            }
+        
+            //ホストが2chの時にDATを利用できない旨のメッセージが出たらエラーとする（DAT破損対策）
+            if (P2Util::isHost2chs($this->host))
+            {
+                $firstmsg = substr($body, 0, 100);
+                if (strpos($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２")===0) {
+                    $this->getdat_error_msg_ht .= "<p>rep2 error: 2ちゃんねるのDAT提供は終了しました。</p>";
+                    $this->diedat = true;
+                    fclose($fp);
+                    return false;
+                }
+                unset($firstmsg);
+            }
+        
+            // 末尾の改行であぼーんチェック
+            if (!$zero_read) {
+                if (substr($body, 0, 1) != "\n") {
+                    //echo "あぼーん検出";
+                    fclose($fp);
+                    $this->onbytes = 0;
+                    $this->modified = null;
+                    return $this->_downloadDat2ch(0); // あぼーん検出。全部取り直し。
+                }
+                $body = substr($body, 1);
+            }
+        
+            $file_append = ($zero_read) ? 0 : FILE_APPEND;
+        
+            if (FileCtl::file_write_contents($this->keydat, $body, $file_append) === false) {
+                p2die('cannot write file.');
+            }
+        
+            //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("dat_size_check");
+            // 取得後サイズチェック
+            if ($zero_read == false && $this->onbytes) {
+                $this->getDatBytesFromLocalDat(); // $aThread->length をset
+                if ($this->onbytes != $this->length) {
+                    fclose($fp);
+                    $this->onbytes = 0;
+                    $this->modified = null;
+                    P2Util::pushInfoHtml("<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>");
+                    //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
+                    return $this->_downloadDat2ch(0); //datサイズは不正。全部取り直し。
+        
+                    // サイズが同じならそのまま
+                } elseif ($this->onbytes == $this->length) {
+                    fclose($fp);
+                    $this->isonline = true;
+                    //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
+                    return true;
+                }
+            }
+            //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('dat_size_check');
+
+        } else {
+            // スレッドがないと判断
+            fclose($fp);
+            return $this->_downloadDat2chNotFound($code);
         }
 
         fclose($fp);
@@ -781,99 +815,106 @@ class ThreadRead extends Thread
         $chunked = false;
         $is_gzip = false;
         $start_here = false;
+        
+        // HTTPヘッダレスポンスを取得する
+        $h = $this->_freadHttpHeader($fp);
+        if ($h === false) {
+            fclose($fp);
+            $this->_pushInfoHtmlFreadHttpHeaderError($url);
+            $this->diedat = true;
+            return false;
+        }
+        
+        // {{{ HTTPコードをチェック
+        
+        $code = $h['code'];
+        
+        if ($code == '200') {
+            ;
+        } elseif ($code == '304') {
+            fclose($fp);
+            //$this->isonline = true;
+            return '304 Not Modified';
+        } else {
+            fclose($fp);
+            return $this->_downloadDat2chMaruNotFound();
+        }
+        
+        if (isset($h['headers']['Content-Encoding'])) {
+            if (preg_match("/^(x-)?gzip/", $h['headers']['Content-Encoding'], $matches)) {
+                $isGzip = true;
+            }
+        }
+        if (isset($h['headers']['Content-Length'])) {
+            if (preg_match("/^([0-9]+)/", $h['headers']['Content-Length'], $matches)) {
+                $this->onbytes = $h['headers']['Content-Length'];
+            }
+        }
+        if (isset($h['headers']['Transfer-Encoding'])) {
+            if ($h['headers']['Transfer-Encoding'] == 'chunked') {
+                $chunked = true;
+            }
+        }
+        if (isset($h['headers']['Last-Modified'])) {
+            $this->modified = $h['headers']['Last-Modified'];
+        }
 
-        while (!p2_stream_eof($fp, $timed_out)) {
-
-            if ($start_here) {
-
-                if ($code == '200') {
-
-                    while (!p2_stream_eof($fp, $timed_out)) {
-                        $body .= fread($fp, 4096);
-                    }
-
-                    if ($timed_out) {
-                        self::_pushInfoReadTimedOut($url);
-                        //$this->diedat = true;
-                        fclose($fp);
-                        return false;
-                    }
-
-                    // gzip圧縮なら
-                    if ($is_gzip) {
-                        $body = self::_decodeGzip($body, $url);
-                        if ($body === null) {
-                            //$this->diedat = true;
-                            fclose($fp);
-                            return false;
-                        }
-                    }
-
-                    if (FileCtl::file_write_contents($this->keydat, $body) === false) {
-                        p2die('cannot write file. downloadDat2chMaru()');
-                    }
-
-                    // クリーニング =====
-                    if ($marudatlines = FileCtl::file_read_lines($this->keydat)) {
-                    	if (!$shirokuma) {
-                            $firstline = array_shift($marudatlines);
-                            // チャンクとか
-                            if (strpos($firstline, 'Success') === false) {      // 浪人(rokka)対応
-                                $secondline = array_shift($marudatlines);
-                            }
-                    	}
-                        $cont = '';
-                        foreach ($marudatlines as $aline) {
-                            // チャンクエンコーディングが欲しいところ(HTTP 1.0でしのぐ)
-                            if ($chunked) {
-                                $cont .= $aline;
-                            } else {
-                                $cont .= $aline;
-                            }
-                        }
-                        if (FileCtl::file_write_contents($this->keydat, $cont) === false) {
-                            p2die('cannot write file. downloadDat2chMaru()');
-                        }
-                    }
-
-                // dat.gzはなかったと判断
-                } else {
+        if ($code == '200') {
+        
+            while (!p2_stream_eof($fp, $timed_out)) {
+                $body .= fread($fp, 4096);
+            }
+        
+            if ($timed_out) {
+                self::_pushInfoReadTimedOut($url);
+                //$this->diedat = true;
+                fclose($fp);
+                return false;
+            }
+        
+            // gzip圧縮なら
+            if ($is_gzip) {
+                $body = self::_decodeGzip($body, $url);
+                if ($body === null) {
+                    //$this->diedat = true;
                     fclose($fp);
-                    return $this->_downloadDat2chMaruNotFound();
-                }
-
-            // ヘッダの処理
-            } else {
-                $l = rtrim(fgets($fp, 128000), "\r\n");
-                //echo $l.'<br>';// for debug
-                // ex) HTTP/1.1 304 Not Modified
-                if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@', $l, $matches)) {
-                    $code = $matches[1];
-
-                    if ($code == '200') {
-                        ;
-                    } elseif ($code == '304') {
-                        fclose($fp);
-                        //$this->isonline = true;
-                        return '304 Not Modified';
-                    } else {
-                        fclose($fp);
-                        return $this->_downloadDat2chMaruNotFound();
-                    }
-
-                } elseif (preg_match('/^Content-Encoding: (?:x-)?gzip/i', $l)) {
-                    $is_gzip = true;
-                } elseif (preg_match('/^Transfer-Encoding: (.+)/i', $l, $matches)) { // Transfer-Encoding: chunked
-                    $t_enco = $matches[1];
-                    if ($t_enco == 'chunked') {
-                        $chunked = true;
-                    }
-                } elseif ($l === '') {
-                    $start_here = true;
+                    return false;
                 }
             }
-
+        
+            if (FileCtl::file_write_contents($this->keydat, $body) === false) {
+                p2die('cannot write file. downloadDat2chMaru()');
+            }
+        
+            // クリーニング =====
+            if ($marudatlines = FileCtl::file_read_lines($this->keydat)) {
+                if (!$shirokuma) {
+                    $firstline = array_shift($marudatlines);
+                    // チャンクとか
+                    if (strpos($firstline, 'Success') === false) {      // 浪人(rokka)対応
+                        $secondline = array_shift($marudatlines);
+                    }
+                }
+                $cont = '';
+                foreach ($marudatlines as $aline) {
+                    // チャンクエンコーディングが欲しいところ(HTTP 1.0でしのぐ)
+                    if ($chunked) {
+                        $cont .= $aline;
+                    } else {
+                        $cont .= $aline;
+                    }
+                }
+                if (FileCtl::file_write_contents($this->keydat, $cont) === false) {
+                    p2die('cannot write file. downloadDat2chMaru()');
+                }
+            }
+        
+        } else {
+            // dat.gzはなかったと判断
+            fclose($fp);
+            return $this->_downloadDat2chMaruNotFound();
         }
+        
         fclose($fp);
         //$this->isonline = true;
         //$this->datochiok = 1;
@@ -967,68 +1008,68 @@ class ThreadRead extends Thread
         $code = null;
         $is_gzip = false;
         $start_here = false;
+        
+        // HTTPヘッダレスポンスを取得する
+        $h = $this->_freadHttpHeader($fp);
+        if ($h === false) {
+            fclose($fp);
+            $this->_pushInfoHtmlFreadHttpHeaderError($url);
+            $this->diedat = true;
+            return false;
+        }
+        
+        // {{{ HTTPコードをチェック
+        
+        $code = $h['code'];
+        
+        if ($code == '200') {
+            ;
+        } elseif ($code == '304') {
+            fclose($fp);
+            //$this->isonline = true;
+            return '304 Not Modified';
+        } else {
+            fclose($fp);
+            return $this->_downloadDat2chMaruNotFound();
+        }
+        
+        if (isset($h['headers']['Content-Encoding'])) {
+            if (preg_match("/^(x-)?gzip/", $h['headers']['Content-Encoding'], $matches)) {
+                $isGzip = true;
+            }
+        }
 
-        while (!p2_stream_eof($fp, $timed_out)) {
-
-            if ($start_here) {
-
-                if ($code == '200') {
-
-                    while (!p2_stream_eof($fp, $timed_out)) {
-                        $body .= fread($fp, 4096);
-                    }
-
-                    if ($timed_out) {
-                        self::_pushInfoReadTimedOut($url);
-                        $this->diedat = true;
-                        fclose($fp);
-                        return false;
-                    }
-
-                    if ($is_gzip) {
-                        $body = self::_decodeGzip($body, $url);
-                        if ($body === null) {
-                            $this->diedat = true;
-                            fclose($fp);
-                            return false;
-                        }
-                    }
-
-                    if (FileCtl::file_write_contents($this->keydat, $body) === false) {
-                        p2die('cannot write file. downloadDat2chKako()');
-                    }
-
-                // なかったと判断
-                } else {
+        if ($code == '200') {
+        
+            while (!p2_stream_eof($fp, $timed_out)) {
+                $body .= fread($fp, 4096);
+            }
+        
+            if ($timed_out) {
+                self::_pushInfoReadTimedOut($url);
+                $this->diedat = true;
+                fclose($fp);
+                return false;
+            }
+        
+            if ($is_gzip) {
+                $body = self::_decodeGzip($body, $url);
+                if ($body === null) {
+                    $this->diedat = true;
                     fclose($fp);
-                    return $this->_downloadDat2chKakoNotFound($uri, $ext);
-
-                }
-
-            } else {
-                $l = rtrim(fgets($fp, 128000), "\r\n");
-                if (preg_match('@^HTTP/1\\.\\d (\\d+) (.+)@', $l, $matches)) { // ex) HTTP/1.1 304 Not Modified
-                    $code = $matches[1];
-
-                    if ($code == '200') {
-                        ;
-                    } elseif ($code == '304') {
-                        fclose($fp);
-                        //$this->isonline = true;
-                        return '304 Not Modified';
-                    } else {
-                        fclose($fp);
-                        return $this->_downloadDat2chKakoNotFound($uri, $ext);
-                    }
-
-                } elseif (preg_match('/^Content-Encoding: (?:x-)?gzip/i', $l)) {
-                    $is_gzip = true;
-                } elseif ($l === '') {
-                    $start_here = true;
+                    return false;
                 }
             }
-
+        
+            if (FileCtl::file_write_contents($this->keydat, $body) === false) {
+                p2die('cannot write file. downloadDat2chKako()');
+            }
+        } else {
+            // なかったと判断
+            fclose($fp);
+            return $this->_downloadDat2chKakoNotFound($uri, $ext);
         }
+
         fclose($fp);
         //$this->isonline = true;
         return !$timed_out;

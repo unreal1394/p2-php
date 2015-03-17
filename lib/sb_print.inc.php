@@ -256,7 +256,7 @@ EOP;
                 $row_class .= ' r_offline';
                 // JavaScriptでの確認ダイアログあり
                 $unum_ht_c = <<<EOP
-<a class="un_n" href="{$_conf['subject_php']}?{$host_bbs_key_q}{$spmode_q}&amp;dele=true">-</a>
+<a class="un_n" href="{$_conf['subject_php']}?{$host_bbs_key_q}{$spmode_q}&amp;dele=true" target="_self">-</a>
 EOP;
                 $row_class = ' nosubject';
 
@@ -265,13 +265,13 @@ EOP;
                 $row_class .= ' r_new';
                 $midoku_ari = true;
                 $unum_ht_c = <<<EOP
-<a id="un{$i}" class="un_a" href="{$_conf['subject_php']}?{$host_bbs_key_q}{$spmode_q}&amp;dele=true">{$aThread->unum}</a>
+<a id="un{$i}" class="un_a" href="{$_conf['subject_php']}?{$host_bbs_key_q}{$spmode_q}&amp;dele=true" target="_self">{$aThread->unum}</a>
 EOP;
 
             // subject.txtにはあるが、新着なし
             } else {
                 $unum_ht_c = <<<EOP
-<a class="un" href="{$_conf['subject_php']}?{$host_bbs_key_q}{$spmode_q}&amp;dele=true">{$aThread->unum}</a>
+<a class="un" href="{$_conf['subject_php']}?{$host_bbs_key_q}{$spmode_q}&amp;dele=true" target="_self">{$aThread->unum}</a>
 EOP;
             }
         }
