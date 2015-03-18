@@ -314,9 +314,9 @@ if ($_conf['ktai']) {
         $res1 = $aShowThread->quoteOne(); // >>1ポップアップ用
 
         if ($_GET['showbl']) {
-            $mainhtml = $aShowThread->datToHtml_resFrom(true);
+            $mainhtml = $aShowThread->getDatToHtml_resFrom();
         } else {
-            $mainhtml .= $aShowThread->datToHtml(true);
+            $mainhtml .= $aShowThread->getDatToHtml();
         }
         $mainhtml .= $res1['q'];
 

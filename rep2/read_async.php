@@ -145,14 +145,6 @@ if (empty($_GET['rec'])) {
     exit;
 }
 
-
-// テレビ番組欄＠2chなどはログ・idx・履歴を保存しない
-if (P2Util::isHostNoCacheData($aThread->host)) {
-    //@unlink($aThread->keydat); // ThreadRead::readDat()で削除する
-    exit;
-}
-
-
 //===========================================================
 // idxの値を設定、記録
 //===========================================================
