@@ -336,7 +336,7 @@ EOP;
 P2Util::printInfoHtml();
 
 echo "<p>\n";
-echo "<b><a class=\"thre_title\" href=\"{$_conf['read_php']}?{$common_q}{$_conf['k_at_a']}\"{$target_read_at}>{$hd['ttitle_name']}</a></b>\n";
+echo "<b><a class=\"thre_title\" href=\"{$_conf['read_php']}?{$common_q}{$_conf['k_at_a']}\"{$target_read_at}>",(isset($title_msg) ? $hd['ttitle_name'] : $aThread->ttitle_hd),"</a></b>\n";echo "</p>\n";
 echo "</p>\n";
 
 // Œg‘Ñ‚È‚ç–`“ª‚Å•\Ž¦
