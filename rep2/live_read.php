@@ -1,6 +1,6 @@
 <?php
 /**
- * rep2 - スレッド表示スクリプト
+ * rep2 - スレッド表示スクリプト（実況専用）
  * フレーム分割画面、右下部分
  */
 
@@ -101,32 +101,6 @@ if ($lines = FileCtl::file_read_lines($aThread->keyidx, FILE_IGNORE_NEW_LINES)) 
 }
 $aThread->getThreadInfoFromIdx();
 
-//==========================================================
-// preview >>1
-//==========================================================
-
-//if (!empty($_GET['onlyone'])) {
-if (!empty($_GET['one'])) {
-    $aThread->ls = '1';
-    $aThread->resrange = array('start' => 1, 'to' => 1, 'nofirst' => false);
-
-    // 必ずしも正確ではないが便宜的に
-    //if (!isset($aThread->rescount) && !empty($_GET['rc'])) {
-    if (!isset($aThread->rescount) && !empty($_GET['rescount'])) {
-        //$aThread->rescount = $_GET['rc'];
-        $aThread->rescount = (int)$_GET['rescount'];
-    }
-
-    $preview = $aThread->previewOne();
-    $ptitle_ht = p2h($aThread->itaj) . ' / ' . $aThread->ttitle_hd;
-
-    include READ_HEADER_INC_PHP;
-    echo $preview;
-    include READ_FOOTER_INC_PHP;
-
-    return;
-}
-
 //===========================================================
 // DATのダウンロード
 //===========================================================
@@ -202,62 +176,11 @@ $aThread->lsToPoint();
 $ptitle_ht = p2h($aThread->itaj) . ' / ' . $aThread->ttitle_hd;
 
 if ($_conf['ktai']) {
+    include READ_HEADER_INC_PHP;
 
-    if ($resFilter && $resFilter->hasWord() && $aThread->rescount) {
-        $GLOBALS['filter_hits'] = 0;
-    } else {
-        $GLOBALS['filter_hits'] = null;
-    }
+    echo "PCのみ実況できます。";
 
-    $aShowThread = new ShowThreadK($aThread);
-
-    if ($is_ajax) {
-        $response = trim(mb_convert_encoding($aShowThread->getDatToHtml(true), 'UTF-8', 'CP932'));
-        if (isset($_GET['respop_id'])) {
-            $response = preg_replace('/<[^<>]+? id="/u', sprintf('$0_respop%d_', $_GET['respop_id']), $response);
-        }
-        /*if ($_conf['iphone']) {
-            // HTMLの断片をXMLとして渡してもDOMでidやclassが期待通りに反映されない
-            header('Content-Type: application/xml; charset=UTF-8');
-            //$responseId = 'ajaxResponse' . time();
-            $doc = new DOMDocument();
-            $err = error_reporting(E_ALL & ~E_WARNING);
-            $html = '<html><head>'
-                  . '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-                  . '</head><body>'
-                  . $response
-                  . '</body></html>';
-            $doc->loadHTML($html);
-            error_reporting($err);
-            echo '<?xml version="1.0" encoding="utf-8" ?>';
-            echo $doc->saveXML($doc->getElementsByTagName('div')->item(0));
-        } else {*/
-            // よって、HTMLの断片をそのまま返してinnterHTMLに代入しないといけない。
-            // (根本的にレスポンスのフォーマットとクライアント側での処理を変えない限りは)
-            header('Content-Type: text/html; charset=UTF-8');
-            echo $response;
-        //}
-    } else {
-        if ($aThread->rescount) {
-            if ($_GET['showbl']) {
-                $content = $aShowThread->getDatToHtml_resFrom();
-            } else {
-                $content = $aShowThread->getDatToHtml();
-            }
-        } elseif ($aThread->diedat && count($aThread->datochi_residuums) > 0) {
-            $content = $aShowThread->getDatochiResiduums();
-        }
-
-        include READ_HEADER_INC_PHP;
-
-        if ($_conf['iphone'] && $_conf['expack.spm.enabled']) {
-            echo $aShowThread->getSpmObjJs();
-        }
-
-        echo $content;
-
-        include READ_FOOTER_INC_PHP;
-    }
+    include READ_FOOTER_INC_PHP;
 
 } else {
 
@@ -284,8 +207,8 @@ if ($_conf['ktai']) {
     //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("datToHtml");
 
     if ($aThread->rescount) {
-        $mainhtml = '';
-		require_once P2_LIB_DIR . '/live/live_ShowThreadPc.php';
+        //どうせ表示しないので本体のShowThreadPcを使う
+		//require_once P2_LIB_DIR . '/live/live_ShowThreadPc.php';
         $aShowThread = new ShowThreadPc($aThread);
 
         if ($_conf['expack.spm.enabled']) {
@@ -293,23 +216,13 @@ if ($_conf['ktai']) {
         }
 
         $res1 = $aShowThread->quoteOne(); // >>1ポップアップ用
-        if ($_conf['coloredid.enable'] > 0 && $_conf['coloredid.click'] > 0 &&
-            $_conf['coloredid.rate.type'] > 0) {
-            if ($_GET['showbl']) {
-                $mainhtml = $aShowThread->datToHtml_resFrom(true);
-            } else {
-                $mainhtml .= $aShowThread->datToHtml(true);
-            }
-            $mainhtml .= $res1['q'];
-        } else {
-            if ($_GET['showbl']) {
-                $aShowThread->datToHtml_resFrom();
-            } else {
-                $aShowThread->datToHtml();
-            }
-            echo $res1['q'];
-        }
 
+        //呼ばないとIDカラーなどが反映されないので呼ぶが結果は表示しない
+        if ($_GET['showbl']) {
+            $aShowThread->getDatToHtml_resFrom();
+        } else {
+            $aShowThread->getDatToHtml();
+        }
 
         // レス追跡カラー
         if ($_conf['backlink_coloring_track']) {
@@ -319,10 +232,12 @@ if ($_conf['ktai']) {
         // IDカラーリング
         if ($_conf['coloredid.enable'] > 0 && $_conf['coloredid.click'] > 0) {
             echo $aShowThread->getIdColorJs();
-            // ブラウザ負荷軽減のため、CSS書き換えスクリプトの後でコンテンツを
-            // レンダリングさせる
-            echo $mainhtml;
         }
+
+        // 本文の代わり
+        echo <<<LIVE
+\n<div id="live_view"></div>\n
+LIVE;
 
         // 外部ツール
         $pluswiki_js = '';
@@ -374,7 +289,6 @@ EOP;
         }
 
     } elseif ($aThread->diedat && count($aThread->datochi_residuums) > 0) {
-        require_once P2_LIB_DIR . '/ShowThreadPc.php';
         $aShowThread = new ShowThreadPc($aThread);
         echo $aShowThread->getDatochiResiduums();
     }
