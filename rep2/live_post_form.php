@@ -124,60 +124,59 @@ if ((!$_conf['ktai'] && $_conf['expack.editor.savedraft']) ||
     echo <<<EOP
     <script type="text/javascript" src="js/post_draft.js?{$_conf['p2_version_id']}"></script>
 EOP;
-
-	// +live 書込規制用タイマー
-	if ($_GET['w_reg'] && $_conf['live.write_regulation']) {
-		$load_control = "cd_on()";
-		if ($_conf['live.write_regulation'] == 3) {
-			$count_down_second = "31";
-		} else if ($_conf['live.write_regulation'] == 2) {
-			$count_down_second = "21";
-		} else if ($_conf['live.write_regulation'] == 1) {
-			$count_down_second = "11";
-		}
-	} else {
-		$load_control = "cd_off()";
-		$count_down_second = "0";
-	}
-
-	echo <<<LIVE
-	<script language="javascript">
-	<!--
-	
-	var cd_timer;
-	var count_down;
-	var kakikomi_b = "<input id=\"kakiko_submit\" type=\"submit\" name=\"submit\" value=\"{$submit_value}\" tabindex=\"4\" accesskey=\"z\">";
-	
-	function cd_on() {
-		count_down = {$count_down_second}; // 書込規制時間
-		SetTimer();
-	}
-	
-	function cd_off() {
-		document.getElementById("write_regulation").innerHTML = kakikomi_b;
-	}
-	
-	function SetTimer() {
-	
-		count_down -= 1; // カウントダウン
-	
-		document.getElementById("write_reg_ato").innerHTML = "[あと";
-		document.getElementById("write_regulation").innerHTML = count_down; // 残秒表示
-		document.getElementById("write_reg_byou").innerHTML = "秒]";
-	
-		if (count_down < 1) {
-			clearTimeout(cd_timer); // タイマー終了
-			document.getElementById("write_reg_ato").innerHTML = "";
-			document.getElementById("write_regulation").innerHTML = kakikomi_b;
-			document.getElementById("write_reg_byou").innerHTML = "";
-		} else {
-			cd_timer = setTimeout('SetTimer()', 1000);
-		}
-	}
-	//-->
-	</script>
-LIVE;
 }
+// +live 書込規制用タイマー
+if ($_GET['w_reg'] && $_conf['live.write_regulation']) {
+    $load_control = "cd_on()";
+    if ($_conf['live.write_regulation'] == 3) {
+        $count_down_second = "31";
+    } else if ($_conf['live.write_regulation'] == 2) {
+        $count_down_second = "21";
+    } else if ($_conf['live.write_regulation'] == 1) {
+        $count_down_second = "11";
+    }
+} else {
+    $load_control = "cd_off()";
+    $count_down_second = "0";
+}
+
+echo <<<LIVE
+<script language="javascript">
+<!--
+
+var cd_timer;
+var count_down;
+var kakikomi_b = "<input id=\"kakiko_submit\" type=\"submit\" name=\"submit\" value=\"{$submit_value}\" tabindex=\"4\" accesskey=\"z\">";
+
+function cd_on() {
+    count_down = {$count_down_second}; // 書込規制時間
+    SetTimer();
+}
+
+function cd_off() {
+    document.getElementById("write_regulation").innerHTML = kakikomi_b;
+}
+
+function SetTimer() {
+
+    count_down -= 1; // カウントダウン
+
+    document.getElementById("write_reg_ato").innerHTML = "[あと";
+    document.getElementById("write_regulation").innerHTML = count_down; // 残秒表示
+    document.getElementById("write_reg_byou").innerHTML = "秒]";
+
+    if (count_down < 1) {
+        clearTimeout(cd_timer); // タイマー終了
+        document.getElementById("write_reg_ato").innerHTML = "";
+        document.getElementById("write_regulation").innerHTML = kakikomi_b;
+        document.getElementById("write_reg_byou").innerHTML = "";
+    } else {
+        cd_timer = setTimeout('SetTimer()', 1000);
+    }
+}
+//-->
+</script>
+LIVE;
 
 $body_on_load = <<<EOP
  onLoad="setFocus('MESSAGE'); checkSage(); {$load_control};"
