@@ -378,29 +378,10 @@ abstract class ShowThread
     /**
      * DatをHTML変換したものを取得する
      *
-     * @param   bool $is_fragment
-     * @return  bool|string
-     */
-    public function getDatToHtml($is_fragment = false)
-    {
-        return $this->datToHtml(true, $is_fragment);
-    }
-    public function getDatToHtml_resFrom($is_fragment = false)
-    {
-        return $this->datToHtml_resFrom(true, $is_fragment);
-    }
-
-    // }}}
-    // {{{ datToHtml()
-
-    /**
-     * DatをHTMLに変換して表示する
-     *
-     * @param   bool $capture       trueなら変換結果を出力せずに返す
      * @param   bool $is_fragment   trueなら<div class="thread"></div>で囲まない
      * @return  bool|string
      */
-    public function datToHtml($capture = false, $is_fragment = false)
+    public function getDatToHtml($is_fragment = false)
     {
         global $_conf, $filter_hits, $last_hit_resnum;
 
@@ -408,13 +389,8 @@ abstract class ShowThread
 
         // 表示レス範囲が指定されていなければ
         if (!$aThread->resrange) {
-            $error = '<p><b>p2 error: {$this->resrange} is false at datToHtml()</b></p>';
-            if ($capture) {
-                return $error;
-            } else {
-                echo $error;
-                return false;
-            }
+            $error = '<p><b>p2 error: {$this->resrange} is false at getDatToHtml()</b></p>';
+            return $error;
         }
 
         $start = $aThread->resrange['start'];
@@ -504,14 +480,6 @@ abstract class ShowThread
             } else {
                 $buf['body'] .= $res;
             }
-            if (!$capture && $n % 10 == 0) {
-                echo $buf['body'];
-                if ($do_filtering && !$is_ktai) {
-                    echo "<script type=\"text/javascript\">filterCount({$n});</script>\n";
-                }
-                flush();
-                $buf['body'] = '';
-            }
         }
 
         if ($this->thread->readnum < $rn) {
@@ -526,25 +494,18 @@ abstract class ShowThread
             $buf['body'] .= "</div>\n";
         }
 
-        if ($capture) {
-            return $buf['body'] . $buf['q'];
-        } else {
-            echo $buf['body'];
-            echo $buf['q'];
-            flush();
-            return true;
-        }
+        return $buf['body'] . $buf['q'];
+
     }
 
     /**
-     * 指定の書込みへのレスをHTMLに変換して表示する
+     * 指定の書込みへのレスをHTMLに変換したものを取得する
      *
-     * @param   bool $capture       trueなら変換結果を出力せずに返す
      * @param   bool $is_fragment   trueなら<div class="thread"></div>で囲まない
      * @param   bool $show_rootres  trueなら指定の書込みも結果に含める
      * @return  bool|string
      */
-    public function datToHtml_resFrom($capture = false, $is_fragment = false, $show_rootres = false)
+    public function getDatToHtml_resFrom($is_fragment = false, $show_rootres = false)
     {
         global $_conf;
 
@@ -554,12 +515,7 @@ abstract class ShowThread
         $target = $aThread->resrange['start'];
         if (!$aThread->resrange || $target != $aThread->resrange['to']) {
             $error = '<p><b>p2 error: {$this->resrange} is false at datToHtml()</b></p>';
-            if ($capture) {
-                return $error;
-            } else {
-                echo $error;
-                return false;
-            }
+            return $error;
         }
 
         $datlines = $aThread->datlines;
@@ -612,25 +568,13 @@ abstract class ShowThread
             } else {
                 $buf['body'] .= $res;
             }
-            if (!$capture && $n % 10 == 0) {
-                echo $buf['body'];
-                flush();
-                $buf['body'] = '';
-            }
         }
 
         if (!$is_fragment) {
             $buf['body'] .= "</div>\n";
         }
 
-        if ($capture) {
-            return $buf['body'] . $buf['q'];
-        } else {
-            echo $buf['body'];
-            echo $buf['q'];
-            flush();
-            return true;
-        }
+        return $buf['body'] . $buf['q'];
     }
 
     // }}}
