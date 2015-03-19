@@ -207,9 +207,10 @@ if ($_conf['ktai']) {
     //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection("datToHtml");
 
     if ($aThread->rescount) {
-        //どうせ表示しないので本体のShowThreadPcを使う
-		//require_once P2_LIB_DIR . '/live/live_ShowThreadPc.php';
-        $aShowThread = new ShowThreadPc($aThread);
+        // どうせ表示しないので本体のShowThreadPcを使う
+        // 表示しない内容を全部作るのもアレなので最低限の出力のShowThreadLiveに変更
+		require_once P2_LIB_DIR . '/live/live_ShowThreadLive.php';
+        $aShowThread = new ShowThreadLive($aThread);
 
         if ($_conf['expack.spm.enabled']) {
             echo $aShowThread->getSpmObjJs();
@@ -217,7 +218,7 @@ if ($_conf['ktai']) {
 
         $res1 = $aShowThread->quoteOne(); // >>1ポップアップ用
 
-        //呼ばないとIDカラーなどが反映されないので呼ぶが結果は表示しない
+        // 呼ばないとIDカラーなどが反映されないので呼ぶが結果は表示しない
         if ($_GET['showbl']) {
             $aShowThread->getDatToHtml_resFrom();
         } else {
