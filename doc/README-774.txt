@@ -36,6 +36,17 @@ rep2-expack test https://github.com/orzisun/p2-php
  本家p2と同じく、X11ライセンスです。
 
 ●ChangeLog
+150320.1020
+・ポップアップから書き込み成功した後にスレを再読み込みしない設定を追加
+・実況モードからの書き込みでCookie確認が発生した場合実況モードに戻れない不具合を修正
+・メンテナンス性を向上させるためlive_ShowThreadPc.phpとlive_ShowThread.phpの代わりに
+live_ShowThreadLive.phpと本体のShowThread.phpを使用するように変更
+・下書き保存(expack.editor.savedraft)が無効なときに実況モードから書き込めない不具合を修正
+・スレタイ検索でWarningが出る不具合を修正
+
+150317.1200
+・その他諸々
+
 150316.1120
 ・3ペイン表示の配置を変更できる設定を追加
 ・Beのアイコンを表示できるようにした

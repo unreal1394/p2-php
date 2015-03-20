@@ -660,7 +660,14 @@ function showPostMsg($isDone, $result_msg, $reload)
             $popup_ht = <<<EOJS
 <script type="text/javascript">
 //<![CDATA[
+
+EOJS;
+            if ($_conf['res_popup_reload']) {
+                $popup_ht .= <<<EOJS
     opener.location.href = "{$location_noenc}";
+EOJS;
+            }
+            $popup_ht .= <<<EOJS
     var delay= 3*1000;
     setTimeout("window.close()", delay);
 //]]>

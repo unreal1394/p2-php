@@ -416,6 +416,7 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('rct_rec_num', '最近読んだスレの記録数'),
         array('res_hist_rec_num', '書き込み履歴の記録数'),
         array('res_write_rec', '書き込み内容ログを記録'),
+        array('res_popup_reload', 'ポップアップから書き込み成功したらスレを再読み込みする'),
         array('through_ime', '外部URLジャンプする際に通すゲート<br>「直接」でもCookieが使えない端末では gate.php を通す'),
         array('through_ime_http_only', ' HTTPSでアクセスしているときは外部URLゲートを通さない<br>(最近のWebブラウザの多くは https → http の遷移でRefererを送出しませんが、<br>「HTTPSでは直」にする場合は、お使いのブラウザの仕様を確認してください)'),
         array('ime_manual_ext', 'ゲートで自動転送しない拡張子（カンマ区切りで、拡張子の前のピリオドは不要）'),

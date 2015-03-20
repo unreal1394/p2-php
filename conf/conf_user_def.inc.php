@@ -459,6 +459,10 @@ $conf_user_rules['res_hist_rec_num'] = array('notIntExceptMinusToDef');
 $conf_user_def['res_write_rec'] = 1; // (1)
 $conf_user_rad['res_write_rec'] = array('1' => 'する', '0' => 'しない');
 
+// ポップアップから書き込み成功したらスレを再読み込みする(する:1, しない:0)
+$conf_user_def['res_popup_reload'] = 1; // (1)
+$conf_user_rad['res_popup_reload'] = array('1' => 'する', '0' => 'しない');
+
 // 外部URLジャンプする際に通すゲート
 // 「直接」でもCookieが使えない端末では gate.php を通す
 $conf_user_def['through_ime'] = "exm"; // ("exm") 
