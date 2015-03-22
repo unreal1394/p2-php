@@ -119,7 +119,7 @@ class ReplaceWordCtl
         $mail    = $resar[1];
         $date_id = $resar[2];
         $msg     = $resar[3];
-        
+
         switch ($cont) {
             case 'name':
                 $word = $name;
@@ -169,19 +169,15 @@ class ReplaceWordCtl
             これ自体に正規表現が入っていたらどうしよう。
             実質的に使うのは$i, $host, $bbs, $key, $date_idくらいだから問題ないだろうけど。
             */
-            $v['replace'] = str_replace ('$ttitle_hd', $aThread->ttitle_hd, $v['replace']);
-            $v['replace'] = str_replace ('$ttitle',    $aThread->ttitle, $v['replace']);
-            $v['replace'] = str_replace ('$host',      $aThread->host, $v['replace']);
-            $v['replace'] = str_replace ('$bbs',       $aThread->bbs,  $v['replace']);
-            $v['replace'] = str_replace ('$key',       $aThread->key,  $v['replace']);
-            // $v['replace'] = str_replace ('$name',      $name,  $v['replace']);
-            // $v['replace'] = str_replace ('$mail',      $mail,  $v['replace']);
-            // $v['replace'] = str_replace ('$date_id',   $date_id,  $v['replace']);
-            // $v['replace'] = str_replace ('$msg',       $msg,  $v['replace']);
-            $v['replace'] = str_replace ('$id_base64', base64_encode($id),  $v['replace']);
-            $v['replace'] = str_replace ('$id',        $id,  $v['replace']);
-            $v['replace'] = str_replace ('$i',         $i, $v['replace']);
-
+            $v['replace'] = strtr($v['replace'], array(
+                    '$ttitle_hd' => $aThread->ttitle_hd,
+                    '$host' => $aThread->host,
+                    '$bbs' => $aThread->bbs,
+                    '$key' => $aThread->key,
+                    '$id' => $id,
+                    '$id_base64' => base64_encode($id),
+                    '$i' => $i
+            ));
             $word = @preg_replace ('{'.$v['match'].'}', $v['replace'], $word);
         }
 

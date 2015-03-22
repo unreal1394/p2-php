@@ -364,7 +364,7 @@ EOJS;
         global $_conf;
 
         $resar = $this->thread->explodeDatLine($ares);
-        $name = $this->transName($resar[0]);
+        $name = $resar[0];
         $mail = $resar[1];
         if (($id = $this->thread->ids[$i]) !== null) {
             $idstr = 'ID:' . $id;
@@ -374,6 +374,17 @@ EOJS;
             $date_id = $resar[2];
         }
         $msg = $this->transMsg($resar[3], $i);
+
+        // +Wiki:置換ワード
+        if (isset($GLOBALS['replaceWordCtl'])) {
+            $replaceWordCtl = $GLOBALS['replaceWordCtl'];
+            $name    = $replaceWordCtl->replace('name', $this->thread, $ares, $i);
+            $mail    = $replaceWordCtl->replace('mail', $this->thread, $ares, $i);
+            $date_id = $replaceWordCtl->replace('date', $this->thread, $ares, $i);
+            $msg     = $replaceWordCtl->replace('msg',  $this->thread, $ares, $i);
+        }
+
+        $name = $this->transName($name); // 名前HTML変換
 
         $tores = '';
 

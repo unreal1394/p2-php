@@ -59,6 +59,11 @@ class P2Util
     static private $_hostIsVip2ch = array();
 
     /**
+     * isHost2chSc()のキャッシュ
+     */
+    static private $_hostIs2chSc = array();
+
+    /**
      * P2Imeオブジェクト
      *
      * @var P2Ime
@@ -975,6 +980,23 @@ class P2Util
     {
         return preg_replace('<(^|/)jbbs\\.(?:shitaraba|livedoor)\\.(?:net|com)(/|$)>', '\\1jbbs.shitaraba.net\\2', $in_str, 1);
         //return preg_replace('<(^|/)jbbs\\.(?:shitaraba\\.com|livedoor\\.(?:com|jp))(/|$)>', '\\1rentalbbs.livedoor.com\\2', $in_str, 1);
+    }
+
+    // }}}
+    // {{{ isHost2chSc()
+
+    /**
+     * host が 2ch.sc なら true を返す
+     *
+     * @param string $host
+     * @return  boolean
+     */
+    static public function isHost2chSc($host)
+    {
+        if (!array_key_exists($host, self::$_hostIs2chSc)) {
+            self::$_hostIs2chSc[$host] = (bool)preg_match('/\\.(2ch\\.sc)$/', $host);
+        }
+        return self::$_hostIs2chSc[$host];
     }
 
     // }}}

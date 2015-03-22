@@ -161,7 +161,7 @@ foreach ($threads as $o => $t) {
 <tr class="<?php echo $R ? 'r1 r_odd' : 'r2 r_even'; $R = !$R; ?>">
     <td class="ti"><?php echo $nnum; ?></td>
     <td class="ti"><?php echo $rnum; ?></td>
-    <td class="ti"><?php echo $o; ?></td>
+    <td class="ti"><?php echo $o+1; ?></td>
     <td class="tl"><a href="<?php echo $ourl; ?>" class="moto_thre" onmouseover="showMotoLsPopUp(event, this, this.nextSibling.innerText)" onmouseout="hideMotoLsPopUp()" target="read">ÅE</a><a href="<?php echo $turl; ?>" target="read"><?php echo $t->title; ?></a></td>
     <td class="t"><a href="<?php echo $burl; ?>"><?php echo $t->ita; ?></a></td>
     <td class="t"><?php echo date('y/m/d', $t->tkey); ?></td>
