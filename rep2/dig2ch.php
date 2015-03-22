@@ -10,7 +10,7 @@ function dig2chsearch($query)
 	$query_arry['q'] = urlencode($query_arry['q']);
 
 	$client = new HTTP_Client();
-	$client->setDefaultHeader('User-Agent', 'p2-tgrep-client');
+	$client->setDefaultHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.4; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko');
 	$code = $client->get($_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q']);
 	if (PEAR::isError($code)) {
 		p2die($code->getMessage());
@@ -19,34 +19,38 @@ function dig2chsearch($query)
 	}
 	$response = $client->currentResponse();
 
-	$jsontest1 = json_decode($response['body'], true);
+    // æ•û‚ÌI‚Å‰½‚©áŠQ‚ª”­¶‚µ‚½‚çJSON‚ÉHTML‚ÌƒRƒƒ“ƒg‚ª¬‚´‚é‚Ì‚Å‚»‚Ì‘Îô
+    $body = preg_replace("/<\!--.*-->/", "", $response['body']);
+
+	$jsontest1 = json_decode($body, true);
 
 	//mb_convert_variables('SHIFT-JIS','UTF-8',$jsontest1);
-	/* switch (json_last_error()) {
+    $jsonerror = "";
+	switch (json_last_error()) {
 		case JSON_ERROR_NONE:
-			echo ' - No errors';
+			$jsonerror = ' - No errors';
 			break;
 		case JSON_ERROR_DEPTH:
-			echo ' - Maximum stack depth exceeded';
+			$jsonerror = ' - Maximum stack depth exceeded';
 			break;
 		case JSON_ERROR_STATE_MISMATCH:
-			echo ' - Underflow or the modes mismatch';
+			$jsonerror = ' - Underflow or the modes mismatch';
 			break;
 		case JSON_ERROR_CTRL_CHAR:
-			echo ' - Unexpected control character found';
+			$jsonerror = ' - Unexpected control character found';
 			break;
 		case JSON_ERROR_SYNTAX:
-			echo ' - Syntax error, malformed JSON';
+			$jsonerror = ' - Syntax error, malformed JSON';
 			break;
 		case JSON_ERROR_UTF8:
-			echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+			$jsonerror = ' - Malformed UTF-8 characters, possibly incorrectly encoded';
 			break;
 		default:
-			echo ' - Unknown error';
+			$jsonerror = ' - Unknown error';
 			break;
-	} */
+	}
 	if ($jsontest1 === NULL) {
-		p2die("ŒŸõŒ‹‰Ê‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½");
+		p2die("ŒŸõŒ‹‰Ê‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½".$jsonerror);
 	}
 
 	foreach ($jsontest1[result] as $jsontest2) {
