@@ -1093,7 +1093,7 @@ EOP;
                             } else {
                                 $prv_onload = '';
                             }
-                            $img_str = "<img src=\"{$prv_url}\"{$prv_onload}>";
+                            $img_str = "<img src=\"{$prv_url}\"{$prv_onload} width=\"{$prv_size[0]}\" height=\"{$prv_size[1]}\">";
                         }
                         $inline_preview_done = true;
                     } else {
@@ -1137,7 +1137,7 @@ EOP;
                 // インラインプレビューが有効で、サムネイル表示制限数以内なら
                 if ($this->thumbnailer->ini['General']['inline'] == 1 && $inline_preview_flag) {
                     $rank_str = ($rank !== null) ? '&rank=' . $rank : '';
-                    $img_str = "<img src=\"ic2.php?r=2&amp;t=1&amp;uri={$url_en}{$this->img_memo_query}{$rank_str}\">";
+                    $img_str = "<img src=\"ic2.php?r=2&amp;t=1&amp;uri={$url_en}{$this->img_memo_query}{$rank_str}\" width=\"{$prvw_size[0]}\" height=\"{$prvw_size[1]}\">";
                     $inline_preview_done = true;
                 } else {
                     $img_url .= $this->img_memo_query;
@@ -1288,7 +1288,7 @@ EOP;
                             } else {
                                 $prv_onload = '';
                             }
-                            $img_str = "<img src=\"{$prv_url}\"{$prv_onload}>";
+                            $img_str = "<img src=\"{$prv_url}\"{$prv_onload} width=\"{$prvw_size[0]}\" height=\"{$prvw_size[1]}\">";
                         }
                         $inline_preview_done = true;
                     } else {
@@ -1333,7 +1333,7 @@ EOP;
                 // インラインプレビューが有効で、サムネイル表示制限数以内なら
                 if ($this->thumbnailer->ini['General']['inline'] == 1 && $inline_preview_flag) {
                     $rank_str = ($rank !== null) ? '&rank=' . $rank : '';
-                    $img_str = "<img src=\"ic2.php?r=2&amp;t=1&amp;uri={$url_en}{$this->img_memo_query}{$rank_str}{$ref_en}\">";
+                    $img_str = "<img src=\"ic2.php?r=2&amp;t=1&amp;uri={$url_en}{$this->img_memo_query}{$rank_str}{$ref_en}\" width=\"{$prvw_size[0]}\" height=\"{$prvw_size[1]}\">";
                     $inline_preview_done = true;
                 } else {
                     $img_url .= $this->img_memo_query;
