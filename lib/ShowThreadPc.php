@@ -363,17 +363,13 @@ EOJS;
     {
         global $_conf;
 
-        $resar = $this->thread->explodeDatLine($ares);
-        $name = $resar[0];
-        $mail = $resar[1];
+        list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($ares);
         if (($id = $this->thread->ids[$i]) !== null) {
             $idstr = 'ID:' . $id;
-            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $resar[2]);
+            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $date_id);
         } else {
             $idstr = null;
-            $date_id = $resar[2];
         }
-        $msg = $this->transMsg($resar[3], $i);
 
         // +Wiki:置換ワード
         if (isset($GLOBALS['replaceWordCtl'])) {
@@ -385,6 +381,7 @@ EOJS;
         }
 
         $name = $this->transName($name); // 名前HTML変換
+        $msg = $this->transMsg($msg, $i); // メッセージHTML変換
 
         $tores = '';
 
