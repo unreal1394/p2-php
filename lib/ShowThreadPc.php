@@ -136,14 +136,6 @@ class ShowThreadPc extends ShowThread
     {
         global $_conf, $STYLE, $mae_msg, $highlight_msgs, $highlight_chain_nums;
 
-        list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($ares);
-        if (($id = $this->thread->ids[$i]) !== null) {
-            $idstr = 'ID:' . $id;
-            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $date_id);
-        } else {
-            $idstr = null;
-        }
-
         // +Wiki:置換ワード
         if (isset($GLOBALS['replaceWordCtl'])) {
             $replaceWordCtl = $GLOBALS['replaceWordCtl'];
@@ -151,6 +143,15 @@ class ShowThreadPc extends ShowThread
             $mail    = $replaceWordCtl->replace('mail', $this->thread, $ares, $i);
             $date_id = $replaceWordCtl->replace('date', $this->thread, $ares, $i);
             $msg     = $replaceWordCtl->replace('msg',  $this->thread, $ares, $i);
+        } else {
+            list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($ares);
+        }
+
+        if (($id = $this->thread->ids[$i]) !== null) {
+            $idstr = 'ID:' . $id;
+            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $date_id);
+        } else {
+            $idstr = null;
         }
 
 		// +live (live.bbs_noname) 用 
@@ -363,14 +364,6 @@ EOJS;
     {
         global $_conf;
 
-        list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($ares);
-        if (($id = $this->thread->ids[$i]) !== null) {
-            $idstr = 'ID:' . $id;
-            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $date_id);
-        } else {
-            $idstr = null;
-        }
-
         // +Wiki:置換ワード
         if (isset($GLOBALS['replaceWordCtl'])) {
             $replaceWordCtl = $GLOBALS['replaceWordCtl'];
@@ -378,6 +371,15 @@ EOJS;
             $mail    = $replaceWordCtl->replace('mail', $this->thread, $ares, $i);
             $date_id = $replaceWordCtl->replace('date', $this->thread, $ares, $i);
             $msg     = $replaceWordCtl->replace('msg',  $this->thread, $ares, $i);
+        } else {
+            list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($ares);
+        }
+
+        if (($id = $this->thread->ids[$i]) !== null) {
+            $idstr = 'ID:' . $id;
+            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $date_id);
+        } else {
+            $idstr = null;
         }
 
         $name = $this->transName($name); // 名前HTML変換

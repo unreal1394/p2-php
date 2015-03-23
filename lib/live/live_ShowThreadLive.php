@@ -33,14 +33,6 @@ class ShowThreadLive extends ShowThreadPc
     {
         global $_conf, $STYLE, $mae_msg;
 
-        list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($ares);
-        if (($id = $this->thread->ids[$i]) !== null) {
-            $idstr = 'ID:' . $id;
-            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $date_id);
-        } else {
-            $idstr = null;
-        }
-
         // +Wiki:置換ワード
         if (isset($GLOBALS['replaceWordCtl'])) {
             $replaceWordCtl = $GLOBALS['replaceWordCtl'];
@@ -48,6 +40,15 @@ class ShowThreadLive extends ShowThreadPc
             $mail    = $replaceWordCtl->replace('mail', $this->thread, $ares, $i);
             $date_id = $replaceWordCtl->replace('date', $this->thread, $ares, $i);
             $msg     = $replaceWordCtl->replace('msg',  $this->thread, $ares, $i);
+        } else {
+            list($name, $mail, $date_id, $msg) = $this->thread->explodeDatLine($ares);
+        }
+
+        if (($id = $this->thread->ids[$i]) !== null) {
+            $idstr = 'ID:' . $id;
+            $date_id = str_replace($this->thread->idp[$i] . $id, $idstr, $date_id);
+        } else {
+            $idstr = null;
         }
 
         $tores = '';
@@ -77,38 +78,19 @@ class ShowThreadLive extends ShowThreadPc
         }
 
         //=============================================================
-        // レスをポップアップ表示
-        //=============================================================
-        if ($_conf['quote_res_view']) {
-            $quote_res_nums = $this->checkQuoteResNums($i, $name, $msg);
-
-            foreach ($quote_res_nums as $rnv) {
-                if (!isset($this->_quote_res_nums_done[$rnv])) {
-                    $this->_quote_res_nums_done[$rnv] = true;
-                    if (isset($this->thread->datlines[$rnv-1])) {
-                        if ($this->_matome) {
-                            $qres_id = "t{$this->_matome}qr{$rnv}";
-                        } else {
-                            $qres_id = "qr{$rnv}";
-                        }
-                        $ds = $this->qRes($this->thread->datlines[$rnv-1], $rnv);
-                        $onPopUp_at = " onmouseover=\"showResPopUp('{$qres_id}',event)\" onmouseout=\"hideResPopUp('{$qres_id}')\"";
-                        $rpop .= "<div id=\"{$qres_id}\" class=\"respopup\"{$onPopUp_at}>\n{$ds}</div>\n";
-                    }
-                }
-            }
-        }
-
-        //=============================================================
         // まとめて出力
         //=============================================================
 
         $name = $this->transName($name); // 名前HTML変換
         $msg = $this->transMsg($msg, $i); // メッセージHTML変換
 
-
         // BEプロファイルリンク変換
         $date_id = $this->replaceBeId($date_id, $i);
+
+        // IDフィルタ
+        if ($_conf['flex_idpopup'] == 1 && $id && $this->thread->idcount[$id] > 1) {
+            $date_id = str_replace($idstr, $this->idFilter($idstr, $id), $date_id);
+        }
 
         // HTMLポップアップ
         if ($_conf['iframe_popup']) {
