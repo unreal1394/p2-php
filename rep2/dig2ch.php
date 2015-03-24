@@ -9,21 +9,35 @@ function dig2chsearch($query)
     //$query_q = preg_replace('/(\s+)/' , '\+' ,$query_arry['q']);
     $query_arry['q'] = urlencode($query_arry['q']);
 
-    $client = new HTTP_Client();
-    $client->setDefaultHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.4; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko');
-    $code = $client->get($_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q']);
-    if (PEAR::isError($code)) {
-        p2die($code->getMessage());
-    } elseif ($code != 200) {
-        p2die("HTTP Error - {$code}");
+    $url = $_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q'];
+    $params = array();
+    $params['timeout'] = $_conf['http_conn_timeout'];
+    $params['readTimeout'] = array($_conf['http_read_timeout'], 0);
+    if ($_conf['proxy_use']) {
+        $params['proxy_host'] = $_conf['proxy_host'];
+        $params['proxy_port'] = $_conf['proxy_port'];
     }
-    $response = $client->currentResponse();
 
-    $body = $response['body'];
+    $req = new HTTP_Request($url, $params);
+    $req->addHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.4; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko');
+
+    $response = $req->sendRequest();
+
+    if (PEAR::isError($response)) {
+        p2die($response->getMessage());
+    } else {
+        $code = $req->getResponseCode();
+        if ($code != 200) {
+            p2die("HTTP Error - {$code}");
+        }
+    }
+
+    $body = $req->getResponseBody();
+
     // æ•û‚ÌI‚Å‰½‚©áŠQ‚ª”­¶‚µ‚½‚çJSON‚ÉHTML‚ÌƒRƒƒ“ƒg‚ª¬‚´‚é‚Ì‚Å‚»‚Ì‘Îô
     if (strpos($body,"<!--") !== false)
     {
-        $body = preg_replace("/<\!--.*-->/", "", $body);
+        $body = preg_replace("/<\!--.*?-->/", "", $body);
     }
 
     $jsontest1 = json_decode($body, true);
