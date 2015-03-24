@@ -36,7 +36,7 @@ function login2ch()
             return false;
         }
     } else {
-        $x_2ch_ua = 'X-2ch-UA: ' . $_conf['p2ua'];
+        $x_2ch_ua = 'X-2ch-UA: ' . P2Util::getP2UA(false,false);
     }
 
     // ”O‚Ì‚½‚ß‚ ‚ç‚©‚¶‚ßtempƒtƒ@ƒCƒ‹‚ğœ‹‚µ‚Ä‚¨‚­

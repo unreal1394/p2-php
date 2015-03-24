@@ -246,7 +246,9 @@ class P2HttpGet extends HttpRequest
         }
 
         if (!isset($options['useragent'])) {
-            $options['useragent'] = "Monazilla/1.00 ({$_conf['p2ua']})";
+            $purl = parse_url($url); // URL•ª‰ð
+            $options['useragent'] = P2Util::getP2UA(true,P2Util::isHost2chs($purl['host']));
+            unset($purl);
         }
 
         if ($_conf['proxy_use'] && !isset($options['proxyhost']) && !empty($_conf['proxy_host'])) {

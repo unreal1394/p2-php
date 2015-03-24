@@ -59,7 +59,7 @@ function p2GetRSS($remotefile, $atom = 0)
     // キャッシュが更新されなかったか、ダウンロード成功ならRSSをパース
     if (file_exists($localpath) && (!isset($dl) || $dl->isSuccess())) {
         if ($atom) {
-            $atom = (isset($dl) && $dl->code == 200) ? 2 : 1;
+            $atom = (isset($dl) && $dl->getStatus() == 200) ? 2 : 1;
         }
         $rss = p2ParseRSS($localpath, $atom);
         return $rss;

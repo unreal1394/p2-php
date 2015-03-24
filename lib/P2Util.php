@@ -261,48 +261,58 @@ class P2Util
             $modified = false;
         }
 
-        // DL
-        $wap_ua = new WapUserAgent();
-        $wap_ua->setTimeout($_conf['http_conn_timeout'], $_conf['http_read_timeout']);
-        $wap_ua->setAtFsockopen(true);
-        $wap_req = new WapRequest();
-        $wap_req->setUrl($url);
-        $wap_req->setModified($modified);
-        if ($_conf['proxy_use']) {
-            $wap_req->setProxy($_conf['proxy_host'], $_conf['proxy_port']);
-        }
-        $wap_res = $wap_ua->request($wap_req);
+        try {
+            // DL
+            $req = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
+            $purl = parse_url($url); // URL分解
+            $req->setHeader('User-Agent', self::getP2UA(true,self::isHost2chs($purl['host'])));
+            unset($purl);
 
-        // 1段階だけリダイレクトを追跡
-        if ($wap_res->isRedirect() && array_key_exists('Location', $wap_res->headers) &&
-            ($trace_redirection === true || $trace_redirection == $wap_res->code))
-        {
-            $wap_req->setUrl($wap_res->headers['Location']);
-            $wap_res = $wap_ua->request($wap_req);
-        }
+            $req->setConfig(array(
+                    'connect_timeout'  => $_conf['http_conn_timeout'],
+                    'timeout'          => $_conf['http_read_timeout'],
+                    'follow_redirects' => $trace_redirection,
+            ));
 
-        // エラーメッセージを設定
-        if ($wap_res->isError() && $disp_error) {
-            $url_t = self::throughIme($wap_req->url);
-            $info_msg_ht = "<p class=\"info-msg\">Error: {$wap_res->code} {$wap_res->message}<br>";
-            if ($wap_res->isRedirect() && array_key_exists('Location', $wap_res->headers)) {
-                $location = $wap_res->headers['Location'];
-                $location_ht = p2h($location);
-                $location_t = self::throughIme($location);
-                $info_msg_ht .= "Location: <a href=\"{$location_t}\"{$_conf['ext_win_target_at']}>{$location_ht}</a><br>";
+            if ($_conf['proxy_use']) {
+                $req->setConfig(array(
+                        ‘proxy_host’ => $_conf['proxy_host'],
+                        ‘proxy_port’ => $_conf['proxy_port'],
+                ));
             }
-            $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$wap_req->url}</a> に接続できませんでした。</p>";
-            self::pushInfoHtml($info_msg_ht);
+
+            $response = $req->send();
+
+            $code = $response->getStatus();
+            if (!($code == 200 || $code == 206 || $code == 304)) {
+                $error_msg = $code;
+            }
+            $body = $response->getBody();
+
+        } catch (Exception $e) {
+            $error_msg = $e->getMessage();
         }
 
-        // 更新されていたら
-        if ($wap_res->isSuccess() && $wap_res->code != 304) {
-            if (FileCtl::file_write_contents($localfile, $wap_res->content) === false) {
+        // エラーが出たらnullを返して終わり
+        if (isset($error_msg) && strlen($error_msg) > 0) {
+            // エラーメッセージを設定
+            if ($disp_error) {
+                $url_t = P2Util::throughIme($url);
+                $info_msg_ht = "<p class=\"info-msg\">Error: {$error_msg}<br>";
+                $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$url}</a> に接続できませんでした。</p>";
+                P2Util::pushInfoHtml($info_msg_ht);
+            }
+            return null;
+        }
+
+        // 更新されていたら保存
+        if ($code != 304) {
+            if (FileCtl::file_write_contents($localfile, $body) === false) {
                 p2die('cannot write file.');
             }
         }
 
-        return $wap_res;
+        return $response;
     }
 
     // }}}
@@ -2120,16 +2130,44 @@ ERR;
     }
 
     // }}}
-    // {{{
+    // {{{ getP2UA()
+    /**
+     * p2又はAPIのUAを返す
+     * @param   bool $withMonazilla trueならMonazilla/1.00を付ける
+     * @param   bool $apiUA trueで尚且つAPIが利用可能なときにAPIのUAを返す
+     * @return  string
+     */
+    static public function getP2UA($withMonazilla = true,$apiUA = false)
+    {
+        global $_conf;
+
+        // APIを使用する設定の場合はAPIのUAを返す
+        if ($apiUA && $_conf['2chapi_use'] == 1) {
+            if ($_conf['2chapi_appname'] != "") {
+                $p2ua = $_conf['2chapi_appname'];
+            } else {
+                p2die("2chと通信するために必要な情報が設定されていません。");
+            }
+
+        } else {
+            $p2ua = $_conf['p2ua'];
+        }
+
+        if ($withMonazilla) {
+            $p2ua = 'Monazilla/1.00' . ' (' . $p2ua . ')';
+        }
+        return $p2ua;
+    }
+    // {{{ isEnableBe2ch()
     /**
      * beが使用可能な設定か調べる
      * @access  public
      * @return  boolean
      */
-    function isEnableBe2ch()
+    static public function isEnableBe2ch()
     {
         global $_conf;
-        
+
         if (
             strlen($_conf['be_2ch_password']) && $_conf['be_2ch_mail']
             || strlen($_conf['be_2ch_DMDM']) && $_conf['be_2ch_MDMD']
@@ -2149,7 +2187,7 @@ ERR;
      * @access  public
      * @return  array|false|null  認証コード配列|認証できなかった|無設定だった
      */
-    function getBe2chCodeWithUserConf()
+    static public function getBe2chCodeWithUserConf()
     {
         global $_conf;
 
@@ -2172,7 +2210,7 @@ ERR;
      * @access  private
      * @return  array|string 成功|エラーメッセージ
      */
-    function getBe2chCodeByMailPass($mail, $pass)
+    static public function getBe2chCodeByMailPass($mail, $pass)
     {
         global $_conf;
 

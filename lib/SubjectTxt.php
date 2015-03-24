@@ -97,17 +97,7 @@ class SubjectTxt
         $modified && $req->addHeader("If-Modified-Since", $modified);
 
         // APIを使用する設定で相手が2chだったらAPIのUAを送る
-        if(P2Util::isHost2chs($this->host) && $_conf['2chapi_use'] == 1) {
-            if($_conf['2chapi_appname'] != "") {
-                $req->addHeader('User-Agent', "Monazilla/1.00 ({$_conf['2chapi_appname']})");
-            } else {
-                $info_msg_ht = "<p class=\"info-msg\">Error: 2ch と通信するために必要な情報が設定されていません。</p>";
-                P2Util::pushInfoHtml($info_msg_ht);
-                return;
-            }
-        } else {
-            $req->addHeader('User-Agent', "Monazilla/1.00 ({$_conf['p2ua']})");
-        }
+        $req->addHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($this->host)));
 
         $response = $req->sendRequest();
 
