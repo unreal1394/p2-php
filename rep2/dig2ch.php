@@ -74,6 +74,9 @@ function dig2chsearch($query)
         p2die("ŒŸõŒ‹‰Ê‚ÌŽæ“¾‚ÉŽ¸”s‚µ‚Ü‚µ‚½".$jsonerror);
     }
 
+    $boards = array();
+    $hits = array();
+    $names = array();
     foreach ($jsontest1[result] as $jsontest2) {
         $result['threads'][$n1] = new stdClass;
         $result['threads'][$n1]->title = $jsontest2[subject];
@@ -84,6 +87,18 @@ function dig2chsearch($query)
         $result['threads'][$n1]->ita = $jsontest2[ita];
         $result['threads'][$n1]->dayres = $jsontest2[ikioi];
         $n1++;
+        $bkey = md5($jsontest2['server'].'-'.$jsontest2['bbs'].'-'.$jsontest2['ita']);
+        if (! isset($boards[$bkey])) {
+            $board = new stdClass;
+            $board->host = $jsontest2['server'];
+            $board->bbs = $jsontest2['bbs'];
+            $names[$bkey] = $board->name = $jsontest2['ita'];
+            $hits[$bkey] = $board->hits = 1;
+            $boards[$bkey] = $board;
+        } else {
+            $hits[$bkey] = ++$boards[$bkey]->hits;
+            $names[$bkey] = $boards[$bkey]->name;
+        }
     }
     $result['modified'] = isset($response['body']['date'])? $response['body']['date'] : '';
     $result['profile']['regex'] = '/(' . $jsontest1[query] .')/i';
@@ -99,6 +114,9 @@ function dig2chsearch($query)
     $result['profile']['cm2'] = str_replace("a href=" , "a target=\"_blank\" href=", $jsontest1[cm2]);
     if (strstr($result['profile']['cm2'] , "rounin")) { $result['profile']['cm2'] = str_replace("src=\"" , "src=\"http://dig.2ch.net", $result['profile']['cm2']);}
     $result['profile']['cm2'] = str_replace("<br></a>" , "</a>", $result['profile']['cm2']);
+    array_multisort($hits, SORT_DESC, $names, $boards);
+    $result['profile']['boards'] = $boards;
+    unset($boards,$hits,$names);
 
     return $result;
 }
