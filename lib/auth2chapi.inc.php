@@ -24,71 +24,86 @@
         $login2chPW = "";
         $message = $AppKey.$CT;
         $HB = hash_hmac("sha256", $message, $HMKey);
-        
+
         if(empty($AppKey) || empty($AppName) || empty($HMKey)) {
             P2Util::pushInfoHtml("<p>p2 Error: 2ch API の認証に必要な情報が設定されていません。</p>");
             return '';
         }
-        
+
         if ($_conf['2chapi_rounin'] == 1&& $array = P2Util::readIdPw2ch()) {
             list($login2chID, $login2chPW, $autoLogin2ch) = $array;
         }
-        
-        $values = array(
-            'ID' => $login2chID,
-            'PW' => $login2chPW,
-            'KY' => $AppKey,
-            'CT' => $CT,
-            'HB' => $HB,
-        );
-        $options = array('http' => array(
-            'ignore_errors' => true,
-            'method' => 'POST',
-            'header' => implode("\r\n", array(
-                'User-Agent: '.$AuthUA,
-                'X-2ch-UA: '.$AppName,
-                'Content-Type: application/x-www-form-urlencoded',
-            )),
-            'content' => http_build_query($values),
-        ));
-        
-        // プロキシ
-        if ($_conf['proxy_use']) {
-            $options['http'] += array('proxy' => 'tcp://'.$_conf['proxy_host'].":".$_conf['proxy_port']);
-            $options['http'] += array('request_fulluri' => true);
-            $options['ssl'] = array('SNI_enabled' => false);
+
+        try {
+            $req = new HTTP_Request2($url,HTTP_Request2::METHOD_POST);
+            $req->setHeader('User-Agent', $AuthUA);
+            $req->setHeader('X-2ch-UA', $AppName);
+            $req->setAdapter($_conf['ssl_function']);
+            // プロキシ
+            if ($_conf['proxy_use']) {
+                $req->setConfig(array(
+                        ‘proxy_host’ => $_conf['proxy_host'],
+                        ‘proxy_port’ => $_conf['proxy_port'],
+                ));
+            }
+            $req->addPostParameter('ID', $login2chID);
+            $req->addPostParameter('PW', $login2chPW);
+            $req->addPostParameter('KY', $AppKey);
+            $req->addPostParameter('CT', $CT);
+            $req->addPostParameter('HB', $HB);
+
+            // POSTデータの送信
+            $res = $req->send();
+
+            $code = $res->getStatus();
+            if ($code =! 200) {
+                P2Util::pushInfoHtml("<p>p2 Error: HTTP Error({$code})</p>");
+            } else {
+                $body = $res->getBody();
+            }
+        } catch (Exception $e) {
+            P2Util::pushInfoHtml("<p>p2 Error: 2ch API の認証サーバに接続出来ませんでした。({$e->getMessage()})</p>");
         }
-        
-        $response = '';
-        $response = file_get_contents($url, false, stream_context_create($options));
-        
+
         if(file_exists($_conf['sid2chapi_php'])) {
             unlink($_conf['sid2chapi_php']);
         }
-        
-        if (strpos($response, ':') != false)
+
+        // 接続失敗ならば
+        if (empty($body)) {
+            P2Util::pushInfoHtml('<p>p2 info: 2ちゃんねるのAPIを使用するには、PHPの<a href="'.
+                    P2Util::throughIme("http://www.php.net/manual/ja/ref.curl.php").
+                    '">cURL関数</a>又は<a href="'.
+                    P2Util::throughIme("http://www.php.net/manual/ja/ref.openssl.php").
+                    '">OpenSSL関数</a>が有効である必要があります。</p>');
+
+            P2Util::pushInfoHtml("<p>p2 error: 2ch API認証に失敗しました。{$curl_msg}</p>");
+            return false;
+        }
+
+        if (strpos($body, ':') != false)
         {
-            $sid = explode(':', $response);
-            
+            $sid = explode(':', $body);
+
             if($_conf['2chapi_debug_print']==1)
             {
-                P2Util::pushInfoHtml($response."<br>".$AuthUA);
+                P2Util::pushInfoHtml($body."<br>".$AuthUA);
             }
-            
+
             if($sid[0]!='SESSION-ID=Monazilla/1.00') {
-                P2Util::pushInfoHtml("<p>p2 Error: 2ch API のSessionIDを取得出来ませんでした。</p>");
+                P2Util::pushInfoHtml("<p>p2 Error: レスポンスからSessionIDを取得出来ませんでした。</p>");
                 return '';
             }
-            
+
             $cont = sprintf('<?php $SID2chAPI = %s;', var_export($sid[1], true));
             if (false === file_put_contents($_conf['sid2chapi_php'], $cont, LOCK_EX)) {
                 P2Util::pushInfoHtml("<p>p2 Error: {$_conf['sid2chapi_php']} を保存できませんでした。ログイン登録失敗。</p>");
                 return '';
             }
-            
+
             return $sid[1];
         }
-        
+
         return '';
     }
 // }}}

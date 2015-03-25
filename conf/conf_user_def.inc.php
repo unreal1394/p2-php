@@ -547,13 +547,9 @@ $conf_user_def['frame_read_width'] = "60%"; // ("40%")
 $conf_user_def['pane_mode'] = 0;  // (0)
 $conf_user_rad['pane_mode'] = array('0' => '標準（に形）', '1' => '横一列（川形）');
 
-// ●ログインを、まずはopensslで試みる。※PHP 4.3.0以降で、OpenSSLが静的にリンクされている必要がある
-$conf_user_def['precede_openssl'] = 0;  // (0)
-$conf_user_rad['precede_openssl'] = array('1' => 'Yes', '0' => 'No');
-
-// curlを使う時、コマンドライン版とPHP関数版どちらを優先するか (コマンドライン版:0, PHP関数版:1)
-$conf_user_def['precede_phpcurl'] = 0;  // (0)
-$conf_user_rad['precede_phpcurl'] = array('0' => 'コマンドライン版', '1' => 'PHP関数版');
+// SSL通信(●ログイン等)に使用する関数 ※該当する拡張をインストールする必要がある
+$conf_user_def['ssl_function'] = "socket";  // (socket)
+$conf_user_sel['ssl_function'] = array('socket' => 'OpenSSL', 'curl' => 'cURL');
 
 // }}}
 // {{{ 拡張パックとiPhone

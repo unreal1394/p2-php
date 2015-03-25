@@ -432,8 +432,7 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('proxy_use', 'プロキシを利用'), 
         array('proxy_host', 'プロキシホスト ex)&quot;127.0.0.1&quot;, &quot;p2proxy.example&quot;'), 
         array('proxy_port', 'プロキシポート ex)&quot;8080&quot;'), 
-        array('precede_openssl', '●ログインを、まずはopensslで試みる<br>(OpenSSLが静的にリンクされている必要がある)'),
-        array('precede_phpcurl', 'curlを使う時、コマンドライン版とPHP関数版どちらを優先するか'),
+        array('ssl_function', 'SSL通信(●ログイン等)に使用する関数<br>(関数に該当する拡張をインストールする必要がある)'),
     );
     printEditConfGroupHtml($groupname, $conflist, $flags);
 }
