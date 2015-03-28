@@ -303,8 +303,9 @@ class ThreadRead extends Thread {
                 return false;
             }
             // 1行目を少し切り出す
-            $firstmsg = trim ( substr ( $body, 0, 100 ) );
-            if (strpos ( $firstmsg, 'ng ' ) === 0) {
+            $posLF = strpos ( $body, "\n" );
+            $firstmsg = substr ( $body, 0, $posLF === false ? strlen($body) : $posLF );
+            if (preg_match ( "/^ng \((.*)\)$/", $firstmsg ) ) {
                 // ngで始まってたらapiのエラーの可能性
                 if (preg_match ( "/^ng \((.*)\)$/", $firstmsg )) {
                     // 誤判定防止のためpreg_matchで二重チェックする
