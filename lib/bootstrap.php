@@ -51,7 +51,7 @@ if (file_exists($_conf['conf_user_file'])) {
 } else {
     // 設定ファイルが保存されるディレクトリがない場合は新規で作成
     if(!file_exists($_conf['pref_dir'])){
-        FileCtl::mkdirFor($_conf['conf_user_file'])
+        FileCtl::mkdirFor($_conf['conf_user_file']);
     }
     if(!is_writable($_conf['pref_dir'])){
         // 書き込み権限を得られなかった場合はパーミッションの注意喚起をする
