@@ -51,7 +51,7 @@ if (empty($id) && empty($uri) && empty($file)) {
 
 // 保存ディレクトリがない場合は新規で作成
 if(!file_exists($ini['General']['cachedir'])){
-    FileCtl::mkdirRecursive($ini['General']['cachedir']);
+    FileCtl::mkdirRecursive($ini['General']['cachedir'], 0777);
 }
 if(!is_writable($ini['General']['cachedir'])){
     // 書き込み権限を得られなかった場合はパーミッションの注意喚起をする
