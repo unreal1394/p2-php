@@ -302,27 +302,26 @@ class ThreadRead extends Thread {
                 fclose ( $fp );
                 return false;
             }
-            // 1行目を少し切り出す
+            // 1行目を切り出す
             $posLF = strpos ( $body, "\n" );
             $firstmsg = substr ( $body, 0, $posLF === false ? strlen($body) : $posLF );
-            if (preg_match ( "/^ng \((.*)\)$/", $firstmsg ) ) {
-                // ngで始まってたらapiのエラーの可能性
-                if (preg_match ( "/^ng \((.*)\)$/", $firstmsg )) {
-                    // 誤判定防止のためpreg_matchで二重チェックする
-                    fclose ( $fp );
-                    if (strstr ( $firstmsg, "not valid" )) {
-                        // sidが無効になった可能性。もう一回認証するため最初からやり直し。
-                        if (empty ( $_REQUEST ['relogin2chapi'] )) {
-                            $_REQUEST ['relogin2chapi'] = true;
-                            return $this->downloadDat ();
-                        }
+
+            // ngで始まってたらapiのエラーの可能性
+            if (preg_match ( "/^ng \((.*)\)$/", $firstmsg )) {
+                fclose ( $fp );
+                if (strstr ( $firstmsg, "not valid" )) {
+                    // sidが無効になった可能性。もう一回認証するため最初からやり直し。
+                    if (empty ( $_REQUEST ['relogin2chapi'] )) {
+                        $_REQUEST ['relogin2chapi'] = true;
+                        return $this->downloadDat ();
                     }
-                    $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。" . $firstmsg . "</p>";
-                    $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
-                    $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
-                    $this->diedat = true;
-                    return false;
                 }
+                $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。" . $firstmsg . "</p>";
+                $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
+                $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
+                $this->diedat = true;
+                return false;
+
             } elseif (strpos ( $firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２" ) === 0) {
                 fclose ( $fp );
                 $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
