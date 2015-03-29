@@ -49,6 +49,15 @@ if (file_exists($_conf['conf_user_file'])) {
         $save_conf_user = false;
     }
 } else {
+    // 設定ファイルが保存されるディレクトリがない場合は新規で作成
+    if(!file_exists($_conf['pref_dir'])){
+        FileCtl::mkdirFor($_conf['conf_user_file']);
+    }
+    if(!is_writable($_conf['pref_dir'])){
+        // 書き込み権限を得られなかった場合はパーミッションの注意喚起をする
+        p2die("親ディレクトリのパーミッションを見直して下さい。");
+    }
+
     // デフォルト設定を読み込み、マージ
     include P2_CONFIG_DIR . '/conf_user_def.inc.php';
     $_conf = array_merge($_conf, $conf_user_def);

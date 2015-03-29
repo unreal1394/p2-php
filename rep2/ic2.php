@@ -49,6 +49,15 @@ if (empty($id) && empty($uri) && empty($file)) {
     ic2_error('x06', 'URLまたはファイル名がありません。', false);
 }
 
+// 保存ディレクトリがない場合は新規で作成
+if(!file_exists($ini['General']['cachedir'])){
+    FileCtl::mkdirRecursive($ini['General']['cachedir'], 0777);
+}
+if(!is_writable($ini['General']['cachedir'])){
+    // 書き込み権限を得られなかった場合はパーミッションの注意喚起をする
+    p2die("親ディレクトリのパーミッションを見直して下さい。");
+}
+
 if (!is_dir($_conf['tmp_dir'])) {
     FileCtl::mkdirRecursive($_conf['tmp_dir']);
 }
