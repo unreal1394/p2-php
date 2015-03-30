@@ -534,6 +534,12 @@ $conf_user_def['proxy_host'] = ""; // ("")
 // プロキシポート ex)"8080"
 $conf_user_def['proxy_port'] = ""; // ("")
 
+// プロキシユーザー名 (使用する場合のみ)
+$conf_user_def['proxy_user'] = ""; // ("")
+
+// プロキシパスワード (使用する場合のみ)
+$conf_user_def['proxy_password'] = ""; // ("")
+
 // フレーム左 板メニュー の表示幅
 $conf_user_def['frame_menu_width'] = "158"; // ("158")
 

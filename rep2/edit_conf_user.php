@@ -229,7 +229,7 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
     $conflist = array(
         'be',
         array('be_2ch_mail', 'be.2ch.netの登録メールアドレス', P2_EDIT_CONF_USER_LONGTEXT),
-        array('be_2ch_password', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>のパスワード(認証コードは使えなくなりました)', P2_EDIT_CONF_USER_LONGTEXT),
+        array('be_2ch_password', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>のパスワード(認証コードは使えなくなりました)', P2_EDIT_CONF_USER_PASSWORD),
         array('be_2ch_DMDM', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>のDMDM(手動設定する場合のみ入力)', P2_EDIT_CONF_USER_LONGTEXT),
         array('be_2ch_MDMD', '<a href="http://be.2ch.net/" target="_blank">be.2ch.net</a>のMDMD(手動設定する場合のみ入力)', P2_EDIT_CONF_USER_LONGTEXT),
         '公式p2',
@@ -402,11 +402,12 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
     $keep_old = true;
 } else {
     $conflist = array(
+        '3ペイン画面',
         array('frame_menu_width', 'フレーム左 板メニュー の表示幅'),
         array('frame_subject_width', 'フレーム右上 スレ一覧 の表示幅'),
         array('frame_read_width', 'フレーム右下 スレ本文 の表示幅'),
         array('pane_mode', '3ペイン画面のフレームの並べ方'),
-
+        '書き込み',
         array('my_FROM', 'レス書き込み時のデフォルトの名前'),
         array('my_mail', 'レス書き込み時のデフォルトのmail'),
 
@@ -417,21 +418,27 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('res_hist_rec_num', '書き込み履歴の記録数'),
         array('res_write_rec', '書き込み内容ログを記録'),
         array('res_popup_reload', 'ポップアップから書き込み成功したらスレを再読み込みする'),
+        '外部URL・ブラクラチェッカ',
         array('through_ime', '外部URLジャンプする際に通すゲート<br>「直接」でもCookieが使えない端末では gate.php を通す'),
         array('through_ime_http_only', ' HTTPSでアクセスしているときは外部URLゲートを通さない<br>(最近のWebブラウザの多くは https → http の遷移でRefererを送出しませんが、<br>「HTTPSでは直」にする場合は、お使いのブラウザの仕様を確認してください)'),
         array('ime_manual_ext', 'ゲートで自動転送しない拡張子（カンマ区切りで、拡張子の前のピリオドは不要）'),
+        array('brocra_checker_use', 'ブラクラチェッカ (つける, つけない)'),
+        array('brocra_checker_url', 'ブラクラチェッカURL'),
+        array('brocra_checker_query', 'ブラクラチェッカのクエリー (空の場合、PATH_INFOでURLを渡す)'),
+        '板メニュー・お気に板',
         array('join_favrank', '<a href="http://akid.s17.xrea.com/favrank/favrank.html" target="_blank">お気にスレ共有</a>に参加'),
         array('merge_favita', 'お気に板のスレ一覧をまとめて表示 (お気に板の数によっては処理に時間がかかる)'),
         array('favita_order_dnd', 'ドラッグ＆ドロップでお気に板を並べ替える'),
         array('enable_menu_new', '板メニューに新着数を表示'),
         array('menu_refresh_time', '板メニュー部分の自動更新間隔 (分指定。0なら自動更新しない)'),
         array('menu_hide_brds', '板カテゴリ一覧を閉じた状態にする'),
-        array('brocra_checker_use', 'ブラクラチェッカ (つける, つけない)'),
-        array('brocra_checker_url', 'ブラクラチェッカURL'),
-        array('brocra_checker_query', 'ブラクラチェッカのクエリー (空の場合、PATH_INFOでURLを渡す)'),
+        'プロキシ',
         array('proxy_use', 'プロキシを利用'), 
-        array('proxy_host', 'プロキシホスト ex)&quot;127.0.0.1&quot;, &quot;p2proxy.example&quot;'), 
-        array('proxy_port', 'プロキシポート ex)&quot;8080&quot;'), 
+        array('proxy_host', 'プロキシホスト ex)&quot;127.0.0.1&quot;, &quot;p2proxy.example&quot;'),
+        array('proxy_port', 'プロキシポート ex)&quot;8080&quot;'),
+        array('proxy_user', 'プロキシユーザー名 (使用する場合のみ)'), 
+        array('proxy_password', 'プロキシパスワード (使用する場合のみ)'),
+        '通信設定',
         array('ssl_function', 'SSL通信(●ログイン等)に使用する関数<br>(関数に該当する拡張をインストールする必要がある)'),
     );
     printEditConfGroupHtml($groupname, $conflist, $flags);

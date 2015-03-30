@@ -275,9 +275,11 @@ class P2Util
             ));
 
             if ($_conf['proxy_use']) {
-                $req->setConfig(array(
-                        eproxy_hostf => $_conf['proxy_host'],
-                        eproxy_portf => $_conf['proxy_port'],
+                $req->setConfig (array (
+                    'proxy_host' => $_conf['proxy_host'],
+                    'proxy_port' => $_conf['proxy_port'],
+                    'proxy_user' => $_conf['proxy_user'],
+                    'proxy_password' => $_conf['proxy_password']
                 ));
             }
 

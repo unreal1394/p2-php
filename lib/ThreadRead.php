@@ -179,7 +179,7 @@ class ThreadRead extends Thread {
                 // >>1プレビューの時はサーバーに最初の部分だけ請求
                 $req->setHeader ('Range', "bytes=0-8192");
             } elseif (! $zero_read) {
-                $req->setHeader ('Range', "bytes=" . $from_bytes);
+                $req->setHeader ('Range', sprintf ('bytes=%d-', $from_bytes) );
             }
 
             if ($this->modified) {
@@ -200,8 +200,10 @@ class ThreadRead extends Thread {
             // プロキシ
             if ($_conf['proxy_use']) {
                 $req->setConfig (array (
-                        ‘proxy_host’ => $_conf['proxy_host'],
-                        ‘proxy_port’ => $_conf['proxy_port']
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
                 ));
             }
 
@@ -317,9 +319,6 @@ class ThreadRead extends Thread {
                 return $this->_downloadDat2chNotFound ($code);
             }
 
-            if ($response->getHeader ('Location')) {
-                $post_seikou = true;
-            }
         } catch (Exception $e) {
             $this->getdat_error_msg_ht .= "<p>サーバ接続エラー: " . $e->getMessage ();
             $this->getdat_error_msg_ht .= "<br>rep2 error: 板サーバへの接続に失敗しました。</p>";
@@ -375,7 +374,7 @@ class ThreadRead extends Thread {
                 // >>1プレビューの時はサーバーに最初の部分だけ請求
                 $req->setHeader ('Range', "bytes=0-8192");
             } elseif (! $zero_read) {
-                $req->setHeader ('Range', "bytes=" . $from_bytes);
+                $req->setHeader ('Range', sprintf ('bytes=%d-', $from_bytes) );
             }
 
             if ($this->modified) {
@@ -396,8 +395,10 @@ class ThreadRead extends Thread {
             // プロキシ
             if ($_conf['proxy_use']) {
                 $req->setConfig (array (
-                        ‘proxy_host’ => $_conf['proxy_host'],
-                        ‘proxy_port’ => $_conf['proxy_port']
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
                 ));
             }
 
@@ -423,12 +424,12 @@ class ThreadRead extends Thread {
 
                 $this->modified = $response->getHeader ('Last-Modified');
 
-                // 1行目を切り出す
-                $posLF = mb_strpos ($body, "\n");
-                $firstmsg = mb_substr ($body, 0, $posLF === false ? mb_strlen ($body) : $posLF);
-
                 // ホストが2chの時にDATを利用できない旨のメッセージが出たらエラーとする（DAT破損対策）
                 if (P2Util::isHost2chs ($this->host)) {
+                    // 1行目を切り出す
+                    $posLF = mb_strpos ($body, "\n");
+                    $firstmsg = mb_substr ($body, 0, $posLF === false ? mb_strlen ($body) : $posLF);
+
                     if (mb_strpos ($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２") === 0) {
                         $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
                         $marutori_ht = $this->_generateMarutoriLink ();
@@ -564,8 +565,10 @@ class ThreadRead extends Thread {
             // プロキシ
             if ($_conf['proxy_use']) {
                 $req->setConfig (array (
-                        ‘proxy_host’ => $_conf['proxy_host'],
-                        ‘proxy_port’ => $_conf['proxy_port']
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
                 ));
             }
 
@@ -667,8 +670,10 @@ class ThreadRead extends Thread {
             // プロキシ
             if ($_conf['proxy_use']) {
                 $req->setConfig (array (
-                        ‘proxy_host’ => $_conf['proxy_host'],
-                        ‘proxy_port’ => $_conf['proxy_port']
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
                 ));
             }
 
@@ -780,8 +785,10 @@ class ThreadRead extends Thread {
                 // プロキシ
                 if ($_conf['proxy_use']) {
                     $req->setConfig (array (
-                            ‘proxy_host’ => $_conf['proxy_host'],
-                            ‘proxy_port’ => $_conf['proxy_port']
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
                     ));
                 }
 
@@ -1508,14 +1515,19 @@ EOF;
          * 過去ログ ★<><>[過去ログ]<><div style="color:red;text-align:center;">■ このスレッドは過去ログ倉庫に格納されています</div><hr /><br />IE等普通のブラウザで見る場合 http://tubo.80.kg/tubo_and_maru.html<br />専用のブラウザで見る場合 http://www.monazilla.org/<br /><br />２ちゃんねる Viewer を使うと、すぐに読めます。 http://2ch.tora3.net/<br /><div style="color:navy;">この Viewer(通称●) の売上で、２ちゃんねるは設備を増強しています。<br />●が売れたら、新しいサーバを投入できるという事です。</div><br />よくわからない場合はソフトウェア板へGo http://pc11.2ch.net/software/<br /><br />モリタポ ( http://find.2ch.net/faq/faq2.php#c1 ) を持っていれば、50モリタポで表示できます。<br />　　　　こちらから → http://find.2ch.net/index.php?STR=dat:http://ex23.2ch.net/test/read.cgi/morningcoffee/1181449791/<br /><br /><hr /><>
          */
         try {
-            $params = array ();
-            $params['timeout'] = $_conf['fsockopen_time_limit'];
-            if ($_conf['proxy_use']) {
-                $params['proxy_host'] = $_conf['proxy_host'];
-                $params['proxy_port'] = $_conf['proxy_port'];
-            }
             $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
-            $req = new HTTP_Request2 ($url,HTTP_Request2::METHOD_GET, $params);
+            $req = new HTTP_Request2 ($url,HTTP_Request2::METHOD_GET);
+
+            // プロキシ
+                if ($_conf['proxy_use']) {
+                    $req->setConfig (array (
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
+                    ));
+                }
+
             $res = $req->send ();
 
             // レスポンスコードを検証
