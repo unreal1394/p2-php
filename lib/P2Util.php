@@ -2225,38 +2225,20 @@ ERR;
             $params['proxy_port'] = $GLOBALS['_conf']['proxy_port'];
         }
 
-        $req = new HTTP_Request('http://be.2ch.net/index.php', $params);
+        try {
+            $req = new HTTP_Request2('http://be.2ch.net/index.php', HTTP_Request2::METHOD_POST);
 
-        $req->setMethod(HTTP_REQUEST_METHOD_POST);
-        $req->addPostData('mail', $mail);
-        $req->addPostData('pass', $pass);
-        $req->addPostData('login', 'ログインする');
+            $req->addPostParameter('mail', $mail);
+            $req->addPostParameter('pass', $pass);
+            $req->addPostParameter('login', 'ログインする');
 
-        //var_dump($req);
-        // If-Modified-Since => gmdate('D, d M Y H:i:s', time()) . ' GMT';
+            $response = $req->send();
 
-        /*
-        if ($headers) {
-            foreach ($headers as $k => $v) {
-                $req->addHeader($k, $v);
-            }
-        }
-        */
-        $response = $req->sendRequest(); // $saveBody = true
-//var_dump($req->getResponseHeader());
-//var_dump($req->getResponseCookies());
-//var_dump($req->getResponseCode());
-//var_dump(mb_convert_encoding($req->getResponseBody(), 'SJIS-win', 'eucJP-win'));
-
-        if (PEAR::isError($response)) {
-            $error_msg = $response->getMessage();
-
-        } else {
-            $code = $req->getResponseCode();
+            $code = $response->getStatus();
             // 成功とみなすコード
             if ($code == 302) {
                 //return $req->getResponseBody();
-                if ($cookies = $req->getResponseCookies()) { // urlencodeされた状態
+                if ($cookies = $response->getCookies()) { // urlencodeされた状態
                     $r = array();
                     foreach ($cookies as $cookie) {
                         if (in_array($cookie['name'], array('DMDM', 'MDMD'))) {
@@ -2267,19 +2249,10 @@ ERR;
                         return $r;
                     }
                 }
-
-                //$error_msg = mb_convert_encoding($req->getResponseBody(), 'SJIS-win', 'eucJP-win');
-
-            /*
-            // 更新がなければnullを返す
-            } elseif ($code == 304) {
-                // 304の時は、$req->getResponseBody() は空文字""となる
-                return null;
-            */
-            } else {
-                //var_dump($req->getResponseHeader());
-                $error_msg = $code;
             }
+
+        } catch (Exception $e) {
+            return false; // $error_msg
         }
 
         return false; // $error_msg
