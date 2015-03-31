@@ -92,8 +92,9 @@ class BrdCtl
                 $brdfile_online_res = P2Util::fileDownload($_conf['brdfile_online'], $cachefile);
                 if (isset($brdfile_online_res) && $brdfile_online_res->getStatus() != 304) {
                     $isNewDL = true;
-                    unset($brdfile_online_res);
                 }
+
+                unset($brdfile_online_res);
             }
 
             // htmlŒ`Ž®‚È‚ç

@@ -94,39 +94,64 @@ class SettingTxt
         }
 
         // DL
-        $params = array();
-        $params['timeout'] = $_conf['http_conn_timeout'];
-        $params['readTimeout'] = array($_conf['http_read_timeout'], 0);
-        if ($_conf['proxy_use']) {
-            $params['proxy_host'] = $_conf['proxy_host'];
-            $params['proxy_port'] = $_conf['proxy_port'];
-        }
-        $req = new HTTP_Request($this->_url, $params);
-        $modified && $req->addHeader('If-Modified-Since', $modified);
+        try {
+            $req = new HTTP_Request2($this->_url, HTTP_Request2::METHOD_GET);
+            $modified && $req->setHeader("If-Modified-Since", $modified);
 
-        $req->addHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($this->host)));
+            // APIを使用する設定で相手が2chだったらAPIのUAを送る
+            $req->setHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($this->host)));
+            $req->setConfig (array (
+                    'connect_timeout' => $_conf['http_conn_timeout'],
+                    'timeout' => $_conf['http_read_timeout'],
+                    'follow_redirects' => false
+            ));
 
-        $response = $req->sendRequest();
+            // プロキシ
+            if ($_conf['proxy_use']) {
+                $req->setConfig (array (
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
+                ));
+            }
 
-        if (PEAR::isError($response)) {
-            $error_msg = $response->getMessage();
-        } else {
-            $code = $req->getResponseCode();
+            $response = $req->send();
 
+            $code = $response->getStatus();
             if ($code == 302) {
                 // ホストの移転を追跡
-                $new_host = BbsMap::getCurrentHost($this->_host, $this->_bbs);
-                if ($new_host != $this->_host) {
+                $new_host = BbsMap::getCurrentHost($this->host, $this->bbs);
+                if ($new_host != $this->host) {
                     $aNewSettingTxt = new SettingTxt($new_host, $this->_bbs);
-                    $body = $aNewSettingTxt->downloadSettingTxt();
-                    return true;
+                    return $aNewSettingTxt->downloadSettingTxt();
                 }
-            }
-
-            if (!($code == 200 || $code == 206 || $code == 304)) {
+            } elseif ($code == 200 || $code == 206) {
                 //var_dump($req->getResponseHeader());
+                $body = $response->getBody();
+                // したらば or be.2ch.net ならEUCをSJISに変換
+                if (P2Util::isHostJbbsShitaraba($this->host) || P2Util::isHostBe2chNet($this->host)) {
+                    $body = mb_convert_encoding($body, 'CP932', 'CP51932');
+                }
+                if (FileCtl::file_write_contents($this->_setting_txt, $body) === false) {
+                    p2die('cannot write file');
+                }
+                // パースしてキャッシュを保存する
+                if (!$this->cacheParsedSettingTxt()) {
+                    return false;
+                }
+            } elseif ($code == 304) {
+                // touchすることで更新インターバルが効くので、しばらく再チェックされなくなる
+                // （変更がないのに修正時間を更新するのは、少し気が進まないが、ここでは特に問題ないだろう）
+                touch($this->_setting_txt);
+                // 同時にキャッシュもtouchしないと、_setting_txtと_setting_srdで更新時間がずれ、
+                // 毎回ここまで処理が来る（サーバへのヘッダリクエストが飛ぶ）場合がある。
+                touch($this->_setting_srd);
+            } else {
                 $error_msg = $code;
             }
+        } catch (Exception $e) {
+            $error_msg = $e->getMessage();
         }
 
         // DLエラー
@@ -138,33 +163,6 @@ class SettingTxt
             touch($this->_setting_txt); // DL失敗した場合も touch
             return false;
 
-        }
-
-        $body = $req->getResponseBody();
-
-        // DL成功して かつ 更新されていたら保存
-        if ($body && $code != '304') {
-
-            // したらば or be.2ch.net ならEUCをSJISに変換
-            if (P2Util::isHostJbbsShitaraba($this->_host) || P2Util::isHostBe2chNet($this->_host)) {
-                $body = mb_convert_encoding($body, 'CP932', 'CP51932');
-            }
-
-            if (FileCtl::file_write_contents($this->_setting_txt, $body) === false) {
-                p2die('cannot write file');
-            }
-
-            // パースしてキャッシュを保存する
-            if (!$this->cacheParsedSettingTxt()) {
-                return false;
-            }
-
-        } else {
-            // touchすることで更新インターバルが効くので、しばらく再チェックされなくなる
-            touch($this->_setting_txt);
-            // 同時にキャッシュもtouchしないと、_setting_txtと_setting_srdで更新時間がずれ、
-            // 毎回ここまで処理が来る（サーバへのヘッダリクエストが飛ぶ）場合がある。
-            touch($this->_setting_srd);
         }
 
         return true;

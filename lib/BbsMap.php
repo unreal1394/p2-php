@@ -265,13 +265,8 @@ class BbsMap
         global $_conf;
 
         // {{{ 設定
-
-        $bbsmenu_url = 'http://menu.2ch.net/bbsmenu.html';  // 公式メニューの URL
-        $altmenu_url = 'http://www.2ch.se/bbsmenu.html';    // 代替メニューの URL
         $map_cache_path = $_conf['cache_dir'] . '/host_bbs_map.txt';
-        $map_cache_lifetime = 600; // TTLは少し短めに
-        $err_fmt = '<p>rep2 error: BbsMap: %s - %s をダウンロードできませんでした。</p>';
-        $use_alt = false;
+        $map_cache_lifetime = 60 * 60 * 30; // 30分おきに更新があるか確認するがBrdCtl側で最低1時間はアクセスしない。
 
         // }}}
         // {{{ キャッシュ確認
@@ -294,77 +289,26 @@ class BbsMap
 
         // }}}
         // {{{ メニューをダウンロード
-
-        $params = array();
-        $params['timeout'] = $_conf['http_conn_timeout'];
-        $params['readTimeout'] = array($_conf['http_read_timeout'], 0);
-        if (isset($mtime)) {
-            $params['requestHeaders'] = array('If-Modified-Since' => http_date($mtime));
-        }
-        if ($_conf['proxy_use']) {
-            $params['proxy_host'] = $_conf['proxy_host'];
-            $params['proxy_port'] = $_conf['proxy_port'];
-        }
-        $req = new HTTP_Request($bbsmenu_url, $params);
-        $req->setMethod('GET');
-        $err = $req->sendRequest(true);
-
-        // エラーのとき、代わりのメニューを使ってみる
-        if (PEAR::isError($err) && $use_alt) {
-            P2Util::pushInfoHtml(sprintf($err_fmt, p2h($err->getMessage()), p2h($bbsmenu_url)));
-            P2Util::pushInfoHtml(sprintf("<p>代わりに %s をダウンロードします。</p>", p2h($altmenu_url)));
-            $bbsmenu_url = $altmenu_url;
-            unset ($req, $err);
-            $req = new HTTP_Request($bbsmenu_url, $params);
-            $req->setMethod('GET');
-            $err = $req->sendRequest(true);
-        }
-
-        // エラーを検証
-        if (PEAR::isError($err)) {
-            P2Util::pushInfoHtml(sprintf($err_fmt, p2h($err->getMessage()), p2h($bbsmenu_url)));
-            if (file_exists($map_cache_path)) {
-                return unserialize(file_get_contents($map_cache_path));
-            } else {
-                return false;
-            }
-        }
-
-        // レスポンスコードを検証
-        $code = $req->getResponseCode();
-        if ($code == 304) {
-            $map_cahce = file_get_contents($map_cache_path);
-            self::$_map = unserialize($map_cahce);
-            return self::$_map;
-        } elseif ($code != 200) {
-            P2Util::pushInfoHtml(sprintf($err_fmt, p2h(strval($code)), p2h($bbsmenu_url)));
-            if (file_exists($map_cache_path)) {
-                return unserialize(file_get_contents($map_cache_path));
-            } else {
-                return false;
-            }
-        }
-
-        $res_body = $req->getResponseBody();
-
-        // }}}
-        // {{{ パース
-
-        $regex = '!<A HREF=http://(\w+\.(?:2ch\.net|bbspink\.com|machi\.to|mathibbs\.com))/(\w+)/(?: TARGET=_blank)?>(.+?)</A>!';
-        preg_match_all($regex, $res_body, $matches, PREG_SET_ORDER);
-
+        $brd_menus_online = BrdCtl::read_brd_online();
         $map = array();
-        foreach ($matches as $match) {
-            $host = $match[1];
-            $bbs  = $match[2];
-            $itaj = $match[3];
-            $type = self::_detectHostType($host);
-            if (!isset($map[$type])) {
-                $map[$type] = array();
-            }
-            $map[$type][$bbs] = array('host' => $host, 'itaj' => $itaj);
-        }
 
+        foreach ($brd_menus_online as $a_brd_menu) {
+            foreach ($a_brd_menu->categories as $cate) {
+                if ($cate->num > 0) {
+                    foreach ($cate->menuitas as $mita) {
+                        $host = $mita->host;
+                        $bbs  = $mita->bbs;
+                        $itaj = $mita->itaj;
+                        $type = self::_detectHostType($host);
+                        if (!isset($map[$type])) {
+                            $map[$type] = array();
+                        }
+                        $map[$type][$bbs] = array('host' => $host, 'itaj' => $itaj);
+                    }
+                }
+            }
+        }
+        unset ($brd_menus_online);
         // }}}
         // {{{ キャッシュする
 
