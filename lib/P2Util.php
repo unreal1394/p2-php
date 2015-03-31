@@ -2228,6 +2228,18 @@ ERR;
         try {
             $req = new HTTP_Request2('http://be.2ch.net/index.php', HTTP_Request2::METHOD_POST);
 
+            $req->setHeader('User-Agent', P2Util::getP2UA(true,true));
+
+            // プロキシ
+            if ($_conf['proxy_use']) {
+                $req->setConfig(array(
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
+                ));
+            }
+
             $req->addPostParameter('mail', $mail);
             $req->addPostParameter('pass', $pass);
             $req->addPostParameter('login', 'ログインする');

@@ -39,14 +39,26 @@ class P2UtilWiki
 
     public static function getResponseCode($url)
     {
-        $client = new HTTP_Client();
-        $client->setRequestParameter('timeout', $timeout);
-        $client->setDefaultHeader('User-Agent', 'Monazilla/1.00');
-        if (!empty($_conf['proxy_use'])) {
-            $client->setRequestParameter('proxy_host', $_conf['proxy_host']);
-            $client->setRequestParameter('proxy_port', $_conf['proxy_port']);
+        try {
+            $req = new HTTP_Request2($url, HTTP_Request2::METHOD_HEAD);
+
+            $req->setHeader('User-Agent', 'Monazilla/1.00');
+
+            // ƒvƒƒLƒV
+            if ($_conf['proxy_use']) {
+                $req->setConfig(array(
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
+                ));
+            }
+
+            return $response->getStatus();
+
+        } catch (Exception $e) {
+            return false; // $error_msg
         }
-        return $client->head($url);
     }
 
     /**
