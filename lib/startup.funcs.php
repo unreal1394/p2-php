@@ -40,14 +40,9 @@ function p2_load_class($name)
             Thread(?:List|Read)? |
             UA |
             UrlSafeBase64 |
-            Wap(?:UserAgent|Request|Response)
         )$/x', $name))
     {
-        if (strncmp($name, 'Wap', 3) === 0) {
-            include P2_LIB_DIR . '/Wap.php';
-        } else {
-            include P2_LIB_DIR . '/' . $name . '.php';
-        }
+        include P2_LIB_DIR . '/' . $name . '.php';
     } elseif (preg_match('/^[A-Z][A-Za-z]*DataStore$/', $name)) {
         include P2_LIB_DIR . '/P2DataStore/' . $name . '.php';
     }
