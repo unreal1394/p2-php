@@ -86,16 +86,15 @@ class BrdCtl
                 }
             }
 
-            // DL‚µ‚È‚¢
-            if ($noDL) {
-                ;
             // DL‚·‚é
-            } else {
+            if (!$noDL) {
                 //echo "DL!<br>";//
                 $brdfile_online_res = P2Util::fileDownload($_conf['brdfile_online'], $cachefile);
-                if ($brdfile_online_res->isSuccess() && $brdfile_online_res->code != 304) {
+                if (isset($brdfile_online_res) && $brdfile_online_res->getStatus() != 304) {
                     $isNewDL = true;
                 }
+
+                unset($brdfile_online_res);
             }
 
             // htmlŒ`Ž®‚È‚ç

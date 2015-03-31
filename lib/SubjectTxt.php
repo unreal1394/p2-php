@@ -86,35 +86,31 @@ class SubjectTxt
         }
 
         // DL
-        $params = array();
-        $params['timeout'] = $_conf['http_conn_timeout'];
-        $params['readTimeout'] = array($_conf['http_read_timeout'], 0);
-        if ($_conf['proxy_use']) {
-            $params['proxy_host'] = $_conf['proxy_host'];
-            $params['proxy_port'] = $_conf['proxy_port'];
-        }
-        $req = new HTTP_Request($this->subject_url, $params);
-        $modified && $req->addHeader("If-Modified-Since", $modified);
+        try {
+            $req = new HTTP_Request2($this->subject_url, HTTP_Request2::METHOD_GET);
+            $modified && $req->setHeader("If-Modified-Since", $modified);
 
-        // APIを使用する設定で相手が2chだったらAPIのUAを送る
-        if(P2Util::isHost2chs($this->host) && $_conf['2chapi_use'] == 1) {
-            if($_conf['2chapi_appname'] != "") {
-                $req->addHeader('User-Agent', "Monazilla/1.00 ({$_conf['2chapi_appname']})");
-            } else {
-                $info_msg_ht = "<p class=\"info-msg\">Error: 2ch と通信するために必要な情報が設定されていません。</p>";
-                P2Util::pushInfoHtml($info_msg_ht);
-                return;
+            // APIを使用する設定で相手が2chだったらAPIのUAを送る
+            $req->setHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($this->host)));
+            $req->setConfig (array (
+                    'connect_timeout' => $_conf['http_conn_timeout'],
+                    'timeout' => $_conf['http_read_timeout'],
+                    'follow_redirects' => false
+            ));
+
+            // プロキシ
+            if ($_conf['proxy_use']) {
+                $req->setConfig (array (
+                        'proxy_host' => $_conf['proxy_host'],
+                        'proxy_port' => $_conf['proxy_port'],
+                        'proxy_user' => $_conf['proxy_user'],
+                        'proxy_password' => $_conf['proxy_password']
+                ));
             }
-        } else {
-            $req->addHeader('User-Agent', "Monazilla/1.00 ({$_conf['p2ua']})");
-        }
 
-        $response = $req->sendRequest();
+            $response = $req->send();
 
-        if (PEAR::isError($response)) {
-            $error_msg = $response->getMessage();
-        } else {
-            $code = $req->getResponseCode();
+            $code = $response->getStatus();
             if ($code == 302) {
                 // ホストの移転を追跡
                 $new_host = BbsMap::getCurrentHost($this->host, $this->bbs);
@@ -123,11 +119,27 @@ class SubjectTxt
                     $body = $aNewSubjectTxt->downloadSubject();
                     return $body;
                 }
-            }
-            if (!($code == 200 || $code == 206 || $code == 304)) {
+            } elseif ($code == 200 || $code == 206) {
                 //var_dump($req->getResponseHeader());
+                $body = $response->getBody();
+                // したらば or be.2ch.net ならEUCをSJISに変換
+                if (P2Util::isHostJbbsShitaraba($this->host) || P2Util::isHostBe2chNet($this->host)) {
+                    $body = mb_convert_encoding($body, 'CP932', 'CP51932');
+                }
+                if (FileCtl::file_write_contents($this->subject_file, $body) === false) {
+                    p2die('cannot write file');
+                }
+            } elseif ($code == 304) {
+                // touchすることで更新インターバルが効くので、しばらく再チェックされなくなる
+                // （変更がないのに修正時間を更新するのは、少し気が進まないが、ここでは特に問題ないだろう）
+                if ($this->storage === 'file') {
+                    touch($this->subject_file);
+                }
+            } else {
                 $error_msg = $code;
             }
+        } catch (Exception $e) {
+            $error_msg = $e->getMessage();
         }
 
         if (isset($error_msg) && strlen($error_msg) > 0) {
@@ -136,27 +148,6 @@ class SubjectTxt
             $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$this->subject_url}</a> に接続できませんでした。</p>";
             P2Util::pushInfoHtml($info_msg_ht);
             $body = '';
-        } else {
-            $body = $req->getResponseBody();
-        }
-
-        // ■ DL成功して かつ 更新されていたら
-        if ($body && $code != "304") {
-
-            // したらば or be.2ch.net ならEUCをSJISに変換
-            if (P2Util::isHostJbbsShitaraba($this->host) || P2Util::isHostBe2chNet($this->host)) {
-                $body = mb_convert_encoding($body, 'CP932', 'CP51932');
-            }
-
-            if (FileCtl::file_write_contents($this->subject_file, $body) === false) {
-                p2die('cannot write file');
-            }
-        } else {
-            // touchすることで更新インターバルが効くので、しばらく再チェックされなくなる
-            // （変更がないのに修正時間を更新するのは、少し気が進まないが、ここでは特に問題ないだろう）
-            if ($this->storage === 'file') {
-                touch($this->subject_file);
-            }
         }
 
         return $body;

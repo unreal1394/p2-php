@@ -10,29 +10,36 @@ function dig2chsearch($query)
     $query_arry['q'] = urlencode($query_arry['q']);
 
     $url = $_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q'];
-    $params = array();
-    $params['timeout'] = $_conf['http_conn_timeout'];
-    $params['readTimeout'] = array($_conf['http_read_timeout'], 0);
-    if ($_conf['proxy_use']) {
-        $params['proxy_host'] = $_conf['proxy_host'];
-        $params['proxy_port'] = $_conf['proxy_port'];
-    }
 
-    $req = new HTTP_Request($url, $params);
-    $req->addHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.4; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko');
+    try {
+        $req = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
+        $req->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.4; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko');
 
-    $response = $req->sendRequest();
+        $req->setConfig(array(
+                'connect_timeout'  => $_conf['http_conn_timeout'],
+                'timeout'          => $_conf['http_read_timeout'],
+        ));
 
-    if (PEAR::isError($response)) {
-        p2die($response->getMessage());
-    } else {
-        $code = $req->getResponseCode();
+        if ($_conf['proxy_use']) {
+            $req->setConfig (array (
+                'proxy_host' => $_conf['proxy_host'],
+                'proxy_port' => $_conf['proxy_port'],
+                'proxy_user' => $_conf['proxy_user'],
+                'proxy_password' => $_conf['proxy_password']
+            ));
+        }
+
+        $response = $req->send();
+
+        $code = $response->getStatus();
         if ($code != 200) {
             p2die("HTTP Error - {$code}");
         }
-    }
 
-    $body = $req->getResponseBody();
+        $body = $response->getBody();
+    } catch (Exception $e) {
+        p2die($e->getMessage());
+    }
 
     // æ•û‚ÌI‚Å‰½‚©áŠQ‚ª”­¶‚µ‚½‚çJSON‚ÉHTML‚ÌƒRƒƒ“ƒg‚ª¬‚´‚é‚Ì‚Å‚»‚Ì‘Îô
     if (strpos($body,"<!--") !== false)
@@ -100,7 +107,7 @@ function dig2chsearch($query)
             $names[$bkey] = $boards[$bkey]->name;
         }
     }
-    $result['modified'] = isset($response['body']['date'])? $response['body']['date'] : '';
+    $result['modified'] = $response->getHeader('Date');
     $result['profile']['regex'] = '/(' . $jsontest1[query] .')/i';
     $result['profile']['hits'] = $jsontest1[found];
     $result['profile']['cm0'] = str_replace("a href=" , "a target=\"_blank\" href=", $jsontest1[cm0]);

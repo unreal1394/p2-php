@@ -189,7 +189,7 @@ function postFavRank($post)
 
     $request = "{$method} {$send_path} HTTP/1.0\r\n";
     $request .= "Host: {$URL['host']}\r\n";
-    $request .= "User-Agent: Monazilla/1.00 ({$_conf['p2ua']})\r\n";
+    $request .= "User-Agent: ".P2Util::getP2UA(ture)."\r\n";
     $request .= "Connection: Close\r\n";
 
     /* POSTの時はヘッダを追加して末尾にURLエンコードしたデータを添付 */

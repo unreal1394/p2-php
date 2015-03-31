@@ -64,12 +64,11 @@ class DownloadDatMachiBbs implements DownloadDatInterface
         }
         $response = P2Util::fileDownload($url, $tempfile);
 
-        if ($response->isError()) {
-            if (304 != $response->code) {
-                $thread->diedat = true;
-            }
+        if (empty($response)) {
+            $thread->diedat = true;
             return false;
         }
+        unset($response);
 
         // }}}
         // {{{ ダウンロードした各行をチェックしつつローカルdatに書き込み

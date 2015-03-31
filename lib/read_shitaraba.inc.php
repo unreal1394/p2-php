@@ -48,10 +48,11 @@ function shitarabaDownload(ThreadRead $aThread)
     FileCtl::mkdirFor($tempfile);
     $machiurl_res = P2Util::fileDownload($machiurl, $tempfile);
 
-    if ($machiurl_res->isError()) {
+    if (empty($machiurl_res)) {
         $aThread->diedat = true;
         return false;
     }
+    unset($machiurl_res);
 
     // {{{ ‚µ‚½‚ç‚Î‚È‚çEUC‚ðSJIS‚É•ÏŠ·
     if (P2Util::isHostJbbsShitaraba($aThread->host)) {

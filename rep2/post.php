@@ -290,7 +290,7 @@ if ($host && $bbs && $key) {
             // 重複回避, keyのないものは不正データ
             if (!$lar[1] || $lar[1] == $key) {
                 continue;
-            } 
+            }
             $neolines[] = $line;
         }
     }
@@ -378,194 +378,107 @@ function postIt($host, $bbs, $key, $post)
     global $_conf, $post_result, $post_error2ch, $p2cookies, $popup, $rescount, $ttitle_en;
     global $bbs_cgi;
 
-    $method = 'POST';
     $bbs_cgi_url = 'http://' . $host . $bbs_cgi;
 
-    $URL = parse_url($bbs_cgi_url); // URL分解
-    if (isset($URL['query'])) { // クエリー
-        $URL['query'] = '?' . $URL['query'];
-    } else {
-        $URL['query'] = '';
-    }
+    try {
+        $req = new HTTP_Request2($bbs_cgi_url,HTTP_Request2::METHOD_POST);
+        // ヘッダ
+        $req->setHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($host)));
+        $req->setHeader('Referer', "http://{$host}/{$bbs}/{$key}/");
+        $req->setConfig(array(
+                'connect_timeout'  => $_conf['http_conn_timeout'],
+                'timeout'          => $_conf['http_read_timeout'],
+                //'follow_redirects' => true,
+        ));
 
-    // プロキシ
-    if ($_conf['proxy_use']) {
-        $send_host = $_conf['proxy_host'];
-        $send_port = $_conf['proxy_port'];
-        $send_path = $bbs_cgi_url;
-    } else {
-        $send_host = $URL['host'];
-        $send_port = isset($URL['port']) ? $URL['port'] : 80;
-        $send_path = $URL['path'] . $URL['query'];
-    }
-
-    if (!$send_port) { $send_port = 80; }    // デフォルトを80
-
-    $request = "{$method} {$send_path} HTTP/1.0\r\n";
-    $request .= "Host: {$URL['host']}\r\n";
-
-    // APIを使用する設定で相手が2chだったらAPIのUAを送る
-    if(P2Util::isHost2chs($URL['host']) && $_conf['2chapi_use'] == 1) {
-        if($_conf['2chapi_appname'] != "") {
-            $request .= "User-Agent: Monazilla/1.00 ({$_conf['2chapi_appname']})\r\n";
-        } else {
-            showPostMsg(false, "p2 Error: 2chと通信するために必要な情報が設定されていません。</p>", false);
-            return false;
+        // プロキシ
+        if ($_conf['proxy_use']) {
+            $req->setConfig(array(
+                    'proxy_host' => $_conf['proxy_host'],
+                    'proxy_port' => $_conf['proxy_port'],
+                    'proxy_user' => $_conf['proxy_user'],
+                    'proxy_password' => $_conf['proxy_password']
+            ));
         }
-    } else {
-        $request .= "User-Agent: Monazilla/1.00 ({$_conf['p2ua']})\r\n";
-    }
 
-    $request .= "Referer: http://{$host}/{$bbs}/{$key}/\r\n"; 
-
-    // クッキー
-    $cookies_to_send = array();
-    if ($p2cookies) {
-        foreach ($p2cookies as $cname => $cvalue) {
-            if ($cname != 'expires') {
-                $cookies_to_send[$cname] = $cvalue;
+        // クッキー
+        if ($p2cookies) {
+            foreach ($p2cookies as $cname => $cvalue) {
+                if ($cname != 'expires') {
+                    $req->addCookie($cname,$cvalue);
+                }
             }
         }
-    }
 
-    // be.2ch.net 認証クッキー
-    if (P2Util::isHostBe2chNet($host) || !empty($_REQUEST['beres'])) {
-        if ($_conf['be_2ch_DMDM'] && $_conf['be_2ch_MDMD']) {
-            $cookies_to_send['DMDM'] = urlencode(rawurldecode($_conf['be_2ch_DMDM']));
-            $cookies_to_send['MDMD'] = urlencode(rawurldecode($_conf['be_2ch_MDMD']));
-        } else {
-            $ar = P2Util::getBe2chCodeWithUserConf(); // urlencodeされたままの状態
-            if (is_array($ar)) {
-                $cookies_to_send['DMDM'] = $ar['DMDM'];
-                $cookies_to_send['MDMD'] = $ar['MDMD'];
+        // be.2ch.net 認証クッキー
+        if (P2Util::isHostBe2chNet($host) || !empty($_REQUEST['beres'])) {
+            if ($_conf['be_2ch_DMDM'] && $_conf['be_2ch_MDMD']) {
+                $req->addCookie('DMDM', urlencode( rawurldecode( $_conf['be_2ch_DMDM']) ) );
+                $req->addCookie('MDMD', urlencode( rawurldecode( $_conf['be_2ch_MDMD']) ) );
+            } else {
+                $ar = P2Util::getBe2chCodeWithUserConf(); // urlencodeされたままの状態
+                if (is_array($ar)) {
+                    $req->addCookie('DMDM', $ar['DMDM']);
+                    $req->addCookie('MDMD', $ar['MDMD']);
+                }
             }
         }
-    }
 
-    if ($cookies_to_send) {
-        $cstrs = array();
-        foreach ($cookies_to_send as $k => $v) {
-            $cstrs[] = "$k=$v";
-        }
-        $request .= 'Cookie: ' . implode('; ', $cstrs) . "\r\n";
-    }
-    //$request .= 'Cookie: PON='.$SPID.'; NAME='.$FROM.'; MAIL='.$mail."\r\n";
-
-    $request .= "Connection: Close\r\n";
-
-    // {{{ POSTの時はヘッダを追加して末尾にURLエンコードしたデータを添付
-
-    if (strcasecmp($method, 'POST') == 0) {
-        $post_enc = array();
+        // POSTする内容
         while (list($name, $value) = each($post)) {
 
             // したらば or be.2ch.netなら、EUCに変換
             if (P2Util::isHostJbbsShitaraba($host) || P2Util::isHostBe2chNet($host)) {
                 $value = mb_convert_encoding($value, 'CP51932', 'CP932');
             }
-
-            $post_enc[] = $name . '=' . rawurlencode($value);
+            $req->addPostParameter($name, $value);
         }
-        $postdata = implode("&", $post_enc);
-        $request .= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $request .= "Content-Length: ".strlen($postdata)."\r\n";
-        $request .= "\r\n";
-        $request .= $postdata;
 
-    } else {
-        $request .= "\r\n";
-    }
-    // }}}
+        // POSTデータの送信
+        $response = $req->send();
 
-    // WEBサーバへ接続
-    $fp = fsockopen($send_host, $send_port, $errno, $errstr, $_conf['http_conn_timeout']);
-    if (!$fp) {
-        $errstr = p2h($errstr);
-        showPostMsg(false, "サーバ接続エラー: $errstr ($errno)<br>p2 Error: 板サーバへの接続に失敗しました", false);
-        return false;
-    }
-    stream_set_timeout($fp, $_conf['http_read_timeout'], 0);
-
-    //echo '<h4>$request</h4><p>' . $request . "</p>"; //for debug
-    fputs($fp, $request);
-
-    $start_here = false;
-    $post_seikou = false;
-
-    while (!p2_stream_eof($fp, $timed_out)) {
-
-        if ($start_here) {
-            $wr = '';
-            while (!p2_stream_eof($fp, $timed_out)) {
-                $wr .= fread($fp, 164000);
-            }
-            $response = $wr;
-            break;
-
-        } else {
-            $l = fgets($fp, 164000);
-            //echo $l .'<br>'; // for debug
-            // クッキーキタ
-            if (preg_match('/Set-Cookie: (.+?)\\r\\n/', $l, $matches)) {
-                //echo '<p>' . $matches[0] . '</p>'; //
-                $cgroups = explode(';', $matches[1]);
-                if ($cgroups) {
-                    foreach ($cgroups as $v) {
-                        if (preg_match('/(.+)=(.*)/', $v, $m)) {
-                            $k = ltrim($m[1]);
-                            if ($k != 'path') {
-                                if (!$p2cookies) {
-                                    $p2cookies = array();
-                                }
-                                $p2cookies[$k] = $m[2];
-                            }
-                        }
-                    }
+        // Cookieを取得
+        $cookies = $response->getCookies();
+        if ($cookies) {
+            foreach ($cookies as $cookie) {
+                if (!$p2cookies) {
+                    $p2cookies = array();
                 }
-                if ($p2cookies) {
-                    $cookies_to_send = '';
-                    foreach ($p2cookies as $cname => $cvalue) {
-                        if ($cname != 'expires') {
-                            $cookies_to_send .= " {$cname}={$cvalue};";
-                        }
-                    }
-                    $newcookies = "Cookie:{$cookies_to_send}\r\n";
-
-                    $request = preg_replace('/Cookie: .*?\\r\\n/', $newcookies, $request);
-                }
-
-            // 転送は書き込み成功と判断
-            } elseif (preg_match('/^Location: /', $l, $matches)) {
-                $post_seikou = true;
-            }
-            if ($l == "\r\n") {
-                $start_here = true;
+                $p2cookies[ $cookie['name'] ] = $cookie['value'];
             }
         }
 
+        $code = $response->getStatus();
+        $body = $response->getBody();
+
+        if($response->getHeader('Location')) {
+            $post_seikou = true;
+        }
+
+    } catch (Exception $e) {
+        showPostMsg(false, "サーバ接続エラー: $e->getMessage()<br>p2 Error: 板サーバへの接続に失敗しました", false);
     }
-    fclose($fp);
 
     // be.2ch.net or JBBSしたらば 文字コード変換 EUC→SJIS
     if (P2Util::isHostBe2chNet($host) || P2Util::isHostJbbsShitaraba($host)) {
-        $response = mb_convert_encoding($response, 'CP932', 'CP51932');
+        $body = mb_convert_encoding($body, 'CP932', 'CP51932');
 
         //<META http-equiv="Content-Type" content="text/html; charset=EUC-JP">
-        $response = preg_replace(
-            '{<head>(.*?)<META http-equiv="Content-Type" content="text/html; charset=EUC-JP">(.*)</head>}is',
-            '<head><meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">$1$2</head>',
-            $response);
+        $body = preg_replace(
+                '{<head>(.*?)<META http-equiv="Content-Type" content="text/html; charset=EUC-JP">(.*)</head>}is',
+                '<head><meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">$1$2</head>',
+                $body);
     }
 
     $kakikonda_match = '{<title>.*(?:書きこみました|■ 書き込みました ■|書き込み終了 - SubAll BBS).*</title>}is';
     $cookie_kakunin_match = '{<!-- 2ch_X:cookie -->|<title>■ 書き込み確認 ■</title>|>書き込み確認。<}';
 
-    if (preg_match('/<.+>/s', $response, $matches)) {
-        $response = $matches[0];
+    if (preg_match('/<.+>/s', $body, $matches)) {
+        $body = $matches[0];
     }
 
     // カキコミ成功
-    if ($post_seikou || preg_match($kakikonda_match, $response)) {
+    if ($post_seikou || preg_match($kakikonda_match, $body)) {
         $reload = empty($_POST['from_read_new']);
         showPostMsg(true, '書きこみが終わりました。', $reload);
 
@@ -582,13 +495,13 @@ function postIt($host, $bbs, $key, $post)
         //echo "<pre>{$response_ht}</pre>";
 
     // cookie確認（post再チャレンジ）
-    } elseif (preg_match($cookie_kakunin_match, $response)) {
-        showCookieConfirmation($host, $response);
+    } elseif (preg_match($cookie_kakunin_match, $body)) {
+        showCookieConfirmation($host, $body);
         return false;
 
     // その他はレスポンスをそのまま表示
     } else {
-        echo preg_replace('@こちらでリロードしてください。<a href="\\.\\./[a-z]+/index\\.html"> GO! </a><br>@', '', $response);
+        echo preg_replace('@こちらでリロードしてください。<a href="\\.\\./[a-z]+/index\\.html"> GO! </a><br>@', '', $body);
         return false;
     }
 }
