@@ -640,7 +640,7 @@ EOP;
             return $idstr;
         }
 
-        if ($_conf['coloredid.enable'] > 0 && preg_match("|^ID:[ ]?[0-9A-Za-z/.+]{8,11}|",$idstr)) {
+        if ($_conf['coloredid.enable'] > 0 && preg_match("|^ID: ?[0-9A-Za-z/.+]+|",$idstr)) {
             if ($this->_ids_for_render === null) {
                 $this->_ids_for_render = array();
             }

@@ -174,6 +174,7 @@ class ThreadRead extends Thread {
             $req = new HTTP_Request2 ($url, HTTP_Request2::METHOD_POST);
             // ヘッダ
             $req->setHeader ('User-Agent', $ReadUA);
+            $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
             if (! empty ($_GET['one'])) {
                 // >>1プレビューの時はサーバーに最初の部分だけ請求
@@ -255,13 +256,7 @@ class ThreadRead extends Thread {
                     $this->diedat = true;
                     return false;
                 } elseif (mb_strpos ($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２") === 0) {
-                    $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
-                    $marutori_ht = $this->_generateMarutoriLink ();
-                    $plugin_ht = $this->_generateWikiDatLink ();
-                    $moritori_ht = $this->_generateMoritapoDatLink ();
-                    $this->getdat_error_msg_ht .= "{$marutori_ht}{$moritori_ht}{$plugin_ht}";
-                    $this->diedat = true;
-                    return false;
+                    return $this->_downloadDat2chNotFound ('404');
                 }
                 unset ($firstmsg);
 
@@ -369,6 +364,7 @@ class ThreadRead extends Thread {
             // ヘッダ
             $req->setHeader ('User-Agent', P2Util::getP2UA (true));
             $req->setHeader ('Referer', "http://{$purl['host']}/{$this->bbs}/");
+            $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
             if (! empty ($_GET['one'])) {
                 // >>1プレビューの時はサーバーに最初の部分だけ請求
@@ -431,11 +427,7 @@ class ThreadRead extends Thread {
                     $firstmsg = mb_substr ($body, 0, $posLF === false ? mb_strlen ($body) : $posLF);
 
                     if (mb_strpos ($firstmsg, "２ちゃんねる ★<><>2015/03/13(金) 00:00:00.00 ID:????????<> 3月13日より２") === 0) {
-                        $this->getdat_error_msg_ht .= "<p>rep2 error: API経由でのスレッド取得に失敗しました。<br />rep2 info: スレッドが存在しないか過去ログに格納されています。</p>";
-                        $marutori_ht = $this->_generateMarutoriLink ();
-                        $plugin_ht = $this->_generateWikiDatLink ();
-                        $moritori_ht = $this->_generateMoritapoDatLink ();
-                        $this->getdat_error_msg_ht .= "{$marutori_ht}{$moritori_ht}{$plugin_ht}";
+                        $this->getdat_error_msg_ht .= "<p>rep2 error: 板サーバから接続を拒否されました<br>rep2 info: 2ちゃんねるのDAT提供は終了しました</p>";
                         $this->diedat = true;
                         return false;
                     }
@@ -759,12 +751,9 @@ class ThreadRead extends Thread {
                     $reason = 'kakohtml';
                 }
             }
-        } elseif (P2Util::isHost2chs ($this->host) && $code == '404') {
-            // APIの為404だったら過去ログと決めつけとく（fix Here）
-            $reason = 'datochi';
         }
 
-        $read_url = "http://{$this->host}/test/read.cgi/{$this->bbs}/{$this->key}/";
+        $read_url = "http://{$this->host}/test/read.cgi/{$this->bbs}/{$this->key}/1";
 
         // {{{ read.cgi からHTMLを取得
 
@@ -773,7 +762,7 @@ class ThreadRead extends Thread {
             try {
                 $req = new HTTP_Request2 ($read_url, HTTP_Request2::METHOD_GET);
                 // ヘッダ
-                $req->setHeader ('User-Agent', P2Util::getP2UA(false)); // ここは、"Monazilla/" をつけるとNG
+                $req->setHeader ('User-Agent', P2Util::getP2UA(false,P2Util::isHost2chs($this->host))); // ここは、"Monazilla/" をつけるとNG
                 $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
                 $req->setConfig (array (
@@ -805,7 +794,7 @@ class ThreadRead extends Thread {
                 } else {
                     $url_t = P2Util::throughIme ($read_url);
                     $info_msg_ht = "<p class=\"info-msg\">Error: {$code}<br>";
-                    $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$read_url}</a> に接続できませんでした。</p>";
+                    $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$read_url}</a> のHTMLを取得出来ませんでした。</p>";
                     P2Util::pushInfoHtml ($info_msg_ht);
                 }
             } catch (Exception $e) {
@@ -1168,7 +1157,7 @@ class ThreadRead extends Thread {
         foreach ($this->datlines as $l) {
             $lar = explode ('<>', $l);
             $i ++;
-            if (preg_match ('<(ID: ?| )([0-9A-Za-z/.+]{8,11})(?=[^0-9A-Za-z/.+]|$)>', $lar[2], $m)) {
+            if (preg_match ('<(ID: ?)([0-9A-Za-z/.+]+)(?=[^0-9A-Za-z/.+]|$)>', $lar[2], $m)) {
                 $idp[$i] = $m[1];
                 $ids[$i] = $m[2];
             }
