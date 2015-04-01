@@ -36,11 +36,26 @@ rep2-expack test https://github.com/orzisun/p2-php
  本家p2と同じく、X11ライセンスです。
 
 ●ChangeLog
+150401.2321
+・認証付プロキシに対応（BASIC認証のみ）
+・SSL通信のopenSSLとcURLを切り替えることが出来る設定を追加
+・dig.2ch.netに送るヘッダを変更
+・2chとの通信をHTTP_Request2に変更
+
+150328.2132
+・dig2chの鯖に軽微な不具合が発生したときの対策を講じた
+・dig2chで検索結果の番号が1から表示されるように修正
+・dig2chのjsonエラー処理を変更
+・dig2chがプロキシ設定(proxy_use)に対応していない不具合を修正
+・dig2chで「板で絞り込む」に対応した
+・置換ワードをポップアップにも効くように変更
+・レスをポップアップ(quote_res_view)が無効なときに実況モードのID色づけ(coloredid)が効かない不具合を修正
+
 150320.1020
 ・ポップアップから書き込み成功した後にスレを再読み込みしない設定を追加
 ・実況モードからの書き込みでCookie確認が発生した場合実況モードに戻れない不具合を修正
 ・メンテナンス性を向上させるためlive_ShowThreadPc.phpとlive_ShowThread.phpの代わりに
-live_ShowThreadLive.phpと本体のShowThread.phpを使用するように変更
+・live_ShowThreadLive.phpと本体のShowThread.phpを使用するように変更
 ・下書き保存(expack.editor.savedraft)が無効なときに実況モードから書き込めない不具合を修正
 ・スレタイ検索でWarningが出る不具合を修正
 
