@@ -433,13 +433,14 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('menu_refresh_time', '板メニュー部分の自動更新間隔 (分指定。0なら自動更新しない)'),
         array('menu_hide_brds', '板カテゴリ一覧を閉じた状態にする'),
         'プロキシ',
-        array('proxy_use', 'プロキシを利用'), 
+        array('proxy_use', 'プロキシを利用'),
         array('proxy_host', 'プロキシホスト ex)&quot;127.0.0.1&quot;, &quot;p2proxy.example&quot;'),
         array('proxy_port', 'プロキシポート ex)&quot;8080&quot;'),
-        array('proxy_user', 'プロキシユーザー名 (使用する場合のみ)'), 
+        array('proxy_user', 'プロキシユーザー名 (使用する場合のみ)'),
         array('proxy_password', 'プロキシパスワード (使用する場合のみ)'),
         '通信設定',
         array('ssl_function', 'SSL通信(●ログイン等)に使用する関数<br>(関数に該当する拡張をインストールする必要がある)'),
+        array('ssl_capath', 'SSL通信で接続先を検証するための証明書があるディレクトリ ex)&quot;/etc/ssl/certs&quot;<br>設定なして動く場合は設定不要<br>ssl_functionに対応した形式の証明書が必要'),
     );
     printEditConfGroupHtml($groupname, $conflist, $flags);
 }
@@ -1050,7 +1051,7 @@ function applyRules()
     }
 }
 
-// }}} 
+// }}}
 // {{{ フィルタ関数
 // emptyToDef() などのフィルタはEditConfFiterクラスなどにまとめる予定
 // {{{ emptyToDef()

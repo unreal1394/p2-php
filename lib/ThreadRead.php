@@ -172,6 +172,14 @@ class ThreadRead extends Thread {
 
         try {
             $req = new HTTP_Request2 ($url, HTTP_Request2::METHOD_POST);
+
+            $req->setAdapter($_conf['ssl_function']);
+
+            if($_conf['ssl_capath'])
+            {
+                $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
+            }
+
             // ƒwƒbƒ_
             $req->setHeader ('User-Agent', $ReadUA);
             $req->setHeader ('Accept-Encoding', "gzip, deflate");

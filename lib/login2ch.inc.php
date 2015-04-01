@@ -41,7 +41,14 @@ function login2ch()
         $req = new HTTP_Request2($auth2ch_url,HTTP_Request2::METHOD_POST);
         $req->setHeader('User-Agent', $dolib2ch);
         $req->setHeader('X-2ch-UA', $x_2ch_ua);
+
         $req->setAdapter($_conf['ssl_function']);
+
+        if($_conf['ssl_capath'])
+        {
+            $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
+        }
+
         // ƒvƒƒLƒV
         if ($_conf['proxy_use']) {
             $req->setConfig (array (

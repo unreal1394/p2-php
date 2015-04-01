@@ -38,7 +38,14 @@
             $req = new HTTP_Request2($url,HTTP_Request2::METHOD_POST);
             $req->setHeader('User-Agent', $AuthUA);
             $req->setHeader('X-2ch-UA', $AppName);
+
             $req->setAdapter($_conf['ssl_function']);
+
+            if($_conf['ssl_capath'])
+            {
+                $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
+            }
+
             // ƒvƒƒLƒV
             if ($_conf['proxy_use']) {
                 $req->setConfig (array (

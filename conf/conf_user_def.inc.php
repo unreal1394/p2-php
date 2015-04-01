@@ -40,7 +40,7 @@ $conf_user_rad['p2_2ch_ignore_cip'] = array('0' => 'ƒ`ƒFƒbƒN‚·‚é', '1' => 'ƒ`ƒFƒ
 // {{{ PATH
 
 // ‰E‰º•”•ª‚ÉÅ‰‚É•\Ž¦‚³‚ê‚éƒy[ƒWBƒIƒ“ƒ‰ƒCƒ“URL‚à‰ÂB
-$conf_user_def['first_page'] = "first_cont.php"; // ("first_cont.php") 
+$conf_user_def['first_page'] = "first_cont.php"; // ("first_cont.php")
 
 /*
     ”ÂƒŠƒXƒg‚ÍƒIƒ“ƒ‰ƒCƒ“‚Æƒ[ƒJƒ‹‚Ì—¼•û‚©‚ç“Ç‚Ýž‚ß‚é
@@ -92,7 +92,7 @@ $conf_user_rad['sb_show_fav'] = array('1' => '‚·‚é', '0' => '‚µ‚È‚¢');
 // ”Â•\Ž¦‚ÌƒXƒŒƒbƒhˆê——‚Å‚ÌƒfƒtƒHƒ‹ƒg‚Ìƒ\[ƒgŽw’è
 $conf_user_def['sb_sort_ita'] = 'ikioi'; // ('ikioi')
 $conf_user_sel['sb_sort_ita'] = array(
-    'midoku' => 'V’…', 'res' => 'ƒŒƒX', 'no' => 'No.', 'title' => 'ƒ^ƒCƒgƒ‹', // 'spd' => '‚·‚Î‚â‚³', 
+    'midoku' => 'V’…', 'res' => 'ƒŒƒX', 'no' => 'No.', 'title' => 'ƒ^ƒCƒgƒ‹', // 'spd' => '‚·‚Î‚â‚³',
     'ikioi' => '¨‚¢', 'bd' => 'Birthday'); // , 'fav' => '‚¨‹C‚ÉƒXƒŒ'
 
 // V’…ƒ\[ƒg‚Å‚ÌuŠù“¾‚È‚µv‚ÌuV’…”ƒ[ƒv‚É‘Î‚·‚éƒ\[ƒg—Dæ‡ˆÊ (ãˆÊ:0.1, ¬Ý:0, ‰ºˆÊ:-0.1)
@@ -465,7 +465,7 @@ $conf_user_rad['res_popup_reload'] = array('1' => '‚·‚é', '0' => '‚µ‚È‚¢');
 
 // ŠO•”URLƒWƒƒƒ“ƒv‚·‚éÛ‚É’Ê‚·ƒQ[ƒg
 // u’¼Úv‚Å‚àCookie‚ªŽg‚¦‚È‚¢’[––‚Å‚Í gate.php ‚ð’Ê‚·
-$conf_user_def['through_ime'] = "exm"; // ("exm") 
+$conf_user_def['through_ime'] = "exm"; // ("exm")
 $conf_user_sel['through_ime'] = array(
     ''       => '’¼Ú',
     'p2'     => 'p2 ime (Ž©“®“]‘—)',
@@ -483,7 +483,7 @@ $conf_user_def['through_ime_http_only'] = 0; // (0)
 $conf_user_rad['through_ime_http_only'] = array('1' => 'HTTPS‚Å‚Í’¼', '0' => 'í‚É’Ê‚·');
 
 // ƒQ[ƒg‚ÅŽ©“®“]‘—‚µ‚È‚¢Šg’£ŽqiƒJƒ“ƒ}‹æØ‚è‚ÅAŠg’£Žq‚Ì‘O‚ÌƒsƒŠƒIƒh‚Í•s—vj
-$conf_user_def['ime_manual_ext'] = "exe,zip"; // ("exe,zip") 
+$conf_user_def['ime_manual_ext'] = "exe,zip"; // ("exe,zip")
 
 // ‚¨‹C‚ÉƒXƒŒ‹¤—L‚ÉŽQ‰Ái‚·‚é:1, ‚µ‚È‚¢:0j
 $conf_user_def['join_favrank'] = 0; // (0)
@@ -521,7 +521,7 @@ $conf_user_rules['brocra_checker_url'] = array('emptyToDef', 'invalidUrlToDef');
 $conf_user_def['brocra_checker_query'] = ""; // ("")
 
 // Œg‘Ñ‰{——ŽžAƒpƒPƒbƒg—Ê‚ðŒ¸‚ç‚·‚½‚ßA‘SŠp‰p”EƒJƒiEƒXƒy[ƒX‚ð”¼Šp‚É•ÏŠ· (‚·‚é:1, ‚µ‚È‚¢:0)
-$conf_user_def['mobile.save_packet'] = 1; // (1) 
+$conf_user_def['mobile.save_packet'] = 1; // (1)
 $conf_user_rad['mobile.save_packet'] = array('1' => '‚·‚é', '0' => '‚µ‚È‚¢');
 
 // ƒvƒƒLƒV‚ð—˜—p(‚·‚é:1, ‚µ‚È‚¢:0)
@@ -547,7 +547,7 @@ $conf_user_def['frame_menu_width'] = "158"; // ("158")
 $conf_user_def['frame_subject_width'] = "40%"; // ("40%")
 
 // ƒtƒŒ[ƒ€‰E‰º ƒXƒŒ–{•¶ ‚Ì•\Ž¦•
-$conf_user_def['frame_read_width'] = "60%"; // ("40%") 
+$conf_user_def['frame_read_width'] = "60%"; // ("60%")
 
 // 3ƒyƒCƒ“‰æ–Ê‚ÌƒtƒŒ[ƒ€‚Ì•À‚×•û
 $conf_user_def['pane_mode'] = 0;  // (0)
@@ -556,6 +556,9 @@ $conf_user_rad['pane_mode'] = array('0' => '•W€i‚ÉŒ`j', '1' => '‰¡ˆê—ñiìŒ`
 // SSL’ÊM(œƒƒOƒCƒ““™)‚ÉŽg—p‚·‚éŠÖ” ¦ŠY“–‚·‚éŠg’£‚ðƒCƒ“ƒXƒg[ƒ‹‚·‚é•K—v‚ª‚ ‚é
 $conf_user_def['ssl_function'] = "socket";  // (socket)
 $conf_user_sel['ssl_function'] = array('socket' => 'OpenSSL', 'curl' => 'cURL');
+
+// SSL’ÊM‚ÌÚ‘±æ‚ðŒŸØ‚·‚é‚½‚ß‚ÉŽg—p‚·‚éØ–¾‘‚ªŠi”[‚³‚ê‚½ƒfƒBƒŒƒNƒgƒŠ ¦ŒŸØ‚Å‚«‚È‚¢Žž‚Ì‚ÝŽw’è
+$conf_user_def['ssl_capath'] = ""; // ()
 
 // }}}
 // {{{ Šg’£ƒpƒbƒN‚ÆiPhone
