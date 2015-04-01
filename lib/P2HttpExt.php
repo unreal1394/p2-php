@@ -258,6 +258,12 @@ class P2HttpGet extends HttpRequest
             } elseif (strpos($_conf['proxy_host'], ':') === false) {
                 $options['proxyport'] = 80;
             }
+
+            if ($_conf['proxy_user'] && $_conf['proxy_password'])
+            {
+                $options['proxy_auth'] = sprintf('%s:%s', $_conf['proxy_user'], $_conf['proxy_password']);
+                $options['proxyauthtype'] = HTTP_AUTH_BASIC;
+            }
             /*
             $options['proxytype'] = HTTP_PROXY_HTTP;
             if (isset($_conf['proxy_type'])) {
