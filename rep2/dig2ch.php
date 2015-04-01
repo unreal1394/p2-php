@@ -13,7 +13,8 @@ function dig2chsearch($query)
 
     try {
         $req = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
-        $req->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.4; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko');
+        $req->setHeader('User-Agent', $_SERVER['HTTP_USER_AGENT']);
+        $req->setHeader('Acecpt-Language', 'ja');
 
         $req->setConfig(array(
                 'connect_timeout'  => $_conf['http_conn_timeout'],
