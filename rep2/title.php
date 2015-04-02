@@ -20,6 +20,10 @@ $expack_url_r = P2Util::throughIme($_conf['expack.web_url']);
 $expack_dl_url_r = P2Util::throughIme($_conf['expack.download_url']);
 $expack_hist_url_r = P2Util::throughIme($_conf['expack.history_url']);
 
+// rskさんのサイトへのリンクを表示するため by 2ch774
+$rsk_expack_url = "http://rsky.github.io/p2-php/";
+$rsk_expack_url_r = P2Util::throughIme($rsk_expack_url);
+
 // {{{ データ保存ディレクトリのパーミッションの注意を喚起する
 
 P2Util::checkDirWritable($_conf['dat_dir']);
@@ -54,9 +58,9 @@ if ($array = P2Util::readIdPw2ch()) {
 //=========================================================
 // 最新版チェック
 $newversion_found = '';
-/*if (!empty($_conf['updatan_haahaa'])) {
+if (!empty($_conf['updatan_haahaa'])) {
     $newversion_found = checkUpdatan();
-}*/
+}
 
 // ログインユーザ情報
 $htm['auth_user'] = "<p>ログインユーザ: {$_login->user_u} - " . date("Y/m/d (D) G:i") . "</p>\n";
@@ -173,6 +177,7 @@ echo <<<EOP
     </td><td style="padding-left:30px;">
     <p>{$_conf['p2name']} ver.{$_conf['p2version']} +live<br>
     <a href="{$expack_url_r}"{$_conf['ext_win_target_at']}>{$_conf['expack.web_url']}</a><br>
+    <a href="{$rsk_expack_url_r}"{$_conf['ext_win_target_at']}>{$rsk_expack_url}</a><br>
     <a href="{$p2web_url_r}"{$_conf['ext_win_target_at']}>{$_conf['p2web_url']}</a></p>
     <ul>
         <li><a href="viewtxt.php?file=doc/README.txt">README.txt</a></li>
