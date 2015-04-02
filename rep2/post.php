@@ -381,25 +381,11 @@ function postIt($host, $bbs, $key, $post)
     $bbs_cgi_url = 'http://' . $host . $bbs_cgi;
 
     try {
-        $req = new HTTP_Request2($bbs_cgi_url,HTTP_Request2::METHOD_POST);
+        $req = P2Util::getHTTPRequest2 ($bbs_cgi_url,HTTP_Request2::METHOD_POST);
+
         // ヘッダ
         $req->setHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($host)));
         $req->setHeader('Referer', "http://{$host}/{$bbs}/{$key}/");
-        $req->setConfig(array(
-                'connect_timeout'  => $_conf['http_conn_timeout'],
-                'timeout'          => $_conf['http_read_timeout'],
-                //'follow_redirects' => true,
-        ));
-
-        // プロキシ
-        if ($_conf['proxy_use']) {
-            $req->setConfig(array(
-                    'proxy_host' => $_conf['proxy_host'],
-                    'proxy_port' => $_conf['proxy_port'],
-                    'proxy_user' => $_conf['proxy_user'],
-                    'proxy_password' => $_conf['proxy_password']
-            ));
-        }
 
         // クッキー
         if ($p2cookies) {

@@ -171,14 +171,7 @@ class ThreadRead extends Thread {
         $purl = parse_url ($url); // URL分解
 
         try {
-            $req = new HTTP_Request2 ($url, HTTP_Request2::METHOD_POST);
-
-            $req->setAdapter($_conf['ssl_function']);
-
-            if($_conf['ssl_capath'])
-            {
-                $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
-            }
+            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_POST);
 
             // ヘッダ
             $req->setHeader ('User-Agent', $ReadUA);
@@ -198,22 +191,6 @@ class ThreadRead extends Thread {
             // Basic認証用のヘッダ
             if (isset ($purl['user']) && isset ($purl['pass'])) {
                 $req->setAuth ($purl['user'], $purl['pass'], HTTP_Request2::AUTH_BASIC);
-            }
-
-            $req->setConfig (array (
-                    'connect_timeout' => $_conf['http_conn_timeout'],
-                    'timeout' => $_conf['http_read_timeout'],
-                    'follow_redirects' => false
-            ));
-
-            // プロキシ
-            if ($_conf['proxy_use']) {
-                $req->setConfig (array (
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                ));
             }
 
             // POSTする内容
@@ -368,7 +345,7 @@ class ThreadRead extends Thread {
                                     // $request .= "Accept-Encoding: gzip, deflate\r\n";
 
         try {
-            $req = new HTTP_Request2 ($url, HTTP_Request2::METHOD_GET);
+            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
             // ヘッダ
             $req->setHeader ('User-Agent', P2Util::getP2UA (true));
             $req->setHeader ('Referer', "http://{$purl['host']}/{$this->bbs}/");
@@ -388,22 +365,6 @@ class ThreadRead extends Thread {
             // Basic認証用のヘッダ
             if (isset ($purl['user']) && isset ($purl['pass'])) {
                 $req->setAuth ($purl['user'], $purl['pass'], HTTP_Request2::AUTH_BASIC);
-            }
-
-            $req->setConfig (array (
-                    'connect_timeout' => $_conf['http_conn_timeout'],
-                    'timeout' => $_conf['http_read_timeout'],
-                    'follow_redirects' => false
-            ));
-
-            // プロキシ
-            if ($_conf['proxy_use']) {
-                $req->setConfig (array (
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                ));
             }
 
             // Requestの送信
@@ -551,26 +512,10 @@ class ThreadRead extends Thread {
         $purl = parse_url ($url); // URL分解
 
         try {
-            $req = new HTTP_Request2 ($url, HTTP_Request2::METHOD_GET);
+            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
             // ヘッダ
             $req->setHeader ('User-Agent', "{$uaMona} ({$_conf['p2ua']})");
             $req->setHeader ('Accept-Encoding', "gzip, deflate");
-
-            $req->setConfig (array (
-                    'connect_timeout' => $_conf['http_conn_timeout'],
-                    'timeout' => $_conf['http_read_timeout'],
-                    'follow_redirects' => false
-            ));
-
-            // プロキシ
-            if ($_conf['proxy_use']) {
-                $req->setConfig (array (
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                ));
-            }
 
             // Requestの送信
             $response = $req->send ();
@@ -656,26 +601,11 @@ class ThreadRead extends Thread {
         $purl = parse_url ($url); // URL分解
 
         try {
-            $req = new HTTP_Request2 ($url, HTTP_Request2::METHOD_GET);
+            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
+
             // ヘッダ
             $req->setHeader ('User-Agent', P2Util::getP2UA(true));
             $req->setHeader ('Accept-Encoding', "gzip, deflate");
-
-            $req->setConfig (array (
-                    'connect_timeout' => $_conf['http_conn_timeout'],
-                    'timeout' => $_conf['http_read_timeout'],
-                    'follow_redirects' => false
-            ));
-
-            // プロキシ
-            if ($_conf['proxy_use']) {
-                $req->setConfig (array (
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                ));
-            }
 
             // Requestの送信
             $response = $req->send ();
@@ -768,26 +698,10 @@ class ThreadRead extends Thread {
         $read_response_html = '';
         if (! $reason) {
             try {
-                $req = new HTTP_Request2 ($read_url, HTTP_Request2::METHOD_GET);
+                $req = P2Util::getHTTPRequest2 ($read_url, HTTP_Request2::METHOD_GET);
                 // ヘッダ
                 $req->setHeader ('User-Agent', P2Util::getP2UA(false,P2Util::isHost2chs($this->host))); // ここは、"Monazilla/" をつけるとNG
                 $req->setHeader ('Accept-Encoding', "gzip, deflate");
-
-                $req->setConfig (array (
-                        'connect_timeout' => $_conf['http_conn_timeout'],
-                        'timeout' => $_conf['http_read_timeout'],
-                        'follow_redirects' => false
-                ));
-
-                // プロキシ
-                if ($_conf['proxy_use']) {
-                    $req->setConfig (array (
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                    ));
-                }
 
                 // Requestの送信
                 $response = $req->send ();
@@ -1513,17 +1427,7 @@ EOF;
          */
         try {
             $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
-            $req = new HTTP_Request2 ($url,HTTP_Request2::METHOD_GET);
-
-            // プロキシ
-                if ($_conf['proxy_use']) {
-                    $req->setConfig (array (
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                    ));
-                }
+            $req = P2Util::getHTTPRequest2 ($url,HTTP_Request2::METHOD_GET);
 
             $res = $req->send ();
 

@@ -87,26 +87,11 @@ class SubjectTxt
 
         // DL
         try {
-            $req = new HTTP_Request2($this->subject_url, HTTP_Request2::METHOD_GET);
+            $req = P2Util::getHTTPRequest2($this->subject_url, HTTP_Request2::METHOD_GET);
             $modified && $req->setHeader("If-Modified-Since", $modified);
 
             // APIを使用する設定で相手が2chだったらAPIのUAを送る
             $req->setHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($this->host)));
-            $req->setConfig (array (
-                    'connect_timeout' => $_conf['http_conn_timeout'],
-                    'timeout' => $_conf['http_read_timeout'],
-                    'follow_redirects' => false
-            ));
-
-            // プロキシ
-            if ($_conf['proxy_use']) {
-                $req->setConfig (array (
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                ));
-            }
 
             $response = $req->send();
 

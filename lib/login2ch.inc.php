@@ -38,26 +38,13 @@ function login2ch()
     }
 
     try {
-        $req = new HTTP_Request2($auth2ch_url,HTTP_Request2::METHOD_POST);
+        $req = P2Util::getHTTPRequest2($auth2ch_url,HTTP_Request2::METHOD_POST);
+
+        // ヘッダー
         $req->setHeader('User-Agent', $dolib2ch);
         $req->setHeader('X-2ch-UA', $x_2ch_ua);
 
-        $req->setAdapter($_conf['ssl_function']);
-
-        if($_conf['ssl_capath'])
-        {
-            $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
-        }
-
-        // プロキシ
-        if ($_conf['proxy_use']) {
-            $req->setConfig (array (
-                'proxy_host' => $_conf['proxy_host'],
-                'proxy_port' => $_conf['proxy_port'],
-                'proxy_user' => $_conf['proxy_user'],
-                'proxy_password' => $_conf['proxy_password']
-            ));
-        }
+        // POSTデータ
         $req->addPostParameter('ID', $login2chID);
         $req->addPostParameter('PW', $login2chPW);
 

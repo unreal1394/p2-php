@@ -263,25 +263,10 @@ class P2Util
 
         try {
             // DL
-            $req = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
+            $req = self::getHTTPRequest2($url, HTTP_Request2::METHOD_GET);
             $purl = parse_url($url); // URL分解
             $req->setHeader('User-Agent', self::getP2UA(true,self::isHost2chs($purl['host'])));
             unset($purl);
-
-            $req->setConfig(array(
-                    'connect_timeout'  => $_conf['http_conn_timeout'],
-                    'timeout'          => $_conf['http_read_timeout'],
-                    'follow_redirects' => $trace_redirection,
-            ));
-
-            if ($_conf['proxy_use']) {
-                $req->setConfig (array (
-                    'proxy_host' => $_conf['proxy_host'],
-                    'proxy_port' => $_conf['proxy_port'],
-                    'proxy_user' => $_conf['proxy_user'],
-                    'proxy_password' => $_conf['proxy_password']
-                ));
-            }
 
             $response = $req->send();
 
@@ -299,10 +284,10 @@ class P2Util
         if (isset($error_msg) && strlen($error_msg) > 0) {
             // エラーメッセージを設定
             if ($disp_error) {
-                $url_t = P2Util::throughIme($url);
+                $url_t = self::throughIme($url);
                 $info_msg_ht = "<p class=\"info-msg\">Error: {$error_msg}<br>";
                 $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$url}</a> に接続できませんでした。</p>";
-                P2Util::pushInfoHtml($info_msg_ht);
+                self::pushInfoHtml($info_msg_ht);
             }
             return null;
         }
@@ -1709,30 +1694,19 @@ ERR;
      */
     static public function getWebPage($url, &$error_msg, $timeout = 15)
     {
-        $params = array("timeout" => $timeout);
+        try {
+            $req = self::getHTTPRequest2($url, HTTP_Request2::METHOD_GET);
+            //$req->addHeader("X-PHP-Version", phpversion());
 
-        if (!empty($_conf['proxy_use'])) {
-            $params['proxy_host'] = $_conf['proxy_host'];
-            $params['proxy_port'] = $_conf['proxy_port'];
-        }
+            $response = $req->send();
 
-        $req = new HTTP_Request($url, $params);
-        //$req->addHeader("X-PHP-Version", phpversion());
-
-        $response = $req->sendRequest();
-
-        if (PEAR::isError($response)) {
-            $error_msg = $response->getMessage();
-        } else {
-            $code = $req->getResponseCode();
+            $code = $response->getStatus();
             if ($code == 200 || $code == 206) { // || $code == 304) {
-                return $req->getResponseBody();
-            } else {
-                //var_dump($req->getResponseHeader());
-                $error_msg = $code;
+                return $response->getBody();
             }
+        } catch (Exception $e) {
+            return false;
         }
-
         return false;
     }
 
@@ -2194,7 +2168,7 @@ ERR;
         global $_conf;
 
         if ($_conf['be_2ch_mail'] && strlen($_conf['be_2ch_password'])) {
-            $r = P2Util::getBe2chCodeByMailPass($_conf['be_2ch_mail'], $_conf['be_2ch_password']);
+            $r = self::getBe2chCodeByMailPass($_conf['be_2ch_mail'], $_conf['be_2ch_password']);
             if (is_array($r)) {
                 return $r;
             }
@@ -2226,19 +2200,9 @@ ERR;
         }
 
         try {
-            $req = new HTTP_Request2('http://be.2ch.net/index.php', HTTP_Request2::METHOD_POST);
+            $req = self::getHTTPRequest2 ('http://be.2ch.net/index.php', HTTP_Request2::METHOD_POST);
 
-            $req->setHeader('User-Agent', P2Util::getP2UA(true,true));
-
-            // プロキシ
-            if ($_conf['proxy_use']) {
-                $req->setConfig(array(
-                        'proxy_host' => $_conf['proxy_host'],
-                        'proxy_port' => $_conf['proxy_port'],
-                        'proxy_user' => $_conf['proxy_user'],
-                        'proxy_password' => $_conf['proxy_password']
-                ));
-            }
+            $req->setHeader('User-Agent', self::getP2UA(true,true));
 
             $req->addPostParameter('mail', $mail);
             $req->addPostParameter('pass', $pass);
@@ -2268,6 +2232,49 @@ ERR;
         }
 
         return false; // $error_msg
+    }
+
+    // }}}
+    // {{{ getHTTPRequest2()
+
+    /**
+     * HTTP_Request2クラスのインスタンスを生成する
+     *
+     * @param $url HTTP_Request2と同じ
+     * @param $method HTTP_Request2と同じ
+     * @return HTTP_Request2
+     */
+    static public function getHTTPRequest2($url , $method = HTTP_Request2::METHOD_GET)
+    {
+        global $_conf;
+
+        $req = new HTTP_Request2($url, $method);
+
+        // タイムアウトの設定
+        $req->setConfig (array (
+                'connect_timeout' => $_conf['http_conn_timeout'],
+                'timeout' => $_conf['http_read_timeout'],
+        ));
+
+        // SSLの設定
+        $req->setAdapter($_conf['ssl_function']);
+
+        if($_conf['ssl_capath'])
+        {
+            $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
+        }
+
+        // プロキシ
+        if ($_conf['proxy_use']) {
+            $req->setConfig (array (
+                    'proxy_host' => $_conf['proxy_host'],
+                    'proxy_port' => $_conf['proxy_port'],
+                    'proxy_user' => $_conf['proxy_user'],
+                    'proxy_password' => $_conf['proxy_password']
+            ));
+        }
+
+        return $req;
     }
 
     // }}}

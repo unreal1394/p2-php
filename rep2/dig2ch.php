@@ -12,23 +12,9 @@ function dig2chsearch($query)
     $url = $_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q'];
 
     try {
-        $req = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
+        $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
         $req->setHeader('User-Agent', $_SERVER['HTTP_USER_AGENT']);
         $req->setHeader('Acecpt-Language', 'ja');
-
-        $req->setConfig(array(
-                'connect_timeout'  => $_conf['http_conn_timeout'],
-                'timeout'          => $_conf['http_read_timeout'],
-        ));
-
-        if ($_conf['proxy_use']) {
-            $req->setConfig (array (
-                'proxy_host' => $_conf['proxy_host'],
-                'proxy_port' => $_conf['proxy_port'],
-                'proxy_user' => $_conf['proxy_user'],
-                'proxy_password' => $_conf['proxy_password']
-            ));
-        }
 
         $response = $req->send();
 

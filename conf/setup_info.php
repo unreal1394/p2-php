@@ -9,6 +9,7 @@ $p2_required_version_5_4 = '5.4.0';
 
 // •K{Šg’£ƒ‚ƒWƒ…[ƒ‹
 $p2_required_extensions = array(
+    'curl',
     'dom',
     'json',
     'libxml',
