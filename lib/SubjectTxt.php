@@ -29,10 +29,18 @@ class SubjectTxt
         $this->storage = 'file';
 
         $this->subject_file = P2Util::datDirOfHostBbs($host, $bbs) . 'subject.txt';
-        $this->subject_url = 'http://' . $host . '/' . $bbs . '/subject.txt';
+        // 接続先が2ch.netならばSSL通信を行う(pinkは対応していないのでしない)
+        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host)) {
+            $this->subject_url = 'https://' . $host . '/' . $bbs . '/subject.txt';
+        } else {
+            $this->subject_url = 'http://' . $host . '/' . $bbs . '/subject.txt';
+        }
 
         // したらばのlivedoor移転に対応。読込先をlivedoorとする。
-        $this->subject_url = P2Util::adjustHostJbbs($this->subject_url);
+        if(P2Util::isHostJbbsShitaraba($host))
+        {
+            $this->subject_url = P2Util::adjustHostJbbs($this->subject_url);
+        }
 
         // subject.txtをダウンロード＆セットする
         $this->dlAndSetSubject();

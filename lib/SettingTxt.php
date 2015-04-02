@@ -37,7 +37,12 @@ class SettingTxt
         $this->_setting_txt = $dat_host_bbs_dir_s . 'SETTING.TXT';
         $this->_setting_srd = $dat_host_bbs_dir_s . 'p2_kb_setting.srd';
 
-        $this->_url = 'http://' . $host . '/' . $bbs . '/SETTING.TXT';
+        // 接続先が2ch.netならばSSL通信を行う(pinkは対応していないのでしない)
+        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host)) {
+            $this->_url = 'https://' . $host . '/' . $bbs . '/SETTING.TXT';
+        } else {
+            $this->_url = 'http://' . $host . '/' . $bbs . '/SETTING.TXT';
+        }
         //$this->_url = P2Util::adjustHostJbbs($this->_url); // したらばのlivedoor移転に対応。読込先をlivedoorとする。
 
         $this->setting_array = array();
