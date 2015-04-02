@@ -36,6 +36,12 @@ rep2-expack test https://github.com/orzisun/p2-php
  本家p2と同じく、X11ライセンスです。
 
 ●ChangeLog
+150402.1350
+・接続先が2ch.netならばSSL通信を行うように変更(pinkとbeログイン認証は対応していないのでしない)
+・ssl_functionのデフォルト設定をcURLに変更
+・SSL通信以外でもSSLの設定が反映されるように変更
+・上記変更のためcURL必須に変更
+
 150401.2321
 ・認証付プロキシに対応（BASIC認証のみ）
 ・SSL通信のopenSSLとcURLを切り替えることが出来る設定を追加
