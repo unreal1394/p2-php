@@ -2240,13 +2240,20 @@ ERR;
     /**
      * HTTP_Request2クラスのインスタンスを生成する
      *
-     * @param $url HTTP_Request2と同じ
+     * @param string $url 文字列のURL(絶対に必須)
      * @param $method HTTP_Request2と同じ
      * @return HTTP_Request2
      */
     static public function getHTTPRequest2($url , $method = HTTP_Request2::METHOD_GET)
     {
         global $_conf;
+
+        $protocol = parse_url($url, PHP_URL_SCHEME);
+
+        if(empty($url) || $protocol === false)
+        {
+            throw new InvalidArgumentException("URLの指定が変です。");
+        }
 
         $req = new HTTP_Request2($url, $method);
 
@@ -2257,11 +2264,13 @@ ERR;
         ));
 
         // SSLの設定
-        $req->setAdapter($_conf['ssl_function']);
+        if($protocol == 'https') {
+            $req->setAdapter($_conf['ssl_function']);
 
-        if($_conf['ssl_capath'])
-        {
-            $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
+            if($_conf['ssl_capath'])
+            {
+                $req->setConfig ('ssl_capath', $_conf['ssl_capath']);
+            }
         }
 
         // プロキシ
