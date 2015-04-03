@@ -24,13 +24,14 @@ class SubjectTxt
      */
     public function __construct($host, $bbs)
     {
+        global $_conf;
         $this->host = $host;
         $this->bbs =  $bbs;
         $this->storage = 'file';
 
         $this->subject_file = P2Util::datDirOfHostBbs($host, $bbs) . 'subject.txt';
         // Ú‘±æ‚ª2ch.net‚È‚ç‚ÎSSL’ÊM‚ðs‚¤(pink‚Í‘Î‰ž‚µ‚Ä‚¢‚È‚¢‚Ì‚Å‚µ‚È‚¢)
-        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host)) {
+        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host) && $_conf['2chapi_use'] == 1) {
             $this->subject_url = 'https://' . $host . '/' . $bbs . '/subject.txt';
         } else {
             $this->subject_url = 'http://' . $host . '/' . $bbs . '/subject.txt';

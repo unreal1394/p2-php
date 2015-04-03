@@ -28,6 +28,7 @@ class SettingTxt
      */
     public function __construct($host, $bbs)
     {
+        global $_conf;
         $this->_cache_interval = 60 * 60 * 12; // キャッシュは12時間有効
 
         $this->_host = $host;
@@ -38,7 +39,7 @@ class SettingTxt
         $this->_setting_srd = $dat_host_bbs_dir_s . 'p2_kb_setting.srd';
 
         // 接続先が2ch.netならばSSL通信を行う(pinkは対応していないのでしない)
-        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host)) {
+        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host) && $_conf['2chapi_use'] == 1) {
             $this->_url = 'https://' . $host . '/' . $bbs . '/SETTING.TXT';
         } else {
             $this->_url = 'http://' . $host . '/' . $bbs . '/SETTING.TXT';

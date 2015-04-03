@@ -379,7 +379,7 @@ function postIt($host, $bbs, $key, $post)
     global $bbs_cgi;
 
     // Ú‘±æ‚ª2ch.net‚È‚ç‚ÎSSL’ÊM‚ğs‚¤(pink‚Í‘Î‰‚µ‚Ä‚¢‚È‚¢‚Ì‚Å‚µ‚È‚¢)
-    if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host)) {
+    if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host) && $_conf['2chapi_use'] == 1) {
         $bbs_cgi_url = 'https://' . $host . $bbs_cgi;
     } else {
         $bbs_cgi_url = 'http://' . $host . $bbs_cgi;
