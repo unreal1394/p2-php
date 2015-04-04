@@ -110,6 +110,8 @@ EOP;
     if ($_conf['expack.editor.dpreview']) {
         echo "<link rel=\"stylesheet\" href=\"css.php?css=prvw&amp;skin={$skin_en}\" type=\"text/css\">\n";
     }
+}
+if (!$_conf['ktai'] || $_conf['iphone']) {
     echo <<<EOP
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <script type="text/javascript" src="js/basic.js?{$_conf['p2_version_id']}"></script>
