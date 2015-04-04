@@ -88,6 +88,39 @@ if (isset($_POST['sync'])) {
 // お気に入りセット変更があれば、設定ファイルを書き換える
 } elseif ($_conf['expack.misc.multi_favs'] && isset($_POST['favsetlist'])) {
     updateFavSetList();
+
+} elseif (isset($_POST['delete']) && isset($_POST['submit'])) { // 履歴の削除処理
+    switch ($_POST['delete']) {
+        case cookie:
+            // cookie
+            $delflag = CookieDataStore::clear() === flase ? false : true;
+            break;
+        case matome:
+            // 新着まとめ読み
+            $delflag = MatomeCacheList::trim(0) === flase ? false : true;
+            break;
+        case recent:
+            // 最近読んだスレ
+            $delflag = deleteFile($_conf['recent_idx']);
+            break;
+        case reshist:
+            // 書込履歴
+            if(deleteFile($_conf['res_hist_idx']) &&
+            deleteFile($_conf['res_hist_dat']) &&
+            deleteFile($_conf['res_hist_dat_php']) ) {
+                $delflag = true;
+            }
+            break;
+        default:
+            $delflag = false;
+            P2Util::pushInfoHtml("<p>p2 error: 引数 {$_POST['delete']} が不正です。 ");
+            break;
+    }
+    if ($delflag) {
+        P2Util::pushInfoHtml("<p>p2 info: {$_POST['submit']}を削除しました。");
+    } else {
+        P2Util::pushInfoHtml("<p>p2 error: {$_POST['submit']}の削除に失敗しました。");
+    }
 }
 
 // }}}
@@ -267,7 +300,7 @@ EOP;
     // }}}
 	// {{{ PC - +live ハイライトワード編集
 
-	echo "<td>\n\n";
+	echo "<tr><td>\n\n";
 
 	echo <<<EOP
 <fieldset>
@@ -281,9 +314,41 @@ EOP;
 </fieldset>\n
 EOP;
 
-	echo "</td></tr>";
+	echo "</td>";
 
 	// }}}
+    // {{{ PC - 2ch774 履歴・キャッシュの削除
+
+    echo "<td>\n\n";
+
+    echo <<<EOP
+<fieldset>
+<legend>履歴・キャッシュの削除</legend>\n
+<script type="text/javascript">
+//<![CDATA[
+function deleteCheck(submit){
+    if(window.confirm(submit + 'を全て削除してよろしいですか？')){
+        return true;
+    }
+    else{
+        return false; // 送信を中止
+    }
+}
+//]]>
+</script>
+
+EOP;
+    echo getDeleteHistoryFormHt('cookie', 'Cookie');
+    echo getDeleteHistoryFormHt('matome', '新着まとめ読み');
+    echo getDeleteHistoryFormHt('reshist', '書込履歴');
+    echo getDeleteHistoryFormHt('recent', '最近読んだスレ');
+    echo <<<EOP
+</fieldset>\n
+EOP;
+
+    echo "</td></tr>";
+
+    // }}}
     // {{{ PC - ホストの同期 HTMLのセット
 
     echo <<<EOP
@@ -335,7 +400,20 @@ EOP;
         echo "</td></tr>\n\n";
     }
 
-    include_once P2_LIB_DIR . '/wiki/editpref.inc.php';
+    // }}}
+    // +Wiki
+    // {{{ PC - +Wiki
+    echo "<tr><td>\n\n";
+    echo <<<EOP
+<fieldset>
+<legend>+Wiki</legend>
+    <a href="edit_link_plugin.php{$_conf['k_at_q']}" target="_self">リンクプラグイン編集</a> ｜
+    <a href="edit_dat_plugin.php{$_conf['k_at_q']}" target="_self">DAT取得プラグイン編集</a> ｜
+    <a href="edit_replace_imageurl.php{$_conf['k_at_q']}" target="_self">置換画像URLプラグイン編集</a>
+</fieldset>\n
+EOP;
+    echo "</td></tr>\n\n";
+
     // }}}
 }
 
@@ -588,6 +666,34 @@ EOFORM;
 }
 
 // }}}
+// {{{ getDeleteHistoryFormHt()
+
+/**
+ * 履歴削除用フォームのHTMLを取得する
+ *
+ * @param   string  $path_value     削除するファイルの種類
+ * @param   string  $submit_value   submitボタンの値
+ * @return  string
+ */
+function getDeleteHistoryFormHt($path_value, $submit_value)
+{
+    global $_conf;
+
+    $ht = <<<EOFORM
+<form action="editpref.php" method="POST" target="_self" class="inline-form" onSubmit="return deleteCheck('{$submit_value}')">
+    {$_conf['k_input_ht']}
+    <input type="hidden" name="delete" value="{$path_value}">
+    <input type="submit" name="submit" value="{$submit_value}">
+</form>\n
+EOFORM;
+
+    if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
+        $ht = '&nbsp;' . preg_replace('/>\s+</', '><', $ht);
+    }
+    return $ht;
+}
+
+// }}}
 // {{{ getFavSetListFormHt()
 
 /**
@@ -738,6 +844,20 @@ function compareSkinNames($a, $b)
         return 1;
     }
     return strcmp($a, $b);
+}
+
+// }}}
+// {{{ deleteFile()
+
+/**
+ * ファイルを削除する。
+ *
+ * @param string ファイル名
+ * @return boolean 既に無いか削除に成功したらtrue
+ */
+function deleteFile($filename)
+{
+    return file_exists($filename) ? unlink($filename) : true;
 }
 
 // }}}
