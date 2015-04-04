@@ -223,6 +223,7 @@ if (!$_conf['ktai'] && $_conf['expack.editor.dpreview']) {
             $_dpreview_noname = $_dpreview_st->setting_array['BBS_NONAME_NAME'];
             $_dpreview_noname = '"' . StrCtl::toJavaScript($_dpreview_noname) . '"';
         }
+        unset($_dpreview_st);
     }
     $_dpreview_hide = 'false';
     if ($_conf['expack.editor.dpreview'] == 2) {
@@ -315,11 +316,31 @@ EOM;
 
 $onsubmit_at = '';
 
-if (!$_conf['ktai']) {
+if (!$_conf['ktai'] || $_conf['iphone']) {
     if (!preg_match('{NetFront|AVE-?Front/}', $_SERVER['HTTP_USER_AGENT'])) {
-        $onsubmit_at = sprintf(' onsubmit="if (validateAll(%s,%s)) { switchBlockSubmit(true); return true; } else { return false }"',
+
+        // 名無しで書くと節穴になる板をチェックして警告を出す。
+        $confirmNanashi = false;
+        $_st = new SettingTxt($host, $bbs);
+        $_st->setSettingArray();
+
+        // 名無しが節穴
+        if (strpos($_st->setting_array['BBS_NONAME_NAME'], "fusianasan")) {
+            $confirmNanashi = true;
+        }
+
+        // 名無しで書けない
+        if($_st->setting_array['BBS_NANASHI_CHECK']=='1')
+        {
+            $confirmNanashi = true;
+        }
+
+        unset($_st);
+
+        $onsubmit_at = sprintf(' onsubmit="if (validateAll(%s,%s) && confirmNanashi(%s)) { switchBlockSubmit(true); return true; } else { return false }"',
             (($_conf['expack.editor.check_message']) ? 'true' : 'false'),
-            (($_conf['expack.editor.check_sage'])    ? 'true' : 'false'));
+            (($_conf['expack.editor.check_sage'])    ? 'true' : 'false'),
+            ($confirmNanashi                         ? 'true' : 'false'));
     }
 }
 

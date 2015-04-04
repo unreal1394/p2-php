@@ -194,3 +194,16 @@ function validateSage() {
 	}
 	return true;
 }
+
+// 引数にtrueを指定したら名無しで書込するかどうか確認する
+function confirmNanashi(doconfirmNanashi) {
+	// 引数がtrueで名前欄が0文字(名無し)ならば
+	if (doconfirmNanashi && document.getElementById('FROM').value.length == 0) {
+		if(window.confirm('この板は名無しでの書き込みが制限されているか\n名無しに fusianasan が含まれています。\n名無しで書き込みますか？')) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	return true;
+}
