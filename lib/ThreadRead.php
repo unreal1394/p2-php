@@ -78,14 +78,14 @@ class ThreadRead extends Thread {
                 include $_conf['sid2ch_php'];
                 return $this->_downloadDat2chMaru ($uaMona, $SID2ch);
 
-                // 2ch bbspink モリタポ読み
+            // 2ch bbspink モリタポ読み
             } elseif (P2Util::isHost2chs ($this->host) && ! empty ($_GET['moritapodat']) && $_conf['p2_2ch_mail'] && $_conf['p2_2ch_pass']) {
                 if (! array_key_exists ('csrfid', $_GET) || $this->_getCsrfIdForMoritapoDat () != $_GET['csrfid']) {
                     p2die ('不正なリクエストです');
                 }
                 return $this->_downloadDat2chMoritapo ();
 
-                // 2chの過去ログ倉庫読み
+            // 2chの過去ログ倉庫読み
             } elseif (! empty ($_GET['kakolog']) && ! empty ($_GET['kakoget'])) {
                 if ($_GET['kakoget'] == 1) {
                     $ext = '.dat.gz';
@@ -94,11 +94,12 @@ class ThreadRead extends Thread {
                 }
                 return $this->_downloadDat2chKako ($_GET['kakolog'], $ext);
 
-                // 2ch or 2ch互換
+            // 2ch or 2ch互換
             } elseif (P2Util::isHost2chs ($this->host) && ! empty ($_GET['shirokuma'])) {
                 return $this->_downloadDat2chMaru ($uaMona, $SID2ch, true);
-                // 2ch はAPI経由で落とす
-            } elseif (P2Util::isHost2chs ($this->host) && $_conf['2chapi_use'] == 1 && empty ($_GET['olddat'])) {
+
+            // 2ch はAPI経由で落とす
+            } elseif (P2Util::isHost2chs ($this->host) && $_conf['2chapi_use'] && empty ($_GET['olddat'])) {
 
                 // ログインしてなければ or ログイン後、設定した時間経過していたら自動再ログイン
                 if (! file_exists ($_conf['sid2chapi_php']) || ! empty ($_REQUEST['relogin2chapi']) || (filemtime ($_conf['sid2chapi_php']) < time () - 60 * 60 * $_conf['2chapi_interval'])) {
@@ -115,6 +116,7 @@ class ThreadRead extends Thread {
                 include $_conf['sid2chapi_php'];
                 return $this->_downloadDat2chAPI ($SID2chAPI, $this->length);
             } else {
+
                 // 2ch 以外の外部板
                 // DATを差分DLする
                 return $this->_downloadDat2ch ($this->length);
@@ -164,7 +166,14 @@ class ThreadRead extends Thread {
         $serverName = explode ('.', $this->host);
         // $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
         // $url="http://news2.2ch.net/test/read.cgi?bbs=newsplus&key=1038486598";
-        $url = 'https://api.2ch.net/v1/' . $serverName[0] . '/' . $this->bbs . '/' . $this->key;
+
+        if($_conf['2chapi_ssl.read']) {
+            $url = 'https://api.2ch.net/v1/';
+        } else {
+            $url = 'http://api.2ch.net/v1/';
+        }
+
+        $url .= $serverName[0] . '/' . $this->bbs . '/' . $this->key;
         $message = '/v1/' . $serverName[0] . '/' . $this->bbs . '/' . $this->key . $sid . $AppKey;
         $HB = hash_hmac ("sha256", $message, $HMKey);
 

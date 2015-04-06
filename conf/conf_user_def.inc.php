@@ -427,6 +427,14 @@ $conf_user_sel['2chapi_ua.read'] = array(
     'Mozilla/3.0 (compatible; %s)'   => '2 Mozilla/3.0 (compatible; AppName)',
 );
 
+// API認証にSSLを使用する
+$conf_user_def['2chapi_ssl.auth'] = 1;  // (1)
+$conf_user_rad['2chapi_ssl.auth'] = array('1' => 'する', '0' => 'しない');
+
+// DAT取得にSSLを使用する
+$conf_user_def['2chapi_ssl.read'] = 1;  // (1)
+$conf_user_rad['2chapi_ssl.read'] = array('1' => 'する', '0' => 'しない');
+
 // デバッグ用の情報を出力する
 $conf_user_def['2chapi_debug_print'] = 0; // (0)
 $conf_user_rad['2chapi_debug_print'] = array('1' => 'する', '0' => 'しない');
@@ -559,6 +567,18 @@ $conf_user_sel['ssl_function'] = array('socket' => 'OpenSSL', 'curl' => 'cURL');
 
 // SSL通信の接続先を検証するために使用する証明書が格納されたディレクトリ ※検証できない時のみ指定
 $conf_user_def['ssl_capath'] = ""; // ()
+
+// 2ch.netの●ログインにSSLを使用する
+$conf_user_def['2ch_ssl.maru'] = 1;  // (1)
+$conf_user_rad['2ch_ssl.maru'] = array('1' => 'する', '0' => 'しない');
+
+// 2ch.netのsubjec.txtとSETTING.TXTの取得にSSLを使用する
+$conf_user_def['2ch_ssl.subject'] = 0;  // (0)
+$conf_user_rad['2ch_ssl.subject'] = array('1' => 'する', '0' => 'しない');
+
+// 2ch.netの書き込みにSSLを使用する
+$conf_user_def['2ch_ssl.post'] = 0;  // (0)
+$conf_user_rad['2ch_ssl.post'] = array('1' => 'する', '0' => 'しない');
 
 // }}}
 // {{{ 拡張パックとiPhone

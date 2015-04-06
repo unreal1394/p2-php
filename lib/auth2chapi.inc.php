@@ -14,7 +14,14 @@
     function authenticate_2chapi()
     {
     	global $_conf;
-        $url = 'https://api.2ch.net/v1/auth/';
+
+        if ($_conf['2chapi_ssl.auth'])
+        {
+            $url = 'https://api.2ch.net/v1/auth/';
+        } else {
+            $url = 'http://api.2ch.net/v1/auth/';
+        }
+
         $CT = time();
         $AppKey = $_conf['2chapi_appkey'];
         $AppName = $_conf['2chapi_appname'];

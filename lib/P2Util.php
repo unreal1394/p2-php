@@ -2130,8 +2130,9 @@ ERR;
         }
 
         if ($withMonazilla) {
-            $p2ua = 'Monazilla/1.00' . ' (' . $p2ua . ')';
+            $p2ua = sprintf('Monazilla/1.00 (%s)', $p2ua);
         }
+
         return $p2ua;
     }
     // {{{ isEnableBe2ch()

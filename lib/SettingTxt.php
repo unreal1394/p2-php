@@ -39,7 +39,7 @@ class SettingTxt
         $this->_setting_srd = $dat_host_bbs_dir_s . 'p2_kb_setting.srd';
 
         // Ú‘±æ‚ª2ch.net‚È‚ç‚ÎSSL’ÊM‚ðs‚¤(pink‚Í‘Î‰ž‚µ‚Ä‚¢‚È‚¢‚Ì‚Å‚µ‚È‚¢)
-        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host) && $_conf['2chapi_use'] == 1) {
+        if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host) && $_conf['2ch_ssl.subject']) {
             $this->_url = 'https://' . $host . '/' . $bbs . '/SETTING.TXT';
         } else {
             $this->_url = 'http://' . $host . '/' . $bbs . '/SETTING.TXT';

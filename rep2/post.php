@@ -379,7 +379,7 @@ function postIt($host, $bbs, $key, $post)
     global $bbs_cgi;
 
     // 接続先が2ch.netならばSSL通信を行う(pinkは対応していないのでしない)
-    if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host) && $_conf['2chapi_use'] == 1) {
+    if (P2Util::isHost2chs($host) && ! P2Util::isHostBbsPink($host) && $_conf['2ch_ssl.post']) {
         $bbs_cgi_url = 'https://' . $host . $bbs_cgi;
     } else {
         $bbs_cgi_url = 'http://' . $host . $bbs_cgi;
@@ -389,7 +389,7 @@ function postIt($host, $bbs, $key, $post)
         $req = P2Util::getHTTPRequest2 ($bbs_cgi_url,HTTP_Request2::METHOD_POST);
 
         // ヘッダ
-        $req->setHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($host)));
+        $req->setHeader('User-Agent', P2Util::getP2UA(true, P2Util::isHost2chs($host)));
         $req->setHeader('Referer', "http://{$host}/{$bbs}/{$key}/");
 
         // クッキー
@@ -447,7 +447,8 @@ function postIt($host, $bbs, $key, $post)
         }
 
     } catch (Exception $e) {
-        showPostMsg(false, "サーバ接続エラー: $e->getMessage()<br>p2 Error: 板サーバへの接続に失敗しました", false);
+        $error_msg = $e->getMessage();
+        showPostMsg(false, "サーバ接続エラー: {$error_msg}<br>p2 Error: 板サーバへの接続に失敗しました", false);
     }
 
     // be.2ch.net or JBBSしたらば 文字コード変換 EUC→SJIS

@@ -383,8 +383,11 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('2chapi_hmkey','HMkey', P2_EDIT_CONF_USER_LONGTEXT),
         array('2chapi_appname','AppName APIに送信するアプリケーション名 例:Hoge/1.00'),
         'User-Agent',
-        array('2chapi_ua.auth','API認証で使用するUser-Agent'),
-        array('2chapi_ua.read','DAT取得で使用するUser-Agent'),
+        array('2chapi_ua.auth','API認証に使用するUser-Agent'),
+        array('2chapi_ua.read','DAT取得に使用するUser-Agent'),
+        'SSL通信設定',
+        array('2chapi_ssl.auth','API認証にSSLを使用する'),
+        array('2chapi_ssl.read','DAT取得にSSLを使用する'),
         'デバッグ用',
         array('2chapi_debug_print','デバッグ用の情報を出力する'),
         '認証情報を変更した場合再認証してください',
@@ -438,9 +441,12 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('proxy_port', 'プロキシポート ex)&quot;8080&quot;'),
         array('proxy_user', 'プロキシユーザー名 (使用する場合のみ)'),
         array('proxy_password', 'プロキシパスワード (使用する場合のみ)'),
-        '通信設定',
+        'SSL通信設定',
         array('ssl_function', 'SSL通信(●ログイン等)に使用する関数<br>(関数に該当する拡張をインストールする必要がある)'),
         array('ssl_capath', 'SSL通信で接続先を検証するための証明書があるディレクトリ ex)&quot;/etc/ssl/certs&quot;<br>設定なして動く場合は設定不要<br>ssl_functionに対応した形式の証明書が必要'),
+        array('2ch_ssl.maru', '2ch.netの●ログインにSSLを使用する'),
+        array('2ch_ssl.subject', '2ch.netのsubjec.txtとSETTING.TXTの取得にSSLを使用する'),
+        array('2ch_ssl.post', '2ch.netの書き込みにSSLを使用する'),
     );
     printEditConfGroupHtml($groupname, $conflist, $flags);
 }

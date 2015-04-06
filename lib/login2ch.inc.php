@@ -23,8 +23,13 @@ function login2ch()
         return false;
     }
 
-    $auth2ch_url    = 'https://2chv.tora3.net/futen.cgi';
-    $dolib2ch       = 'DOLIB/1.00';
+    if ($_conf['2ch_ssl.maru']) {
+        $auth2ch_url = 'https://2chv.tora3.net/futen.cgi';
+    } else {
+        $auth2ch_url = 'http://2chv.tora3.net/futen.cgi';
+    }
+
+    $dolib2ch = 'DOLIB/1.00';
 
     if($_conf['2chapi_use'] == 1) {
         if($_conf['2chapi_appname'] != "") {
