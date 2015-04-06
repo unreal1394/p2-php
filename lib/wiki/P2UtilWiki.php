@@ -41,9 +41,6 @@ class P2UtilWiki
     {
         try {
             $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_HEAD);
-
-            $req->setHeader('User-Agent', 'Monazilla/1.00');
-
             return $response->getStatus();
 
         } catch (Exception $e) {

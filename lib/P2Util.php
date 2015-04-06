@@ -264,9 +264,6 @@ class P2Util
         try {
             // DL
             $req = self::getHTTPRequest2($url, HTTP_Request2::METHOD_GET);
-            $purl = parse_url($url); // URL分解
-            $req->setHeader('User-Agent', self::getP2UA(true,self::isHost2chs($purl['host'])));
-            unset($purl);
 
             $response = $req->send();
 
@@ -2249,14 +2246,21 @@ ERR;
     {
         global $_conf;
 
-        $protocol = parse_url($url, PHP_URL_SCHEME);
+        $purl = parse_url ($url);
 
-        if(empty($url) || $protocol === false)
+        if(empty($url) || $purl === false)
         {
-            throw new InvalidArgumentException("URLの指定が変です。");
+            throw new InvalidArgumentException ("URLの指定が変です。");
         }
 
         $req = new HTTP_Request2($url, $method);
+
+        // よく使うヘッダを指定
+        // p2のHTTP通信は特に指定の無い限りMonazillaを名乗るようにする
+        $req->setHeader ('User-Agent', self::getP2UA(true,self::isHost2chs($purl['host'])));
+        $req->setHeader ('Acecpt-Language', 'ja,en-us;q=0.7,en;q=0.3');
+        $req->setHeader ('Accept', '*/*');
+        $req->setHeader ('Accept-Encoding', 'gzip, deflate');
 
         // タイムアウトの設定
         $req->setConfig (array (
@@ -2265,7 +2269,7 @@ ERR;
         ));
 
         // SSLの設定
-        if($protocol == 'https') {
+        if($purl['scheme'] == 'https') {
             $req->setAdapter($_conf['ssl_function']);
 
             if($_conf['ssl_capath'])
@@ -2283,6 +2287,8 @@ ERR;
                     'proxy_password' => $_conf['proxy_password']
             ));
         }
+
+        unset ($purl);
 
         return $req;
     }

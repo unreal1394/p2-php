@@ -184,7 +184,6 @@ class ThreadRead extends Thread {
 
             // ヘッダ
             $req->setHeader ('User-Agent', $ReadUA);
-            $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
             if (! empty ($_GET['one'])) {
                 // >>1プレビューの時はサーバーに最初の部分だけ請求
@@ -356,9 +355,7 @@ class ThreadRead extends Thread {
         try {
             $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
             // ヘッダ
-            $req->setHeader ('User-Agent', P2Util::getP2UA (true));
             $req->setHeader ('Referer', "http://{$purl['host']}/{$this->bbs}/");
-            $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
             if (! empty ($_GET['one'])) {
                 // >>1プレビューの時はサーバーに最初の部分だけ請求
@@ -524,7 +521,6 @@ class ThreadRead extends Thread {
             $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
             // ヘッダ
             $req->setHeader ('User-Agent', "{$uaMona} ({$_conf['p2ua']})");
-            $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
             // Requestの送信
             $response = $req->send ();
@@ -611,10 +607,6 @@ class ThreadRead extends Thread {
 
         try {
             $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
-
-            // ヘッダ
-            $req->setHeader ('User-Agent', P2Util::getP2UA(true));
-            $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
             // Requestの送信
             $response = $req->send ();
@@ -710,7 +702,6 @@ class ThreadRead extends Thread {
                 $req = P2Util::getHTTPRequest2 ($read_url, HTTP_Request2::METHOD_GET);
                 // ヘッダ
                 $req->setHeader ('User-Agent', P2Util::getP2UA(false,P2Util::isHost2chs($this->host))); // ここは、"Monazilla/" をつけるとNG
-                $req->setHeader ('Accept-Encoding', "gzip, deflate");
 
                 // Requestの送信
                 $response = $req->send ();

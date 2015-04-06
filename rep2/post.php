@@ -389,7 +389,6 @@ function postIt($host, $bbs, $key, $post)
         $req = P2Util::getHTTPRequest2 ($bbs_cgi_url,HTTP_Request2::METHOD_POST);
 
         // ヘッダ
-        $req->setHeader('User-Agent', P2Util::getP2UA(true, P2Util::isHost2chs($host)));
         $req->setHeader('Referer', "http://{$host}/{$bbs}/{$key}/");
 
         // クッキー

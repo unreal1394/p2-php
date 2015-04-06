@@ -104,9 +104,6 @@ class SettingTxt
             $req = P2Util::getHTTPRequest2($this->_url, HTTP_Request2::METHOD_GET);
             $modified && $req->setHeader("If-Modified-Since", $modified);
 
-            // API‚ğg—p‚·‚éİ’è‚Å‘Šè‚ª2ch‚¾‚Á‚½‚çAPI‚ÌUA‚ğ‘—‚é
-            $req->setHeader('User-Agent', P2Util::getP2UA(true,P2Util::isHost2chs($this->host)));
-
             $response = $req->send();
 
             $code = $response->getStatus();

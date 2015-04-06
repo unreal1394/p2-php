@@ -13,9 +13,10 @@ function dig2chsearch($query)
 
     try {
         $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
-        $req->setHeader('User-Agent', $_SERVER['HTTP_USER_AGENT']);
-        $req->setHeader('Acecpt-Language', 'ja');
-        $req->setHeader('Accept', '*/*');
+        // $req->setHeader('User-Agent', $_SERVER['HTTP_USER_AGENT']); ‚â‚Á‚ÏMonazilla–¼æ‚Á‚Æ‚¢‚½•û‚ª—Ç‚³‚»‚¤‚©
+        $req->setHeader('Accept-Charset', 'utf-8');
+        $req->setHeader('Cache-Control', 'no-cache');
+        $req->setHeader('Accept', 'application/json');
 
         $response = $req->send();
 
