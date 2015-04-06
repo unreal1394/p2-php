@@ -15,6 +15,7 @@ function dig2chsearch($query)
         $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
         $req->setHeader('User-Agent', $_SERVER['HTTP_USER_AGENT']);
         $req->setHeader('Acecpt-Language', 'ja');
+        $req->setHeader('Accept', '*/*');
 
         $response = $req->send();
 
@@ -35,7 +36,6 @@ function dig2chsearch($query)
     }
 
     $jsontest1 = json_decode($body, true);
-    unset($body);
 
     //mb_convert_variables('SHIFT-JIS','UTF-8',$jsontest1);
 
@@ -65,7 +65,26 @@ function dig2chsearch($query)
                 $jsonerror = ' - Unknown error';
                 break;
         }
-        p2die("検索結果の取得に失敗しました".$jsonerror);
+        if (true) { // 本来はconf_admin.phpで切り替えることが出来るようにするが強制ON
+            echo "<b>PHPが動作しているOSのuname</b><br>". php_uname() ."<br>";
+            echo "<b>PHPのバージョン</b><br>".  phpversion() ."<br>";
+            if ($_conf['proxy_use'])
+            {
+                echo '<font color="red"><b>この環境は串が設定されています(2chとの通信に介入する串を使用している場合はおま環)</b></font><br>';
+                echo "{$_conf['proxy_host']}:{$_conf['proxy_port']}<br>";
+            }
+            echo "<b>dig2chに送信したURL(ブラウザでアクセスを試してみてください。)</b><br>{$url}<br>";
+            // 表示のためSJIS化
+            $body = mb_convert_encoding($body, "SJIS", "UTF-8");
+            echo '<b>dig2chからのレスポンス(http://jsonlint.com/ でエラーが無ければおま環)</b><br><textarea readonly rows="30" cols="100" wrap="off">'.$body.'</textarea><br>';
+            echo '<b>HTTP_Requestのvar_dump</b><br>';
+            var_dump($req);
+            echo '<b>HTTP_Responseのvar_dump</b><br>';
+            var_dump($response);
+        }
+        p2die("検索結果の解析に失敗しました".$jsonerror);
+    } else {
+        unset ($body);
     }
 
     $boards = array();
