@@ -199,11 +199,21 @@ function validateSage() {
 function confirmNanashi(doconfirmNanashi) {
 	// 引数がtrueで名前欄が0文字(名無し)ならば
 	if (doconfirmNanashi && document.getElementById('FROM').value.length == 0) {
-		if(window.confirm('この板は名無しでの書き込みが制限されているか\n名無しに fusianasan が含まれています。\n名無しで書き込みますか？')) {
+		if(window.confirm('この板は名無しに fusianasan が含まれています。\n名無しで書き込みますか？')) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+	return true;
+}
+
+//引数にtrueを指定したら名無しで書込出来ない
+function blockNanashi(blockNanashi) {
+	// 引数がtrueで名前欄が0文字(名無し)ならば
+	if (blockNanashi && document.getElementById('FROM').value.length == 0) {
+		alert('この板は名無しの書き込みが制限されているので名無しで書き込むことが出来ません。');
+			return false;
 	}
 	return true;
 }

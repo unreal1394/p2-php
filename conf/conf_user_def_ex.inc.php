@@ -141,11 +141,11 @@ $conf_user_def['expack.editor.dpreview_chkaa'] = 0; // (0)
 $conf_user_rad['expack.editor.dpreview_chkaa'] = array('1' => 'する', '0' => 'しない');
 
 // 本文が空でないかチェック
-$conf_user_def['expack.editor.check_message'] = 0; // (0)
+$conf_user_def['expack.editor.check_message'] = 1; // (1)
 $conf_user_rad['expack.editor.check_message'] = array('1' => 'する', '0' => 'しない');
 
 // sage チェック
-$conf_user_def['expack.editor.check_sage'] = 0; // (0)
+$conf_user_def['expack.editor.check_sage'] = 1; // (1)
 $conf_user_rad['expack.editor.check_sage'] = array('1' => 'する', '0' => 'しない');
 
 // 下書き保存

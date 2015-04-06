@@ -320,27 +320,21 @@ if (!$_conf['ktai'] || $_conf['iphone']) {
     if (!preg_match('{NetFront|AVE-?Front/}', $_SERVER['HTTP_USER_AGENT'])) {
 
         // 名無しで書くと節穴になる板をチェックして警告を出す。
-        $confirmNanashi = false;
         $_st = new SettingTxt($host, $bbs);
         $_st->setSettingArray();
 
         // 名無しが節穴
-        if (strpos($_st->setting_array['BBS_NONAME_NAME'], "fusianasan")) {
-            $confirmNanashi = true;
-        }
+        $confirmNanashi = ( (strpos($_st->setting_array['BBS_NONAME_NAME'], "fusianasan") !== false));
 
         // 名無しで書けない
-        if($_st->setting_array['BBS_NANASHI_CHECK']=='1')
-        {
-            $confirmNanashi = true;
-        }
+        $blockNanashi = ($_st->setting_array['BBS_NANASHI_CHECK'] == '1' || $_st->setting_array['NANASHI_CHECK'] == '1');
 
         unset($_st);
 
-        $onsubmit_at = sprintf(' onsubmit="if (validateAll(%s,%s) && confirmNanashi(%s)) { switchBlockSubmit(true); return true; } else { return false }"',
+        $onsubmit_at = sprintf(' onsubmit="if (validateAll(%s,%s) && confirmNanashi(%s) && blockNanashi(%s)) { switchBlockSubmit(true); return true; } else { return false }"',
             (($_conf['expack.editor.check_message']) ? 'true' : 'false'),
             (($_conf['expack.editor.check_sage'])    ? 'true' : 'false'),
-            ($confirmNanashi                         ? 'true' : 'false'));
+            ($confirmNanashi ? 'true' : 'false'), ($blockNanashi ? 'true' : 'false'));
     }
 }
 
