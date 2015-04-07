@@ -374,6 +374,10 @@ $conf_user_rules['ngaborn_frequent_dayres'] = array('notIntExceptMinusToDef');
 $conf_user_def['ngaborn_chain'] = 0; // (0)
 $conf_user_rad['ngaborn_chain'] = array('1' => 'する', '0' => 'しない', '2' => 'すべてNGにする');
 
+// NGあぼーんの対象になったレスのIDを自動的にNGあぼーんする(する:1, しない:0 NGにする:2)
+$conf_user_def['ngaborn_auto'] = 0; // (0)
+$conf_user_rad['ngaborn_auto'] = array('1' => 'する', '0' => 'しない');
+
 // 表示範囲外のレスも連鎖NGあぼーんの対象にする(する:1, しない:0)
 // 処理を軽くするため、デフォルトではしない
 $conf_user_def['ngaborn_chain_all'] = 0; // (0)

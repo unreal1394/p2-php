@@ -14,12 +14,14 @@ $GLOBALS['ngaborns_hits'] = array(
     'aborn_name'    => 0,
     'aborn_res'     => 0,
     'aborn_thread'  => 0,
+    'aborn_auto'    => 0,
     'ng_chain'      => 0,
     'ng_freq'       => 0,
     'ng_id'         => 0,
     'ng_mail'       => 0,
     'ng_msg'        => 0,
     'ng_name'       => 0,
+    'ng_auto'       => 0,
 	'highlight_chain' => 0,
 	'highlight_id'    => 0,
 	'highlight_mail'  => 0,
@@ -30,8 +32,7 @@ $GLOBALS['ngaborns_hits'] = array(
 // }}}
 // {{{ NgAbornCtl
 
-class NgAbornCtl
-{
+class NgAbornCtl {
     // {{{ saveNgAborns()
 
     /**
@@ -40,8 +41,7 @@ class NgAbornCtl
      * @param void
      * @return void
      */
-    static public function saveNgAborns()
-    {
+    static public function saveNgAborns() {
         global $ngaborns, $ngaborns_hits;
         global $_conf;
 
@@ -116,8 +116,7 @@ class NgAbornCtl
      * @param array $aborn_threads
      * @return void
      */
-    static public function saveAbornThreads(array $aborn_threads)
-    {
+    static public function saveAbornThreads(array $aborn_threads) {
         if (array_key_exists('ngaborns', $GLOBALS)) {
             $orig_ngaborns = $GLOBALS['ngaborns'];
             $restore_ngaborns = true;
@@ -141,8 +140,7 @@ class NgAbornCtl
     /**
      * NGあぼーんHIT記録を更新時間でソートする
      */
-    static public function cmpLastTime($a, $b)
-    {
+    static public function cmpLastTime($a, $b) {
         if (empty($a['lasttime']) || empty($b['lasttime'])) {
             return strcmp($a['lasttime'], $b['lasttime']);
         }
@@ -161,8 +159,8 @@ class NgAbornCtl
      * @param void
      * @return array
      */
-    static public function loadNgAborns()
-    {
+    static public function loadNgAborns() {
+        global $_conf;
         $ngaborns = array();
 
         $ngaborns['aborn_res'] = self::_readNgAbornFromFile('p2_aborn_res.txt'); // これだけ少し性格が異なる
@@ -183,6 +181,12 @@ class NgAbornCtl
 		$ngaborns['highlight_msg'] = self::_readNgAbornFromFile('p2_highlight_msg.txt');
 		$ngaborns['highlight_id'] = self::_readNgAbornFromFile('p2_highlight_id.txt');
 
+        if ($_conf['ngaborn_auto']) {
+           // 自動NG
+           $ngaborns['aborn_auto'] = self::_readNgAbornFromFile('p2_aborn_auto.txt');
+           $ngaborns['ng_auto'] = self::_readNgAbornFromFile('p2_ng_auto.txt');
+        }
+
         return $ngaborns;
     }
 
@@ -195,19 +199,45 @@ class NgAbornCtl
      * @param void
      * @return array
      */
-    static public function loadAbornThreads()
-    {
+    static public function loadAbornThreads() {
         return self::_readNgAbornFromFile('p2_aborn_thread.txt');
     }
 
+    // }}}
+    // {{{ ngAbornAdd()
+    /**
+     * あぼーん&NGワード設定を追加する
+     *
+     * @param string どこに追加するか
+     * @param string 追加する内容
+     * @return bool 登録されたらtrue
+     */
+    static public function ngAbornAdd($code, $word) {
+        global $ngaborns;
+        foreach ($ngaborns[$code]['data'] as $data) {
+            if ($data['cond'] === $word) {
+                return false; //見つかったら追加せずに抜ける
+            }
+        }
+
+        // 追加
+        $ngaborns[$code]['data'][] = array(
+                'cond' => $word,        // 検索条件
+                'word' => $word,        // 対象文字列
+                'lasttime' => null,     // 最後にHITした時間
+                'hits' => 0,            // HIT回数
+                'regex' => false,       // パターンマッチ関数
+                'ignorecase' => false,  // 大文字小文字を無視
+        );
+        return;
+    }
     // }}}
     // {{{ _readNgAbornFromFile()
 
     /**
      * readNgAbornFromFile
      */
-    static protected function _readNgAbornFromFile($filename)
-    {
+    static protected function _readNgAbornFromFile($filename) {
         global $_conf;
 
         $file = $_conf['pref_dir'] . '/' . $filename;

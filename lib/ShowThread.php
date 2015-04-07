@@ -726,20 +726,40 @@ abstract class ShowThread
         // }}}
         // {{{ あぼーんチェック
 
+        if ($_conf['ngaborn_auto']) {//自動あぼーん
+            // 自動あぼーんID
+            if ($this->ngAbornCheck('aborn_auto', $date_id) !== false) {
+                $ngaborns_hits['aborn_auto']++;
+                return $this->_markNgAborn($i, self::ABORN, false);
+            }
+        }
+
         // あぼーんレス
         if ($this->abornResCheck($i) !== false) {
+            if ($_conf['ngaborn_auto']) {
+                //自動あぼーんならIDを追加
+                NgAbornCtl::ngAbornAdd('aborn_auto', $id);
+            }
             $ngaborns_hits['aborn_res']++;
             return $this->_markNgAborn($i, self::ABORN, false);
         }
 
         // あぼーんネーム
         if ($this->ngAbornCheck('aborn_name', $name) !== false) {
+            if ($_conf['ngaborn_auto']) {
+                //自動あぼーんならIDを追加
+                NgAbornCtl::ngAbornAdd('aborn_auto', $id);
+            }
             $ngaborns_hits['aborn_name']++;
             return $this->_markNgAborn($i, self::ABORN, false);
         }
 
         // あぼーんメール
         if ($this->ngAbornCheck('aborn_mail', $mail) !== false) {
+            if ($_conf['ngaborn_auto']) {
+                //自動あぼーんならIDを追加
+                NgAbornCtl::ngAbornAdd('aborn_auto', $id);
+            }
             $ngaborns_hits['aborn_mail']++;
             return $this->_markNgAborn($i, self::ABORN, false);
         }
@@ -752,6 +772,10 @@ abstract class ShowThread
 
         // あぼーんメッセージ
         if ($this->ngAbornCheck('aborn_msg', $msg) !== false) {
+            if ($_conf['ngaborn_auto']) {
+                //自動あぼーんならIDを追加
+                NgAbornCtl::ngAbornAdd('aborn_auto', $id);
+            }
             $ngaborns_hits['aborn_msg']++;
             return $this->_markNgAborn($i, self::ABORN, true);
         }
@@ -764,14 +788,31 @@ abstract class ShowThread
 
         // {{{ NGチェック
 
+        if ($_conf['ngaborn_auto']) {//自動あぼーん
+            // 自動NGIDを先にNGする
+            if ($this->ngAbornCheck('ng_auto', $date_id) !== false) {
+                $ngaborns_hits['ng_auto']++;
+                $type |= $this->_markNgAborn($i, self::NG_ID, false);
+                $autong_done = true; //自動NGIDの対象になったレスは意味が無いのでNGIDに追加しない
+            }
+        }
+
         // NGネームチェック
         if ($this->ngAbornCheck('ng_name', $name) !== false) {
+            if ($_conf['ngaborn_auto'] && !$autong_done) {
+                //自動あぼーんならIDを追加
+                $add_done = NgAbornCtl::ngAbornAdd('ng_auto', $id);
+            }
             $ngaborns_hits['ng_name']++;
             $type |= $this->_markNgAborn($i, self::NG_NAME, false);
         }
 
         // NGメールチェック
         if ($this->ngAbornCheck('ng_mail', $mail) !== false) {
+            if ($_conf['ngaborn_auto'] && !$autong_done && !$add_done) {
+                //自動あぼーんならIDを追加
+                $add_done = NgAbornCtl::ngAbornAdd('ng_auto', $id);
+            }
             $ngaborns_hits['ng_mail']++;
             $type |= $this->_markNgAborn($i, self::NG_MAIL, false);
         }
@@ -785,6 +826,10 @@ abstract class ShowThread
         // NGメッセージチェック
         $a_ng_msg = $this->ngAbornCheck('ng_msg', $msg);
         if ($a_ng_msg !== false) {
+            if ($_conf['ngaborn_auto'] && !$autong_done && !$add_done) {
+                //自動あぼーんならIDを追加
+                $add_done = NgAbornCtl::ngAbornAdd('ng_auto', $id);
+            }
             $ngaborns_hits['ng_msg']++;
             $type |= $this->_markNgAborn($i, self::NG_MSG, true);
             $info[] = sprintf('NG%s:%s',

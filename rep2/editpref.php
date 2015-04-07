@@ -111,6 +111,12 @@ if (isset($_POST['sync'])) {
                 $delflag = true;
             }
             break;
+        case autong:
+            if(deleteFile($_conf['pref_dir'] . '/p2_aborn_auto.txt') &&
+            deleteFile($_conf['pref_dir'] . '/p2_ng_auto.txt') ) {
+                $delflag = true;
+            }
+            break;
         default:
             $delflag = false;
             P2Util::pushInfoHtml("<p>p2 error: 引数 {$_POST['delete']} が不正です。 ");
@@ -339,9 +345,10 @@ function deleteCheck(submit){
 
 EOP;
     echo getDeleteHistoryFormHt('cookie', 'Cookie');
-    echo getDeleteHistoryFormHt('matome', '新着まとめ読み');
+    echo getDeleteHistoryFormHt('matome', 'まとめ読み');
     echo getDeleteHistoryFormHt('reshist', '書込履歴');
-    echo getDeleteHistoryFormHt('recent', '最近読んだスレ');
+    echo getDeleteHistoryFormHt('recent', '閲覧履歴');
+    echo getDeleteHistoryFormHt('autong', '自動NGｱﾎﾞｰﾝ');
     echo <<<EOP
 </fieldset>\n
 EOP;
