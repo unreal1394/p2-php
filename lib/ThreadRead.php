@@ -415,7 +415,7 @@ class ThreadRead extends Thread {
                         // echo "あぼーん検出";
                         $this->onbytes = 0;
                         $this->modified = null;
-                        return $this->_downloadDat2chAPI ($sid, 0); // あぼーん検出。全部取り直し。
+                        return $this->_downloadDat2ch (0); // あぼーん検出。全部取り直し。
                     }
                     $body = substr ($body, 1);
                 }
@@ -435,7 +435,7 @@ class ThreadRead extends Thread {
                         $this->modified = null;
                         P2Util::pushInfoHtml ("<p>rep2 info: {$this->onbytes}/{$this->length} ファイルサイズが変なので、datを再取得</p>");
                         // $GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection("dat_size_check");
-                        return $this->_downloadDat2chAPI ($sid, 0); // datサイズは不正。全部取り直し。
+                        return $this->_downloadDat2ch (0); // datサイズは不正。全部取り直し。
                     }
                 }
 
@@ -447,7 +447,7 @@ class ThreadRead extends Thread {
                 if ($new_host != $this->host) {
                     $this->old_host = $this->host;
                     $this->host = $new_host;
-                    return $this->_downloadDat2chAPI ($sid, $from_bytes);
+                    return $this->_downloadDat2ch ($from_bytes);
                 } else {
                     return $this->_downloadDat2chNotFound ($code);
                 }
@@ -458,7 +458,7 @@ class ThreadRead extends Thread {
                                         // echo "あぼーん検出";
                 $this->onbytes = 0;
                 $this->modified = null;
-                return $this->_downloadDat2chAPI ($sid, 0); // あぼーん検出。全部取り直し。
+                return $this->_downloadDat2ch (0); // あぼーん検出。全部取り直し。
             } else {
                 return $this->_downloadDat2chNotFound ($code);
             }
@@ -534,7 +534,7 @@ class ThreadRead extends Thread {
 
                 $this->modified = $response->getHeader ('Last-Modified');
 
-                if (FileCtl::file_write_contents ($this->keydat, $body, $file_append) === false) {
+                if (FileCtl::file_write_contents ($this->keydat, $body, 0) === false) {
                     p2die ('cannot write file. downloadDat2chMaru()');
                 }
 
@@ -620,7 +620,7 @@ class ThreadRead extends Thread {
 
                 $this->modified = $response->getHeader ('Last-Modified');
 
-                if (FileCtl::file_write_contents ($this->keydat, $body, $file_append) === false) {
+                if (FileCtl::file_write_contents ($this->keydat, $body, 0) === false) {
                     p2die ('cannot write file. downloadDat2chMaru()');
                 }
 
@@ -751,7 +751,7 @@ class ThreadRead extends Thread {
         if ($reason === 'datochi' || preg_match ($kakosoko_match, $read_response_html, $matches) || preg_match ($kakosoko_match2, $read_response_html, $matches)) {
             $dat_response_status = "このスレッドは過去ログ倉庫に格納されています。";
             $marutori_ht = $this->_generateMarutoriLink ();
-            $plugin_ht = $this->_generateWikiDatLink ();
+            $plugin_ht = $this->_generateWikiDatLink ($read_url);
             $moritori_ht = $this->_generateMoritapoDatLink ();
             $dat_response_msg = "<p>2ch info - このスレッドは過去ログ倉庫に格納されています。{$marutori_ht}{$moritori_ht}{$plugin_ht}</p>";
 
@@ -1503,8 +1503,10 @@ EOF;
      *            void
      * @return string
      */
-    protected function _generateWikiDatLink() {
+    protected function _generateWikiDatLink($read_url) {
         global $_conf;
+
+        $plugin_ht = '';
 
         // +Wiki
         if ($_GET['plugin']) {
@@ -1555,6 +1557,8 @@ EOP;
      * @return string HTML
      */
     protected function _generateMarutoriLink($retry = false) {
+        global $_conf;
+
         if ($retry) {
             $retry_q = "&amp;relogin2ch=true";
             $atext = "●IDで再取得する";
