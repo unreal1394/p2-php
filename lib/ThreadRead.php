@@ -849,7 +849,11 @@ class ThreadRead extends Thread {
         }
 
         if ($_conf['ktai']) {
-            $aShowThread = new ShowThreadK ($this);
+            if ($_conf['iphone']) {
+                $aShowThread = new ShowThreadI($this);
+            } else {
+                $aShowThread = new ShowThreadK($this);
+            }
             $aShowThread->am_autong = false;
         } else {
             $aShowThread = new ShowThreadPc ($this);

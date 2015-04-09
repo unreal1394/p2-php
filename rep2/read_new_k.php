@@ -484,10 +484,15 @@ EOP;
     $GLOBALS['newres_to_show_flag'] = false;
     $read_cont_ht = '';
     if ($aThread->rescount) {
-        $aShowThread = new ShowThreadK($aThread, true);
 
-        if ($_conf['iphone'] && $_conf['expack.spm.enabled']) {
-            $read_cont_ht .= $aShowThread->getSpmObjJs();
+        if ($_conf['iphone']) {
+            $aShowThread = new ShowThreadI($aThread);
+            if ($_conf['expack.spm.enabled']) {
+                $read_cont_ht .= $aShowThread->getSpmObjJs();
+            }
+
+        } else {
+            $aShowThread = new ShowThreadK($aThread);
         }
 
         $read_cont_ht .= $aShowThread->getDatToHtml();
@@ -688,7 +693,7 @@ if ($_conf['iphone']) {
     }
     // SPM
     if ($_conf['expack.spm.enabled']) {
-        echo ShowThreadK::getSpmElementHtml();
+        echo ShowThreadI::getSpmElementHtml();
     }
 }
 
