@@ -1602,7 +1602,7 @@ abstract class ShowThread
 
            // NGあぼーんチェック
             if (($id = $this->thread->ids[$num + 1]) !== null) {
-                $date_id = str_replace($this->thread->idp[$i] . $id, 'ID:' . $id, $date_id);
+                $date_id = str_replace($this->thread->idp[$num] . $id, 'ID:' . $id, $date_id);
             }
             $ng_type = $this->_ngAbornCheck($num + 1, strip_tags($name), $mail, $date_id, $id, $msg);
             if ($ng_type == self::ABORN) {
@@ -1742,7 +1742,7 @@ abstract class ShowThread
     protected function _quotebackListHtml($resnum, $type, $popup=true)
     {
         $quote_from = $this->getQuoteFrom();
-        if (!array_key_exists($resnum, $quote_from)) return $ret;
+        if (!array_key_exists($resnum, $quote_from)) return '';
 
         $anchors = $quote_from[$resnum];
         sort($anchors);
@@ -1952,7 +1952,7 @@ abstract class ShowThread
             // 大差はないが compileMobile2chUriCallBack() のように preg_relplace_callback()してもいいかも。
         }
         if ($unicode) {
-            return StrSjis::toUnicodePattern($_anchorRegexes[$pattern]);
+            return StrSjis::toUnicodePattern(self::$_anchorRegexes[$pattern]);
         }
         return self::$_anchorRegexes[$pattern];
     }

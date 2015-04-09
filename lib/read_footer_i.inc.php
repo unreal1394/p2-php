@@ -119,7 +119,7 @@ if ($_conf['expack.ic2.enabled']) {
 
 // SPM
 if ($_conf['expack.spm.enabled']) {
-    echo ShowThreadK::getSpmElementHtml();
+    echo ShowThreadI::getSpmElementHtml();
 }
 
 // 最終レス番号を更新
