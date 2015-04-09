@@ -33,7 +33,7 @@ function p2_load_class($name)
             Session |
             SettingTxt |
             ShowBrdMenu(?:K|Pc) |
-            ShowThread(?:K|Pc)? |
+            ShowThread(?:K|I|Pc)? |
             StrCtl |
             StrSjis |
             SubjectTxt |

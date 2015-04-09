@@ -197,7 +197,7 @@ if ($aThread->isKitoku()) {
     if (!$aThread->ls) {
 		// +live ƒŒƒX•\Ž¦”Ø‘Ö
 		if ($_GET['live']) {
-			$aThread->ls = l .$_conf['live.before_respointer'];
+			$aThread->ls = 'l' .$_conf['live.before_respointer'];
 		} else {
         $aThread->ls = $_conf['get_new_res_l'];
 		}
@@ -224,7 +224,11 @@ if ($_conf['ktai']) {
         $GLOBALS['filter_hits'] = null;
     }
 
-    $aShowThread = new ShowThreadK($aThread);
+    if ($_conf['iphone']) {
+        $aShowThread = new ShowThreadI($aThread);
+    } else {
+        $aShowThread = new ShowThreadK($aThread);
+    }
 
     if ($is_ajax) {
         $response = trim(mb_convert_encoding($aShowThread->getDatToHtml(true), 'UTF-8', 'CP932'));

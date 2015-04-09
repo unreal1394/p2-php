@@ -9,9 +9,9 @@ ExpackLoader::loadAAS();
 ExpackLoader::loadActiveMona();
 ExpackLoader::loadImageCache();
 
-// {{{ ShowThreadK
+// {{{ ShowThreadI
 
-class ShowThreadK extends ShowThread
+class ShowThreadI extends ShowThread
 {
     // {{{ properties
 
@@ -21,9 +21,9 @@ class ShowThreadK extends ShowThread
 
     public $aas_rotate = '90°回転'; // AAS 回転リンク文字列
 
-    public $respopup_at = '';  // レスポップアップ・イベントハンドラ
-    public $target_at = '';    // 引用、省略、ID、NG等のリンクターゲット
-    public $check_st = '確';   // 省略、NG等のリンク文字列
+    public $respopup_at = ' onclick="return iResPopUp(this, event);"';  // レスポップアップ・イベントハンドラ
+    public $target_at = ' target="_blank"';    // 引用、省略、ID、NG等のリンクターゲット
+    public $check_st = 'check';   // 省略、NG等のリンク文字列
 
     public $spmObjName; // スマートポップアップメニュー用JavaScriptオブジェクト名
 
@@ -268,10 +268,15 @@ class ShowThreadK extends ShowThread
         // NGメッセージ変換
         if ($ng_type != self::NG_NONE && count($ng_info)) {
             $ng_info = implode(', ', $ng_info);
-
-            $msg = <<<EOMSG
+            if ($ng_type == self::NG_AA) {
+                $msg = <<<EOMSG
+<a class="button" href="{$_conf['read_php']}?host={$this->thread->host}&amp;bbs={$this->thread->bbs}&amp;key={$this->thread->key}&amp;ls={$i}&amp;k_continue=1&amp;nong=1{$_conf['k_at_a']}"{$this->respopup_at}{$this->target_at}>{$ng_info}</a>
+EOMSG;
+            } else {
+                $msg = <<<EOMSG
 <s><font color="{$STYLE['mobile_read_ngword_color']}">{$ng_info}</font></s> <a class="button" href="{$_conf['read_php']}?host={$this->thread->host}&amp;bbs={$this->thread->bbs}&amp;key={$this->thread->key}&amp;ls={$i}&amp;k_continue=1&amp;nong=1{$_conf['k_at_a']}"{$this->respopup_at}{$this->target_at}>{$this->check_st}</a>
 EOMSG;
+            }
 
             // AAS
             if (($ng_type & self::NG_AA) && P2_AAS_AVAILABLE) {
@@ -281,10 +286,7 @@ EOMSG;
                 } else {
                     $aas_txt = "AAS";
                 }
-
-                $msg .= " <a class=\"aas\" href=\"{$aas_url}{$_conf['k_at_a']}\"{$this->target_at}>{$aas_txt}</a>";
-                $msg .= " <a class=\"button\" href=\"{$aas_url}{$_conf['k_at_a']}&amp;rotate=1\"{$this->target_at}>{$this->aas_rotate}</a>";
-
+                $msg .= " <a class=\"aas limelight\" href=\"{$aas_url}&amp;b=pc\" title=\"&gt;&gt;{$i}\"{$this->target_at}>{$aas_txt}</a>";
             }
         }
 
@@ -325,40 +327,44 @@ EOP;
         }
         */
 
-        // 番号（オンザフライ時）
+        $tores .= "<div id=\"{$res_id}\" class=\"res\"><div class=\"res-header\">";
+
+        $no_class = 'no';
+        $no_onclick = '';
+
+        // オンザフライ時
         if ($this->thread->onthefly) {
             $GLOBALS['newres_to_show_flag'] = true;
-            $tores .= "<div id=\"{$res_id}\" name=\"{$res_id}\">[<font color=\"{$STYLE['mobile_read_onthefly_color']}'\">{$i}</font>]";
-            // 番号（新着レス時）
+            $no_class .= ' onthefly';
+            // 新着レス時
         } elseif ($i > $this->thread->readnum) {
             $GLOBALS['newres_to_show_flag'] = true;
-            $tores .= "<div id=\"{$res_id}\" name=\"{$res_id}\">[<font color=\"{$STYLE['mobile_read_newres_color']}\">{$i}</font>]";
-            // 番号
-        } else {
-            $tores .= "<div id=\"{$res_id}\" name=\"{$res_id}\">[{$i}]";
+            $no_class .= ' newres';
         }
 
-        // 名前
-        if ($name) {
-            $tores .= "{$name}: ";
-         }
+        // SPM
+        if ($_conf['expack.spm.enabled']) {
+            $no_onclick = " onclick=\"{$this->spmObjName}.show({$i},'{$res_id}',event)\"";
+        }
 
-         // メール
-         if ($mail) {
-             $tores .= "{$mail}: ";
-         }
-         // 日付とID
-         $tores .= "{$date_id}<br>\n";
-         // 内容
-         $tores .= "{$msg}</div>\n";
-         // 被レスリスト
-         if ($_conf['mobile.backlink_list'] == 1) {
-             $linkstr = $this->_quotebackListHtml($i, 2);
-             if (strlen($linkstr)) {
-                 $tores .= '<br>' . $linkstr;
-             }
-         }
-         $tores .= "<hr>\n";
+        // 番号
+        $tores .= "<span class=\"{$no_class}\"{$no_onclick}>{$i}</span>";
+        // 名前
+        $tores .= " <span class=\"name\">{$name}</span>";
+        // メール
+        $tores .= " <span class=\"mail\">{$mail}</span>";
+        // 日付とID
+        $tores .= " <span class=\"date-id\">{$date_id}</span></div>\n";
+        // 内容
+        $tores .= "<div class=\"message\">{$msg}</div>";
+        // 被レスリスト
+        if ($_conf['mobile.backlink_list'] == 1) {
+            $linkstr = $this->_quotebackListHtml($i, 2);
+            if (strlen($linkstr)) {
+                $tores .= '<br>' . $linkstr;
+            }
+        }
+        $tores .= "</div>\n"; // 内容を閉じる
 
         // まとめてフィルタ色分け
         if ($pattern) {
@@ -506,6 +512,92 @@ EOP;
 
         return <<<EOP
 <div id="{$res_id}" name="{$res_id}" class="res aborned">&nbsp;</div>\n
+EOP;
+    }
+
+    // }}}
+    // {{{ getSpmObjJs()
+
+    /**
+     * スマートポップアップメニューに必要なスレッド情報を格納したJavaScriptコードを取得
+     */
+    public function getSpmObjJs($retry = false)
+    {
+        global $_conf;
+
+        if (isset(self::$_spm_objects[$this->spmObjName])) {
+            return $retry ? self::$_spm_objects[$this->spmObjName] : '';
+        }
+
+        $ttitle_en = UrlSafeBase64::encode($this->thread->ttitle);
+
+        $motothre_url = $this->thread->getMotoThread();
+        $motothre_url = substr($motothre_url, 0, strlen($this->thread->ls) * -1);
+
+        // エスケープ
+        $_spm_title = StrCtl::toJavaScript($this->thread->ttitle_hc);
+        $_spm_url = addslashes($motothre_url);
+        $_spm_host = addslashes($this->thread->host);
+        $_spm_bbs = addslashes($this->thread->bbs);
+        $_spm_key = addslashes($this->thread->key);
+        $_spm_ls = addslashes($this->thread->ls);
+        $_spm_b = ($_conf['view_forced_by_query']) ? "&b={$_conf['b']}" : '';
+
+        $code = <<<EOJS
+<script type="text/javascript">
+//<![CDATA[
+var {$this->spmObjName} = {
+    'objName':'{$this->spmObjName}',
+    'query':'&host={$_spm_host}&bbs={$_spm_bbs}&key={$_spm_key}&rescount={$this->thread->rescount}&ttitle_en={$ttitle_en}{$_spm_b}',
+    'rc':'{$this->thread->rescount}',
+    'title':'{$_spm_title}',
+    'ttitle_en':'{$ttitle_en}',
+    'url':'{$_spm_url}',
+    'host':'{$_spm_host}',
+    'bbs':'{$_spm_bbs}',
+    'key':'{$_spm_key}',
+    'ls':'{$_spm_ls}',
+    'client':['{$_conf['b']}','{$_conf['client_type']}']
+};
+{$this->spmObjName}.show = (function(no,id,evt){SPM.show({$this->spmObjName},no,id,evt);});
+{$this->spmObjName}.hide = SPM.hide; // (function(evt){SPM.hide(evt);});
+//]]>
+</script>\n
+EOJS;
+
+        self::$_spm_objects[$this->spmObjName] = $code;
+
+        return $code;
+    }
+
+    // }}}
+    // {{{ getSpmElementHtml()
+
+    /**
+     * スマートポップアップメニュー用のHTMLを生成する
+     */
+    static public function getSpmElementHtml()
+    {
+        global $_conf;
+
+        return <<<EOP
+<div id="spm">
+<div id="spm-reply">
+    <span id="spm-reply-quote" onclick="SPM.replyTo(true)">&gt;&gt;<span id="spm-num">???</span>にレス</span>
+    <span id="spm-reply-noquote" onclick="SPM.replyTo(false)">[引用なし]</span>
+</div>
+<div id="spm-action"><select id="spm-select-target">
+    <option value="name">名前</option>
+    <option value="mail">メール</option>
+    <option value="id" selected>ID</option>
+    <option value="msg">本文</option>
+</select>を<select id="spm-select-action">
+    <option value="aborn" selected>あぼーん</option>
+    <option value="ng">NG</option>
+<!-- <option value="search">検索</option> -->
+</select><input type="button" onclick="SPM.doAction()" value="OK"></div>
+<img id="spm-closer" src="img/iphone/close.png" width="24" height="26" onclick="SPM.hide(event)">
+</div>
 EOP;
     }
 
@@ -1023,7 +1115,13 @@ EOP;
                                );
             }
 
-            return "<a href=\"{$img_url}{$backto}\">{$img_str}</a>";
+            $img_title = p2h($purl['host'])
+            . '&#10;'
+                    . p2h(basename($purl['path']));
+            return "<a class=\"limelight\" href=\"{$src_url}\" title=\"{$img_title}\" target=\"_blank\">{$img_str}</a>"
+                  //. ' <img class="ic2-show-info" src="img/s2a.png" width="16" height="16" onclick="ic2info.show('
+                    . ' <input type="button" class="ic2-show-info" value="i" onclick="ic2info.show('
+                    . (($img_id) ? $img_id : "'{$url_ht}'") . ', event)">';
         }
 
         return false;
@@ -1209,7 +1307,13 @@ EOP;
                                    );
             }
 
-            $result .= "<a href=\"{$img_url}{$backto}\">{$img_str}</a>";
+            $img_title = p2h($purl['host'])
+                    . '&#10;'
+                    . p2h(basename($purl['path']));
+            $result .= "<a class=\"limelight\" href=\"{$src_url}\" title=\"{$img_title}\" target=\"_blank\">{$img_str}</a>"
+                  //. ' <img class="ic2-show-info" src="img/s2a.png" width="16" height="16" onclick="ic2info.show('
+                    . ' <input type="button" class="ic2-show-info" value="i" onclick="ic2info.show('
+                    . (($img_id) ? $img_id : "'{$v['url']}'") . ', event)">';
         }
 
         $linkUrlResult = $this->plugin_linkURL($url, $purl, $str);
