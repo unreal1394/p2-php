@@ -156,38 +156,35 @@ echo '<table><tbody><tr>';
 echo '<td>';
 if ($disp_navi['from'] > 1) {
     $escaped_url = "{$_conf['subject_php']}?{$paging_q}&amp;from={$disp_navi['mae_from']}{$_conf['k_at_a']}";
-    echo toolbar_i_standard_button('img/gp3-prev.png', '前', $escaped_url);
+    echo toolbar_i_standard_button('img/gp3-prev.png', null, $escaped_url);
 } else {
-    echo toolbar_i_disabled_button('img/gp3-prev.png', '前');
-}
-echo '</td>';
-
-// 次のページ
-echo '<td>';
-if ($disp_navi['tugi_from'] <= $sb_disp_all_num) {
-    $escaped_url = "{$_conf['subject_php']}?{$paging_q}&amp;from={$disp_navi['tugi_from']}{$_conf['k_at_a']}";
-    echo toolbar_i_standard_button('img/gp4-next.png', '次', $escaped_url);
-} else {
-    echo toolbar_i_disabled_button('img/gp4-next.png', '次');
+    echo toolbar_i_disabled_button('img/gp3-prev.png', null);
 }
 echo '</td>';
 
 // ページ番号を直接指定
 echo '<td colspan="2">';
 echo "{$k_sb_navi_ht}<span class=\"large\">/{$sb_all_pages}</span>";
-if (empty($_conf['expack.iphone.toolbars.no_label'])) {
-    echo '<br>ページ';
+echo '</td>';
+
+// 次のページ
+echo '<td>';
+if ($disp_navi['tugi_from'] <= $sb_disp_all_num) {
+    $escaped_url = "{$_conf['subject_php']}?{$paging_q}&amp;from={$disp_navi['tugi_from']}{$_conf['k_at_a']}";
+    echo toolbar_i_standard_button('img/gp4-next.png', null, $escaped_url);
+} else {
+    echo toolbar_i_disabled_button('img/gp4-next.png', null);
 }
 echo '</td>';
 
 // 上へ
 echo '<td>';
-echo toolbar_i_standard_button('img/gp1-up.png', '上', '#header');
+echo toolbar_i_standard_button('img/gp1-up.png', null, '#header');
 echo '</td>';
 
 // }}}
 
-echo '</tr><tr>';
+echo '</tr><tr></tbody></div><div class="ntoolbar"></table><table><tbody>';
 
 // {{{ その他ボタン類
 
@@ -195,12 +192,12 @@ echo '</tr><tr>';
 echo '<td>';
 if ($ta_num) {
     $escaped_url = "{$_conf['subject_php']}?{$host_bbs_q}{$norefresh_q}&amp;spmode=taborn{$_conf['k_at_a']}";
-    echo toolbar_i_badged_button('img/glyphish/icons2/128-bone.png', 'あぼーん', $escaped_url, $ta_num);
+    echo toolbar_i_badged_button('img/glyphish/icons2/128-bone.png', 'あぼーんｽﾚ', $escaped_url, $ta_num);
 } elseif ($aThreadList->spmode == 'taborn') {
     $escaped_url = "{$_conf['subject_php']}?{$host_bbs_q}{$_conf['k_at_a']}";
     echo toolbar_i_standard_button('img/glyphish/icons2/63-runner.png', '板に戻る', $escaped_url);
 } else {
-    echo toolbar_i_disabled_button('img/glyphish/icons2/128-bone.png', 'あぼーん');
+    echo toolbar_i_disabled_button('img/glyphish/icons2/128-bone.png', 'あぼーんｽﾚ');
 }
 echo '</td>';
 

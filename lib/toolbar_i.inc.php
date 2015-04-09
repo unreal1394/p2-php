@@ -54,7 +54,7 @@ function _toolbar_i_button($icon, $label, $uri, $attrs = '')
         $attrs = str_replace('class="', 'class="hoverable ', $attrs);
     }
 
-    if (empty($_conf['expack.iphone.toolbars.no_label'])) {
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
         $label = '<br>' . $label;
     } else {
         $label = '';

@@ -26,37 +26,34 @@ echo '<table><tbody><tr>';
 // 前のページ
 echo '<td>';
 if ($read_navi_previous_url) {
-    echo toolbar_i_standard_button('img/gp3-prev.png', '前', $read_navi_previous_url);
+    echo toolbar_i_standard_button('img/gp3-prev.png', null, $read_navi_previous_url);
 } else {
-    echo toolbar_i_disabled_button('img/gp3-prev.png', '前');
-}
-echo '</td>';
-
-// 次のページ
-echo '<td>';
-if ($read_navi_next_url) {
-    echo toolbar_i_standard_button('img/gp4-next.png', '次', $read_navi_next_url);
-} else {
-    echo toolbar_i_disabled_button('img/gp4-next.png', '次');
+    echo toolbar_i_disabled_button('img/gp3-prev.png', null);
 }
 echo '</td>';
 
 // ページ番号を直接指定
 echo '<td colspan="2">';
 echo get_read_jump($aThread, '', true);
-if (empty($_conf['expack.iphone.toolbars.no_label'])) {
-    echo "<br>{$rescount_st}";
+echo '</td>';
+
+// 次のページ
+echo '<td>';
+if ($read_navi_next_url) {
+    echo toolbar_i_standard_button('img/gp4-next.png', null, $read_navi_next_url);
+} else {
+    echo toolbar_i_disabled_button('img/gp4-next.png', null);
 }
 echo '</td>';
 
 // 上へ
 echo '<td>';
-echo toolbar_i_standard_button('img/gp1-up.png', '上', '#header');
+echo toolbar_i_standard_button('img/gp1-up.png', null, '#header');
 echo '</td>';
 
 // }}}
 
-echo '</tr><tr>';
+echo '</tr><tr></tbody></div><div class="ntoolbar"></table><table><tbody>';
 
 // {{{ その他ボタン類
 
