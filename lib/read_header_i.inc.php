@@ -122,44 +122,34 @@ echo <<<EOP
 </head>
 <body class="nopad">
 <div class="ntoolbar" id="header">
-<h1 class="ptitle hoverable">{$aThread->ttitle_hd}</h1>
+
 EOP;
 
 // {{{ 各種ボタン類
-
-echo '<table><tbody><tr>';
-
 // 板に戻る
-echo '<td>';
 $escaped_url = "{$_conf['subject_php']}?{$host_bbs_key_q}{$_conf['k_at_a']}";
-echo toolbar_i_standard_button('img/glyphish/icons2/104-index-cards.png', $itaj_hd, $escaped_url);
-echo '</td>';
+echo toolbar_i_back_button($itaj_hd, $escaped_url);
+
+echo '<div id="read_toolbar_header">';
 
 // レス検索
-echo '<td>';
-echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', '検索', 'read_toolbar_filter');
-echo '</td>';
+echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', null, 'read_toolbar_filter');
+
 
 // お気にスレ
-echo '<td>';
 if ($thread_info) {
-    echo toolbar_i_fav_button('img/glyphish/icons2/28-star.png', 'お気にスレ', $thread_info);
+    echo toolbar_i_fav_button('img/glyphish/icons2/28-star.png', null, $thread_info);
 } else {
-    echo toolbar_i_disabled_button('img/glyphish/icons2/28-star.png', 'お気にスレ');
+    echo toolbar_i_disabled_button('img/glyphish/icons2/28-star.png', null);
 }
-echo '</td>';
 
 // その他
-echo '<td>';
-echo toolbar_i_showhide_button('img/gp0-more.png', 'その他', 'read_toolbar_extra');
-echo '</td>';
+echo toolbar_i_showhide_button('img/gp0-more.png', null, 'read_toolbar_extra');
 
 // 下へ
-echo '<td>';
-echo toolbar_i_standard_button('img/gp2-down.png', '下', '#footer');
-echo '</td>';
+echo toolbar_i_standard_button('img/gp2-down.png', null, '#footer');
 
-echo '</tr></tbody></table>';
+echo '</div>';
 
 // }}}
 // {{{ その他のツール
@@ -327,7 +317,7 @@ if ($aThread->diedat) {
 if ($do_filtering) {
     $htm['rf_field_names'] = array(
         ResFilter::FIELD_NUMBER => 'レス番号',
-        ResFilter::FIELD_HOLE => '全体', 
+        ResFilter::FIELD_HOLE => '全体',
         ResFilter::FIELD_MESSAGE => '本文',
         ResFilter::FIELD_NAME => '名前',
         ResFilter::FIELD_MAIL => 'メール',
@@ -352,7 +342,13 @@ if ($_GET['showbl']) {
     echo  '<div class="hits">' . p2h($aThread->resrange['start']) . 'へのﾚｽ</div>';
 }
 
-echo '</div>'; // end toolbar
+echo <<<EOP
+</div>
+
+<h4 class="thread_title hoverable">{$aThread->ttitle_hd}</h4>
+
+EOP;
+// end toolbar
 
 // }}}
 

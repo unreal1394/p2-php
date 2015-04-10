@@ -118,7 +118,7 @@ function sb_print($aThreadList)
         $sortq_ita = "&amp;bbs={$aThreadList->bbs}";
     }
 
-    $sortq_common = $sortq_spmode . $sortq_host . $sortq_ita;
+    $sortq_common = $sortq_spmode . $sortq_host . $sortq_ita . $_conf['k_at_a'];
 
     if (!empty($_REQUEST['find_cont']) && strlen($GLOBALS['word_fm']) > 0) {
         $word_q = '&amp;word=' . rawurlencode($GLOBALS['word']) . '&amp;method=' . rawurlencode($GLOBALS['sb_filter']['method']);
@@ -226,7 +226,7 @@ EOP;
         $midoku_ari = false;
         $anum_ht = ''; // #r1
 
-        $host_bbs_key_q = "host={$aThread->host}&amp;bbs={$aThread->bbs}&amp;key={$aThread->key}";
+        $host_bbs_key_q = "host={$aThread->host}&amp;bbs={$aThread->bbs}&amp;key={$aThread->key}{$_conf['k_at_a']}";
 
         if ($aThreadList->spmode != 'taborn') {
             if (!$aThread->torder) { $aThread->torder = $i; }
@@ -285,7 +285,7 @@ EOP;
         if ($ita_name_bool) {
             $ita_name_ht = p2h($aThread->itaj ? $aThread->itaj : $aThread->bbs);
             $td['ita'] = <<<EOP
-<td{$class_t}><a href="{$_conf['subject_php']}?host={$aThread->host}&amp;bbs={$aThread->bbs}" target="_self">{$ita_name_ht}</a></td>\n
+<td{$class_t}><a href="{$_conf['subject_php']}?host={$aThread->host}&amp;bbs={$aThread->bbs}{$_conf['k_at_a']}" target="_self">{$ita_name_ht}</a></td>\n
 EOP;
         }
 
@@ -371,7 +371,7 @@ EOP;
             $offline_q = '&amp;offline=true';
             $anum_ht = '';
         }
-        $thre_url = "{$_conf['read_php']}?{$host_bbs_key_q}{$rescount_q}{$offline_q}{$word_q}{$anum_ht}";
+        $thre_url = "{$_conf['read_php']}?{$host_bbs_key_q}{$rescount_q}{$offline_q}{$word_q}{$anum_ht}{$_conf['k_at_a']}";
 
         // +live ƒŠƒ“ƒN•\¦Ø‘Ö
         if($_conf['live.livelink_subject']==2||$livebbs_bool)
