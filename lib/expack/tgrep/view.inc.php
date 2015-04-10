@@ -116,7 +116,7 @@
 | ƒJƒeƒSƒŠ‚Åi‚èž‚Þ:
 <select onchange="location.href=document.getElementById('h_php_self').value+'?Q='+document.getElementById('h_query_en').value+this.options[this.selectedIndex].value">
 <option value="">-</option>
-<?php foreach ($profile['categories'] as $c) { ?><option value="&amp;C=<?php echo $c->id; ?>"<?php if ($c->id == $htm['category']) { echo ' selected="selected"'; } ?>><?php echo p2h($c->name); ?> (<?php echo $c->hits; ?>)</option><?php } ?>
+<?php if(isset($profile['categories'])){ foreach ($profile['categories'] as $c) { ?><option value="&amp;C=<?php echo $c->id; ?>"<?php if ($c->id == $htm['category']) { echo ' selected="selected"'; } ?>><?php echo p2h($c->name); ?> (<?php echo $c->hits; ?>)</option><?php } } ?>
 </select>
 | ”Â‚Åi‚èž‚Þ:
 <select onchange="moveSubject(document.getElementById('h_subject_php').value, document.getElementById('h_query_en').value, this.options[this.selectedIndex].value);">
