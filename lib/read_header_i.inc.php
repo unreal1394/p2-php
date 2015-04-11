@@ -130,7 +130,7 @@ EOP;
 $escaped_url = "{$_conf['subject_php']}?{$host_bbs_key_q}{$_conf['k_at_a']}";
 echo toolbar_i_back_button($itaj_hd, $escaped_url);
 
-echo '<div id="read_toolbar_header">';
+echo '<div id="toolbar_header">';
 
 // ÉåÉXåüçı
 echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', null, 'read_toolbar_filter');

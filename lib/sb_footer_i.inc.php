@@ -147,7 +147,7 @@ if ($aThreadList->spmode == 'fav' && $_conf['expack.misc.multi_favs']) {
 // }}}
 // {{{ ツールバーを表示
 
-echo '<div class="ntoolbar" id="footer">';
+echo '<div class="ntoolbar" id="footer"><div class="ntoolbar" id="pager">';
 echo '<table><tbody><tr>';
 
 // {{{ ページャ
@@ -184,9 +184,11 @@ echo '</td>';
 
 // }}}
 
-echo '</tr><tr></tbody></div><div class="ntoolbar"></table><table><tbody>';
+echo '</tr></tbody></table></div>';
 
 // {{{ その他ボタン類
+
+echo '<table><tbody><tr>';
 
 // あぼーん中のスレッド一覧を開く
 echo '<td>';

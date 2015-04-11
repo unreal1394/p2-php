@@ -65,6 +65,12 @@ a#backButton {
 	-webkit-border-image: url(../iui/backButton.png?14011419) 0 8 0 14;
 }
 
+div#toolbar_header {
+	text-align:right;
+	padding: 6px;
+	height: 45px;
+	-webkit-box-sizing: border-box;
+}
 
 a:visited {
 	color: #0080ff;
@@ -233,11 +239,6 @@ div#spm > img#spm-closer {
 
 /* }}} */
 /* {{{ Read */
-
-div#read_toolbar_header {
-	text-align:right;
-	padding: 8px 0;
-}
 
 h4.thread_title {
 	margin: 8px 4px;
@@ -652,13 +653,18 @@ div.ntoolbar {
 	color: #fff;
 }
 
+div.ntoolbar#pager {
+	background-color: #808080;
+	color: #fff;
+}
+
 div.ntoolbar#header {
 }
 
 div.ntoolbar#footer {
 }
 
-div.ntoolbar > h1.ptitle {
+h1.ptitle {
 	margin: 0;
 	padding: 10px;
 	white-space: nowrap;
@@ -670,7 +676,7 @@ div.ntoolbar > h1.ptitle {
 	line-height: 16px;
 }
 
-div.ntoolbar > h1.ptitle > span.thin {
+h1.ptitle > span.thin {
 	font-weight: normal;
 	font-size: 14px;
 }
@@ -715,12 +721,17 @@ div.ntoolbar td {
 	width: 20%;
 	min-width: 64px;
 	margin: 0;
-	padding: 8px 0;
+	padding: 4px 0;
 	text-align: center;
 	vertical-align: middle;
 	border-top: #808080 solid 1px;
 	font-size: 11px;
 	line-height: 11px;
+}
+
+div.ntoolbar#pager td {
+	padding: 3px 0;
+	border-top: none;
 }
 
 div.ntoolbar td[colspan='2'] {
