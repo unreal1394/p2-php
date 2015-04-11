@@ -305,11 +305,6 @@ if ($_conf['expack.ic2.enabled'] && $_conf['expack.ic2.thread_imagecount']) {
     <script type="text/javascript" src="js/ic2_getcount.js?{$_conf['p2_version_id']}"></script>
 EOP;
 }
-if ($_conf['expack.editor.savedraft'] != '0') {
-    echo <<<EOP
-    <script type="text/javascript" src="js/post_draft.js?{$_conf['p2_version_id']}"></script>
-EOP;
-}
 if ($_conf['wiki.idsearch.spm.mimizun.enabled'] ||
     $_conf['wiki.idsearch.spm.hissi.enabled'] ||
     $_conf['wiki.idsearch.spm.stalker.enabled']) {
@@ -324,6 +319,11 @@ if ($_conf['bottom_res_form']) {
     echo "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"css.php?css=post&amp;skin={$skin_en}\">\n";
     if ($_conf['expack.editor.dpreview']) {
         echo "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"css.php?css=prvw&amp;skin={$skin_en}\">\n";
+    }
+    if ($_conf['expack.editor.savedraft'] != '0') {
+        echo <<<EOP
+    <script type="text/javascript" src="js/post_draft.js?{$_conf['p2_version_id']}"></script>
+EOP;
     }
     echo "\t<script type=\"text/javascript\" src=\"js/post_form.js?{$_conf['p2_version_id']}\"></script>\n";
     $onload_script .= 'checkSage();';

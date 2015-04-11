@@ -106,6 +106,14 @@ document.addEventListener('DOMContentLoaded', function(event) {
 EOS;
 }
 
+if ($_conf['bottom_res_form']) {
+    $_conf['extra_headers_ht'] .= "\t<script type=\"text/javascript\" src=\"js/post_form.js?{$_conf['p2_version_id']}\"></script>\n";
+    if ($_conf['expack.editor.savedraft'] != '0') {
+        $_conf['extra_headers_ht'] .= <<<EOP
+    <script type="text/javascript" src="js/post_draft.js?{$_conf['p2_version_id']}"></script>
+EOP;
+    }
+}
 // }}}
 // }}}
 // {{{ HTMLƒvƒŠƒ“ƒg

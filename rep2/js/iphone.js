@@ -778,6 +778,12 @@ iutil.toolbarShowHide = function(element, event) {
 						}
 					}
 				}
+
+				// 書き込みフォームなら画面をスクロール(本家より)
+				if(id=='kakiko') {
+					var to = parseInt(target.offsetTop);
+					document.body.scrollTop = to - 60;
+				}
 			}
 		}
 	}

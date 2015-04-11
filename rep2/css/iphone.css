@@ -108,6 +108,15 @@ p.empty {
 }
 
 /* }}} *
+/* {{{ Res */
+textarea#MESSAGE {
+	padding: 6px;
+	line-height: 132%;
+	width: 100%;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+/* }}} *
 /* {{{ Forms */
 
 input, select, textarea {
