@@ -692,7 +692,7 @@ class ThreadRead extends Thread {
             }
         }
 
-        $read_url = "http://{$this->host}/test/read.cgi/{$this->bbs}/{$this->key}/1";
+        $read_url = "http://{$this->host}/test/read.cgi/{$this->bbs}/{$this->key}/";
 
         // {{{ read.cgi ‚©‚çHTML‚ğæ“¾
 

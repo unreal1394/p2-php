@@ -26,9 +26,8 @@ class DatPluginCtl extends WikiPluginCtlBase
     {
         global $_conf;
 
-        $lines = array();
         $path = $_conf['pref_dir'].'/'.$this->filename;
-        if ($lines = @file($path)) {
+        if ($lines = FileCtl::file_read_lines($path)) {
             foreach ($lines as $l) {
                 $lar = explode("\t", trim($l));
                 if (strlen($lar[0]) == 0) {

@@ -361,7 +361,7 @@ EOP;
         if ($_conf['mobile.backlink_list'] == 1) {
             $linkstr = $this->_quotebackListHtml($i, 2);
             if (strlen($linkstr)) {
-                $tores .= '<br>' . $linkstr;
+                $tores .= $linkstr;
             }
         }
         $tores .= "</div>\n"; // “à—e‚ð•Â‚¶‚é
@@ -821,10 +821,6 @@ EOP;
         global $_conf;
 
         if (isset($purl['scheme'])) {
-            // Œg‘Ñ—pŠO•”URL•ÏŠ·
-            if ($_conf['mobile.use_tsukin']) {
-                return $this->ktaiExtUrl('', $purl[0], $str);
-            }
             // ime
             if ($_conf['through_ime']) {
                 $link_url = P2Util::throughIme($purl[0]);

@@ -187,24 +187,17 @@ if ($_conf['iphone']) {
     echo <<<EOP
 <body class="nopad">
 <div class="ntoolbar" id="header">
-<h1 class="ptitle hoverable">{$sb_ht} <span class="thin">(êVÇ‹Ç∆Çﬂ)</span></h1>
-<table><tbody><tr>
 EOP;
 
     // î¬Ç…ñﬂÇÈ
-    echo '<td colspan="2">';
-    echo toolbar_i_standard_button('img/glyphish/icons2/104-index-cards.png', $ptitle_hd, $ita_url);
-    echo '</td>';
+    echo toolbar_i_back_button( $ptitle_hd, $ita_url);
 
-    // ó\îıx2
-    echo '<td>&nbsp;</td><td>&nbsp;</td>';
+    echo '<div id="toolbar_header">';
+    echo <<<EOP
+<h1 class="ptitle hoverable">êVíÖÇ‹Ç∆Çﬂì«Ç›</span></h1>
+</div>
+EOP;
 
-    // â∫Ç÷
-    echo '<td>';
-    echo toolbar_i_standard_button('img/gp2-down.png', 'â∫', '#footer');
-    echo '</td>';
-
-    echo '</tr></tbody></table>';
 
     $info_ht = P2Util::getInfoHtml();
     if (strlen($info_ht)) {

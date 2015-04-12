@@ -18,7 +18,7 @@ if ($do_filtering) {
 // }}}
 // {{{ ツールバーを表示
 
-echo '<div class="ntoolbar" id="footer">';
+echo '<div class="ntoolbar" id="footer"><div class="ntoolbar" id="pager">';
 echo '<table><tbody><tr>';
 
 // {{{ ページャ
@@ -53,9 +53,42 @@ echo '</td>';
 
 // }}}
 
-echo '</tr><tr></tbody></div><div class="ntoolbar"></table><table><tbody>';
+echo '</tr></tbody></table></div>';
+
+// {{{書き込みフォーム
+if ($_conf['bottom_res_form']) {
+    $bbs = $aThread->bbs;
+    $key = $aThread->key;
+    $host = $aThread->host;
+    $rescount = $aThread->rescount;
+    $ttitle_en = UrlSafeBase64::encode($aThread->ttitle);
+
+    $submit_value = '書き込む';
+
+    $key_idx = $aThread->keyidx;
+
+    // フォームのオプション読み込み
+    require_once P2_LIB_DIR . '/post_form_options.inc.php';
+
+    $htm['resform_ttitle'] = <<<EOP
+<p><b class="thre_title">{$aThread->ttitle_hd}</b></p>
+EOP;
+
+    require_once P2_LIB_DIR . '/post_form.inc.php';
+
+    echo <<<EOP
+<div id="kakiko" class="extra">
+{$htm['dpreview']}
+{$htm['post_form']}
+{$htm['dpreview2']}
+</div>\n
+EOP;
+}
+// }}}
 
 // {{{ その他ボタン類
+
+echo '<table><tbody><tr>';
 
 // 新着
 echo '<td>';
@@ -87,8 +120,12 @@ echo '</td>';
 echo '<td>';
 if (!$aThread->diedat) {
     if (empty($_conf['disable_res'])) {
-        $escaped_url = "post_form.php?{$host_bbs_key_q}&amp;rescount={$aThread->rescount}{$ttitle_en_q}{$_conf['k_at_a']}";
-        echo toolbar_i_standard_button('img/glyphish/icons2/08-chat.png', '書込', $escaped_url);
+        if ($_conf['bottom_res_form']) {
+            echo toolbar_i_showhide_button('img/glyphish/icons2/08-chat.png', '書込', 'kakiko');
+        } else {
+            $escaped_url = "post_form.php?{$host_bbs_key_q}&amp;rescount={$aThread->rescount}{$ttitle_en_q}{$_conf['k_at_a']}";
+            echo toolbar_i_standard_button('img/glyphish/icons2/08-chat.png', '書込', $escaped_url);
+        }
     } else {
         echo toolbar_i_opentab_button('img/glyphish/icons2/08-chat.png', '元スレ', $motothre_url);
     }

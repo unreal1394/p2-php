@@ -234,8 +234,12 @@ function toolbar_i_fav_button($icon, $label, $info, $setnum = 0)
         'setnum'    => $setnum,
         'setfav'    => 2,
     ), '', '&amp;');
+    if(isset($label)) // nullだったらlabel無しにするため
+    {
+        $label = $fav['title'];
+    }
 
-    return _toolbar_i_button($icon, $fav['title'], $uri, $attrs);
+    return _toolbar_i_button($icon, $label, $uri, $attrs);
 }
 
 // }}}
@@ -378,6 +382,24 @@ function toolbar_i_action_thread_button($icon, $label, Thread $aThread)
 }
 
 // }}}
+// {{{ toolbar_i_action_thread_button()
+
+/**
+ * 左上のバックボタン
+ *
+ * @param string $label
+ * @return string
+ */
+function toolbar_i_back_button($label, $uri)
+{
+    global $_conf;
+
+
+    return <<<EOS
+<a href="{$uri}" id="backButton">{$label}</a>
+EOS;
+}
+
 // {{{ _toolbar_i_client_type()
 
 /**
