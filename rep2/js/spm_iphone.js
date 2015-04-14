@@ -23,6 +23,9 @@ var SPM = {
  */
 SPM.show = (function(thread, no, id, evt)
 {
+	// skOuterClickÇ™î≠ê∂ÇµÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
+	evt.stopPropagation();
+
 	var spm = document.getElementById('spm');
 	if (!spm) {
 		return;
@@ -45,8 +48,14 @@ SPM.show = (function(thread, no, id, evt)
 		}
 	}
 
-	spm.style.display = 'block';
+	//spm.style.display = 'block';
 	spm.style.top = (iutil.getPageY(evt) + 10) + 'px';
+	$(spm).show();
+	$(spm).skOuterClick(function(event){
+		if (!$(spm).is(':hidden')) {
+			SPM.hide(event);
+		}
+	});
 
 	//document.body.addEventListener('touchmove', this.hide, true);
 });
@@ -64,12 +73,8 @@ SPM.hide = (function(evt)
 {
 	//document.body.removeEventListener('touchmove', this.hide, true);
 
-	var spm = document.getElementById('spm');
-	if (!spm) {
-		return;
-	}
+	$('#spm').hide();
 
-	spm.style.display = 'none';
 });
 
 // }}}

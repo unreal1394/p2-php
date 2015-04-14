@@ -2,6 +2,7 @@
  * rep2expack - iPhone用レスポップアップ
  *
  * iphone.jsの後に読み込む
+ * jQuery 必須になりました by 2ch774
  */
 
 // {{{ globals
@@ -27,7 +28,7 @@ var ipoputil = {};
  * @param {Element} obj
  * @return {String}
  */
-ipoputil.getZ = function(obj) {
+ipoputil.getZ = function() {
 	return (10 + _IRESPOPG.serial).toString();
 };
 
@@ -57,11 +58,12 @@ ipoputil.getActivator = function(obj) {
  * @param {String} key
  * @return void
  */
-ipoputil.getDeactivator = function(obj, key) {
+ipoputil.getDeactivator = function($obj, key) {
 	return (function(){
 		delete _IRESPOPG.hash[key];
-		obj.parentNode.removeChild(obj);
-		delete obj;
+		//obj.parentNode.removeChild(obj);
+		$obj.remove();
+		delete $obj;
 	});
 };
 
@@ -79,36 +81,36 @@ ipoputil.getDeactivator = function(obj, key) {
  * @todo use asynchronous request
  */
 ipoputil.callback = function(req, url, popid, yOffset) {
-	var container = document.createElement('div');
-	var closer = document.createElement('img');
+	var $container = $("<div/>");
+	var $closer = $("<img/>");
 
-	container.id = popid;
-	container.className = 'respop';
-	container.innerHTML = req.responseText;
+	$container.attr("id",popid);
+	$container.addClass("respop");
+	$container.html(req.responseText);
+
 	/*
 	var rx = req.responseXML;
 	while (rx.hasChildNodes()) {
 		container.appendChild(document.importNode(rx.removeChild(rx.firstChild), true));
 	}
 	*/
-	container.style.top = yOffset.toString() + 'px';
-	container.style.zIndex = ipoputil.getZ();
-	//container.onclick = ipoputil.getActivator(container);
+	$container.css('top',yOffset.toString() + 'px');
+	$container.css('z-index',ipoputil.getZ());
+	$container.skOuterClick(ipoputil.getDeactivator($container, url));
 
-	closer.className = 'close-button';
-	closer.setAttribute('src', 'img/iphone/close.png');
-	closer.onclick = ipoputil.getDeactivator(container, url);
+	$closer.addClass('close-button');
+	$closer.attr('src', 'img/iphone/close.png');
+	$closer.click(ipoputil.getDeactivator($container, url));
 
-	container.appendChild(closer);
-	document.body.appendChild(container);
+	$container.append($closer);
+	$(document.body).append($container);
 
-	//iutil.modifyInternalLink(container);
-	iutil.modifyExternalLink(container);
+	iutil.modifyExternalLink($container[0]);
 
-	_IRESPOPG.hash[url] = container;
+	_IRESPOPG.hash[url] = $container[0];
 
 	var lastres = document.evaluate('./div[@class="res" and position() = last()]',
-									container,
+									$container[0],
 									null,
 									XPathResult.ANY_UNORDERED_NODE_TYPE,
 									null
@@ -131,7 +133,7 @@ ipoputil.callback = function(req, url, popid, yOffset) {
 
 	var i;
 	for (i = 0; i < _IRESPOPG.callbacks.length; i++) {
-		_IRESPOPG.callbacks[i](container);
+		_IRESPOPG.callbacks[i]($container[0]);
 	}
 };
 

@@ -49,6 +49,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	 * ‰æ‘œî•ñ‚ğ•\¦‚·‚é
 	 */
 	ic2info.show = function(key, evt) {
+		// skOuterClick‚ª”­¶‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+		evt.stopPropagation();
+
 		var info = ic2info.get(key);
 
 		while (_messageContainer.childNodes.length) {
@@ -189,7 +192,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 	// }}}
 
-	document.getElementById('ic2-info-closer').onclick = ic2info.hide;
+	$('#ic2-info-closer').click(ic2info.hide);
+	$('#ic2-info-body').skOuterClick(ic2info.hide);
 
 	for (var i = 0; i < _ranks.length; i++) {
 		_ranks[i].onclick = (function(n){

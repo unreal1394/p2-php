@@ -130,6 +130,8 @@ EOP;
 // iPhone
 if ($_conf['iphone']) {
     $_conf['extra_headers_ht'] .= <<<EOS
+<script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
+<script type="text/javascript" src="js/jquery.skOuterClick.js"></script>
 <script type="text/javascript" src="js/respopup_iphone.js?{$_conf['p2_version_id']}"></script>
 EOS;
     // ImageCache2
@@ -150,7 +152,6 @@ EOS;
     if ($_conf['expack.aas.enabled'] || $_conf['expack.ic2.enabled']) {
         $_conf['extra_headers_ht'] .= <<<EOS
 <link rel="stylesheet" type="text/css" href="css/limelight.css?{$_conf['p2_version_id']}">
-<script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
 <script type="text/javascript" src="js/limelight.js?{$_conf['p2_version_id']}"></script>
 <script type="text/javascript">
 // <![CDATA[
