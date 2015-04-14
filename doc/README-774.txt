@@ -38,7 +38,7 @@ rep2-expack test https://github.com/orzisun/p2-php
  本家p2と同じく、X11ライセンスです。
 
 ●ChangeLog
-150414.????
+150414.2333
 * スマホ用readに書き込みフォームを追加
 * スマホ用画面のデザインを変更
 * DAT取得プラグインが動作しない不具合を修正
