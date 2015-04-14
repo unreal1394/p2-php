@@ -1156,7 +1156,7 @@ Limelight.prototype.init = function(options) {
 	if (flags.title) {
 		this.initTitlebar();
 	}
-	this.initTitlebar = null; 
+	this.initTitlebar = null;
 
 	if (flags.indicator) {
 		this.initIndicator();
@@ -2203,7 +2203,7 @@ Limelight.prototype.onTouchEnd = function(event) {
 		} else {
 			this.focus();
 			if (now - this.endTime < this.doubleTapDuration) {
-				toolbar.peekaboo();
+				this.deactivate();
 			}
 			if (!this.locked) {
 				this.setLastClicked(null);

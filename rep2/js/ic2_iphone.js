@@ -80,7 +80,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
 				_previewContainer.appendChild(edit).appendChild(thumb);
 			}
 
-			_messageContainer.appendChild(document.createTextNode(info.uri));
+			var aTag = document.createElement('a');
+			aTag.appendChild(document.createTextNode(info.uri));
+			aTag.href = info.uri;
+			aTag.target = '_blank';
+			_messageContainer.appendChild(aTag);
 			_messageContainer.appendChild(document.createElement('br'));
 			_messageContainer.appendChild(document.createTextNode(
 				info.width + 'x' + info.height + ' (' + _number_format(info.size) + ' bytes)'
