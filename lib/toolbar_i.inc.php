@@ -54,16 +54,10 @@ function _toolbar_i_button($icon, $label, $uri, $attrs = '')
         $attrs = str_replace('class="', 'class="hoverable ', $attrs);
     }
 
-    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
-        $label = '<br>' . $label;
-    } else {
-        $label = '';
-    }
-
     $icon = _toolbar_i_icon($icon);
 
     return <<<EOS
-<a href="{$uri}"{$attrs}><img src="{$icon}" width="48" height="32" alt="">{$label}</a>
+<span class="available"><a href="{$uri}"{$attrs}><img src="{$icon}" width="48" height="32" alt="">{$label}</a></span>
 EOS;
 }
 
@@ -85,6 +79,12 @@ function toolbar_i_standard_button($icon, $label, $uri)
     } else {
         $attrs = '';
     }
+
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
     return _toolbar_i_button($icon, $label, $uri, $attrs);
 }
 
@@ -102,8 +102,13 @@ function toolbar_i_standard_button($icon, $label, $uri)
  */
 function toolbar_i_badged_button($icon, $label, $uri, $badge)
 {
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
     $label .= sprintf('<span class="badge l%d">%s</span>', min(strlen($badge), 4), $badge);
-    return _toolbar_i_button($icon, $label, $uri);
+    return '<div id="matome">'._toolbar_i_button($icon, $label, $uri).'</div>';
 }
 
 // }}}
@@ -119,6 +124,11 @@ function toolbar_i_badged_button($icon, $label, $uri, $badge)
  */
 function toolbar_i_opentab_button($icon, $label, $uri)
 {
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
     return _toolbar_i_button($icon, $label, $uri, ' target="_blank"');
 }
 
@@ -137,7 +147,7 @@ function toolbar_i_disabled_button($icon, $label)
 {
     global $_conf;
 
-    if (empty($_conf['expack.iphone.toolbars.no_label'])) {
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label)) {
         $label = '<br>' . $label;
     } else {
         $label = '';
@@ -164,6 +174,11 @@ EOS;
 function toolbar_i_showhide_button($icon, $label, $id)
 {
     $attrs = ' onclick="return iutil.toolbarShowHide(this, event);"';
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
     return _toolbar_i_button($icon, $label, "#{$id}", $attrs);
 }
 
@@ -199,7 +214,17 @@ function toolbar_i_favita_button($icon, $label, $info, $setnum = 0)
         'setfavita' => 2,
     ), '', '&amp;');
 
-    return _toolbar_i_button($icon, $fav['title'], $uri, $attrs);
+    if(isset($label)) // null‚¾‚Á‚½‚çlabel–³‚µ‚É‚·‚é‚½‚ß
+    {
+        $label = $fav['title'];
+    }
+
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
+    return _toolbar_i_button($icon, $label, $uri, $attrs);
 }
 
 // }}}
@@ -238,6 +263,11 @@ function toolbar_i_fav_button($icon, $label, $info, $setnum = 0)
     {
         $label = $fav['title'];
     }
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
 
     return _toolbar_i_button($icon, $label, $uri, $attrs);
 }
@@ -267,6 +297,11 @@ function toolbar_i_palace_button($icon, $label, $info)
         'ttitle_en' => UrlSafeBase64::encode($info->ttitle),
         'setpal'    => 2,
     ), '', '&amp;');
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
 
     return _toolbar_i_button($icon, $label, $uri, $attrs);
 }
@@ -296,6 +331,11 @@ function toolbar_i_aborn_button($icon, $label, $info)
         'ttitle_en' => UrlSafeBase64::encode($info->ttitle),
         'taborn'    => 2,
     ), '', '&amp;');
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
+    }
 
     return _toolbar_i_button($icon, $label, $uri, $attrs);
 }
@@ -335,6 +375,11 @@ function toolbar_i_action_board_button($icon, $label, ThreadList $aThreadList)
     $title = $_conf["expack.tba.{$type}.board_title"];
     if ($title !== '') {
         $label = p2h($title, false);
+    }
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
     }
 
     return _toolbar_i_button($icon, $label, $uri);
@@ -376,6 +421,11 @@ function toolbar_i_action_thread_button($icon, $label, Thread $aThread)
     $title = $_conf["expack.tba.{$type}.thread_title"];
     if ($title !== '') {
         $label = p2h($title, false);
+    }
+    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
+        $label = '<br>' . $label;
+    } else {
+        $label = '';
     }
 
     return _toolbar_i_button($icon, $label, $uri);

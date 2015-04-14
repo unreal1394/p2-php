@@ -7,9 +7,7 @@
 //=================================================
 //フッタプリント
 //=================================================
-$bbs_q = '&amp;bbs=' . $aThreadList->bbs;
-$host_bbs_q = 'host=' . $aThreadList->host . $bbs_q;
-$paging_q = $host_bbs_q . '&amp;spmode=' . $aThreadList->spmode . $norefresh_q;
+
 
 if (!empty($GLOBALS['wakati_words'])) {
     $paging_q .= '&amp;method=similar&amp;word=' . rawurlencode($GLOBALS['wakati_word']);
@@ -195,10 +193,7 @@ echo '<td>';
 if ($ta_num) {
     $escaped_url = "{$_conf['subject_php']}?{$host_bbs_q}{$norefresh_q}&amp;spmode=taborn{$_conf['k_at_a']}";
     echo toolbar_i_badged_button('img/glyphish/icons2/128-bone.png', 'あぼーんｽﾚ', $escaped_url, $ta_num);
-} elseif ($aThreadList->spmode == 'taborn') {
-    $escaped_url = "{$_conf['subject_php']}?{$host_bbs_q}{$_conf['k_at_a']}";
-    echo toolbar_i_standard_button('img/glyphish/icons2/63-runner.png', '板に戻る', $escaped_url);
-} else {
+}  else {
     echo toolbar_i_disabled_button('img/glyphish/icons2/128-bone.png', 'あぼーんｽﾚ');
 }
 echo '</td>';
@@ -208,9 +203,6 @@ echo '<td>';
 if (!$aThreadList->spmode || $aThreadList->spmode == 'taborn') {
     $escaped_url = "{$_conf['subject_php']}?{$host_bbs_q}{$norefresh_q}&amp;spmode=soko{$_conf['k_at_a']}";
     echo toolbar_i_standard_button('img/glyphish/icons2/33-cabinet.png', 'dat倉庫', $escaped_url);
-} elseif ($aThreadList->spmode == 'soko') {
-    $escaped_url = "{$_conf['subject_php']}?{$host_bbs_q}{$_conf['k_at_a']}";
-    echo toolbar_i_standard_button('img/glyphish/icons2/63-runner.png', '板に戻る', $escaped_url);
 } else {
     echo toolbar_i_disabled_button('img/glyphish/icons2/33-cabinet.png', 'dat倉庫');
 }

@@ -147,15 +147,11 @@ echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', nu
 // ‚¨‹C‚ÉƒXƒŒ
 if ($thread_info) {
     echo toolbar_i_fav_button('img/glyphish/icons2/28-star.png', null, $thread_info);
-} else {
-    echo toolbar_i_disabled_button('img/glyphish/icons2/28-star.png', null);
 }
 
 // ‚»‚Ì‘¼
 echo toolbar_i_showhide_button('img/gp0-more.png', null, 'read_toolbar_extra');
 
-// ‰º‚Ö
-echo toolbar_i_standard_button('img/gp2-down.png', null, '#footer');
 
 echo '</div>';
 
@@ -299,6 +295,20 @@ echo <<<EOP
 {$_conf['detect_hint_input_ht']}{$_conf['k_input_ht']}
 </form>
 </div>
+<div class="ntoolbar" id="pager">
+<table><tbody><tr>
+<td colspan="4" id="thread_title"><div>
+{$aThread->ttitle_hd}
+</div></td>
+<td>
+EOP;
+
+// ‰º‚Ö
+echo toolbar_i_standard_button('img/gp2-down.png', null, '#footer');
+
+echo <<<EOP
+</td>
+</tr></tbody></table></div>
 EOP;
 
 // }}}
@@ -352,8 +362,6 @@ if ($_GET['showbl']) {
 
 echo <<<EOP
 </div>
-
-<h4 class="thread_title hoverable">{$aThread->ttitle_hd}</h4>
 
 EOP;
 // end toolbar

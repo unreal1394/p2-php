@@ -8,7 +8,7 @@ body {
 	font-family: sans-serif;
 	font-size: medium;
 	line-height: 140%;
-	color: #000000;
+	color: #000;
 	background-color: #fafafa;
 	-webkit-text-size-adjust: none;
 }
@@ -249,9 +249,46 @@ div#spm > img#spm-closer {
 /* }}} */
 /* {{{ Read */
 
-h4.thread_title {
-	margin: 8px 4px;
-	color: #f40;
+span.thread_title {
+	text-align: left;
+	font-weight: bold;
+	font-size: 16px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+	box-sizing: border-box;
+	display: inline-block;
+}
+
+td#thread_title {
+	text-align: left;
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 14px;
+}
+
+td#thread_title > div {
+	padding: 0 0 0 8px;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+span.link_right_button {
+	position: absolute;
+	text-align: right;
+	right: 0;
+	top: 0;
+	padding: 3px 0;
+	display: inline-block;
+}
+
+div.thread_title {
+	background-color: #808080;
+	position: relative;
+	padding: 4px 0px 4px 4px;
 }
 
 h3 > font[color], div > font[color] > b {
@@ -444,17 +481,14 @@ ul.subject > li > a:visited {
 }
 
 ul.subject > li > a:active {
-	color: #ffffff;
-	background-color: #194fdb;
-	-webkit-tap-highlight-color: transparent;
 }
 
 ul.subject > li > a:link > span.new {
-	color: #ff0000;
+	color: #8C99B4;
 }
 
 ul.subject > li > a:visited > span.new {
-	color: #fa5825;
+	color: #8090B0;
 }
 
 ul.subject > li > a:active > span.new {
@@ -467,14 +501,21 @@ ul.subject > li > a > span.info {
 
 ul.subject > li > a > span.title {
 	word-break: break-all;
-	font-size: large;
+	font-size: 15px;
+	line-height: 127%;
 	font-weight: bold;
 }
 
 ul.subject > li > a > span.ita {
+	white-space: nowrap;
+	color: #666;
+	font-size: 12px;
 }
 
 ul.subject > li > a > span.num {
+	white-space: nowrap;
+	color: #999999;
+	font-size: 14px;
 }
 
 ul.subject > li > a > span.unread {
@@ -487,13 +528,16 @@ ul.subject > li > a > span.unread {
 
 ul.subject > li > a > span.unread.new {
 	font-weight: bold;
-	background-color: #ff0000;
+	background-color: #8C99B4;
 }
 
 ul.subject > li > a > span.unread.offline {
 }
 
 ul.subject > li > a > span.count {
+	white-space: nowrap;
+	color: #999;
+	font-size: 14px;
 }
 
 ul.subject > li > a > span.count:before {
@@ -505,6 +549,9 @@ ul.subject > li > a > span.count:after {
 }
 
 ul.subject > li > a > span.score {
+	white-space: nowrap;
+	color: #666;
+	font-size: 12px;
 }
 
 /* }}} */
@@ -571,7 +618,7 @@ div.popup-dialog > div.popup-dialog-buttons > input[type="button"] {
 ul.subject > li.info-pop {
 	margin: 0;
 	padding: 10px 5px;
-	background-color: #333333;
+	background-color: #333;
 	color: #ffffff;
 	font-size: 16px !important;
 	font-weight: bold;
@@ -723,6 +770,7 @@ div.ntoolbar table {
 	padding: 0;
 	border-collapse: collapse;
 	empty-cells: show;
+	table-layout: fixed;
 }
 
 div.ntoolbar td {
@@ -739,7 +787,7 @@ div.ntoolbar td {
 }
 
 div.ntoolbar#pager td {
-	padding: 3px 0;
+	padding: 0;
 	border-top: none;
 }
 
@@ -788,9 +836,12 @@ div.ntoolbar a:visited {
 div.ntoolbar a.inactive {
 	color: #fff;
 }
-
+div.ntoolbar span.available {
+	display: inline-block;
+}
 div.ntoolbar span.unavailable {
 	color: #555;
+	display: inline-block;
 }
 
 div.ntoolbar a.hover,
@@ -800,7 +851,14 @@ div.ntoolbar a:active {
 	color: #b4b4b4;
 }
 
-div.ntoolbar td > a > span.badge {
+/* バッジの位置決めのためだけ */
+div#matome {
+	display: inline-block;
+	position: relative;
+}
+
+
+a > span.badge {
 	display: inline-block;
 	position: absolute;
 	top: 0;
@@ -811,34 +869,33 @@ div.ntoolbar td > a > span.badge {
 	padding: 2px 5px;
 	-webkit-border-radius: 8px;
 	border-radius: 8px;
-	background-color: #f00;
-	background-color: rgba(255, 0, 0, 0.95);
+	background-color: #8C99B4;
 	color: #fff;
 	font-weight: bold;
 	font-size: 12px;
 	line-height: 12px;
 }
 
-div.ntoolbar td > a > span.badge.l2 {
+a > span.badge.l2 {
 	right: 5px;
 }
 
-div.ntoolbar td > a > span.badge.l3 {
+a > span.badge.l3 {
 	right: 3px;
 }
 
-div.ntoolbar td > a > span.badge.l4 {
+a > span.badge.l4 {
 	right: 0px;
 }
 
-div.ntoolbar td > a > span.badge.l0 {
+a > span.badge.l0 {
 	display: none;
 }
 
-div.ntoolbar td > a.hover > span.badge,
-div.ntoolbar td > a.active > span.badge,
-div.ntoolbar td > a:hover > span.badge,
-div.ntoolbar td > a:active > span.badge {
+a.hover > span.badge,
+a.active > span.badge,
+a:hover > span.badge,
+a:active > span.badge {
 	background-color: #36f;
 }
 
@@ -882,7 +939,7 @@ div.mtoolbar {
 	min-width: 320px;
 	margin: 0;
 	padding: 0;
-	background-color: #333;
+	background-color: #808080;
 	color: #fff;
 }
 
@@ -966,7 +1023,7 @@ div.mtoolbar > .ttitle > span.btitle {
 	div.ntoolbar td > a {
 		width: 68px;
 	}
-	div.ntoolbar td > a > span.badge {
+	a > span.badge {
 		right: 8px !important;
 	}
 }
@@ -975,7 +1032,7 @@ div.mtoolbar > .ttitle > span.btitle {
 	div.ntoolbar td > a {
 		width: 76px;
 	}
-	div.ntoolbar td > a > span.badge {
+	a > span.badge {
 		right: 16px !important;
 	}
 }
@@ -984,7 +1041,7 @@ div.mtoolbar > .ttitle > span.btitle {
 	div.ntoolbar td > a {
 		width: 92px;
 	}
-	div.ntoolbar td > a > span.badge {
+	a > span.badge {
 		right: 24px !important;
 	}
 }

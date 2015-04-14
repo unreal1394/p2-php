@@ -9,6 +9,9 @@
 //===============================================================
 $newtime = date('gis');
 $norefresh_q = '&amp;norefresh=1';
+$bbs_q = '&amp;bbs=' . $aThreadList->bbs;
+$host_bbs_q = 'host=' . $aThreadList->host . $bbs_q;
+$paging_q = $host_bbs_q . '&amp;spmode=' . $aThreadList->spmode . $norefresh_q;
 
 // {{{ ページタイトル部分URL設定
 
@@ -103,16 +106,21 @@ echo <<<EOP
 </head>
 <body class="nopad">
 <div class="ntoolbar" id="header">
-<h1 class="ptitle hoverable">{$ptitle_ht}</h1>
 EOP;
 
 // {{{ 各種ボタン類
 
-echo '<table><tbody><tr>';
-
+// 戻る
+if ($aThreadList->spmode == 'taborn' || $aThreadList->spmode == 'soko') {
+    $escaped_url = "{$_conf['subject_php']}?{$host_bbs_q}{$_conf['k_at_a']}";
+    echo toolbar_i_back_button('板に戻る', $escaped_url);
+} else {
+    echo toolbar_i_back_button('TOP', "index.php{$_conf['k_at_q']}");
+}
+echo '<div id="toolbar_header">';
 // 新着まとめ読み
 $shinchaku_norefresh_ht = '';
-echo '<td>';
+
 if ($aThreadList->spmode != 'soko') {
     $shinchaku_matome_url = "{$_conf['read_new_k_php']}?host={$aThreadList->host}&amp;bbs={$aThreadList->bbs}&amp;spmode={$aThreadList->spmode}&amp;nt={$newtime}{$_conf['k_at_a']}";
 
@@ -122,45 +130,25 @@ if ($aThreadList->spmode != 'soko') {
 
     if ($shinchaku_attayo) {
         $shinchaku_norefresh_ht = '<input type="hidden" name="norefresh" value="1">';
-        echo toolbar_i_badged_button('img/glyphish/icons2/104-index-cards.png', '新まとめ',
+        echo toolbar_i_badged_button('img/glyphish/icons2/104-index-cards.png', null,
                                       $shinchaku_matome_url . $norefresh_q, $shinchaku_num);
     } else {
-        echo toolbar_i_standard_button('img/glyphish/icons2/104-index-cards.png', '新まとめ', $shinchaku_matome_url);
+        echo toolbar_i_standard_button('img/glyphish/icons2/104-index-cards.png', null, $shinchaku_matome_url);
     }
-} else {
-    echo toolbar_i_disabled_button('img/glyphish/icons2/104-index-cards.png', '新まとめ');
 }
-echo '</td>';
 
 // スレ検索
-echo '<td>';
-if (!$spmode_without_palace_or_favita) {
-    echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', '検索', 'sb_toolbar_filter');
-} else {
-    echo toolbar_i_disabled_button('img/glyphish/icons2/06-magnifying-glass.png', '検索');
-}
-echo '</td>';
+echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', null, 'sb_toolbar_filter');
 
 // お気に板
-echo '<td>';
 if ($board_info) {
-    echo toolbar_i_favita_button('img/glyphish/icons2/28-star.png', 'お気に板', $board_info);
-} else {
-    echo toolbar_i_disabled_button('img/glyphish/icons2/28-star.png', 'お気に板');
+    echo toolbar_i_favita_button('img/glyphish/icons2/28-star.png', null, $board_info);
 }
-echo '</td>';
 
 // その他
-echo '<td>';
-echo toolbar_i_showhide_button('img/gp0-more.png', 'その他', 'sb_toolbar_extra');
-echo '</td>';
+echo toolbar_i_showhide_button('img/gp0-more.png', null, 'sb_toolbar_extra');
 
-// 下へ
-echo '<td>';
-echo toolbar_i_standard_button('img/gp2-down.png', '下', '#footer');
-echo '</td>';
-
-echo '</tr></tbody></table>';
+echo '</div>';
 
 // }}}
 // {{{ その他のツール
@@ -265,15 +253,13 @@ echo '</div>';
 
 // }}}
 // {{{ スレ検索フォーム
+if (array_key_exists('method', $sb_filter) && $sb_filter['method'] == 'or') {
+    $hd['method_checked_at'] = ' checked';
+} else {
+    $hd['method_checked_at'] = '';
+}
 
-if (!$spmode_without_palace_or_favita) {
-    if (array_key_exists('method', $sb_filter) && $sb_filter['method'] == 'or') {
-        $hd['method_checked_at'] = ' checked';
-    } else {
-        $hd['method_checked_at'] = '';
-    }
-
-    echo <<<EOP
+echo <<<EOP
 <div id="sb_toolbar_filter" class="extra">
 <form id="sb_filter" method="get" action="{$_conf['subject_php']}" accept-charset="{$_conf['accept_charset']}">
 {$sb_form_hidden_ht}<input type="text" id="sb_filter_word" name="word" value="{$hd['word']}" size="15" autocorrect="off" autocapitalize="off">
@@ -281,8 +267,21 @@ if (!$spmode_without_palace_or_favita) {
 <input type="submit" name="submit_kensaku" value="検索">
 </form>
 </div>
+<div class="ntoolbar" id="pager">
+<table><tbody><tr>
+<td colspan="4" id="thread_title"><div>
+{$ptitle_hd}
+</div></td>
+<td>
 EOP;
-}
+
+// 下へ
+echo toolbar_i_standard_button('img/gp2-down.png', null, '#footer');
+
+echo <<<EOP
+</td>
+</tr></tbody></table></div>
+EOP;
 
 // }}}
 // {{{ 各種通知

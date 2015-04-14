@@ -780,9 +780,14 @@ iutil.toolbarShowHide = function(element, event) {
 				}
 
 				// 書き込みフォームなら画面をスクロール(本家より)
-				if(id=='kakiko') {
+				if (id=='kakiko') {
 					var to = parseInt(target.offsetTop);
 					document.body.scrollTop = to - 60;
+					// 書き込みフォームにキャレットを移す
+					var textbox = document.getElementById('MESSAGE');
+					var len = textbox.value.length;
+					textbox.focus();
+					textbox.setSelectionRange(len, len);
 				}
 			}
 		}
