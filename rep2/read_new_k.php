@@ -23,8 +23,8 @@ $GLOBALS['rnum_all_range'] = $_conf['mobile.rnum_range'];
 $sb_view = 'shinchaku';
 $newtime = date('gis');
 
-$newthre_num = 0;
 $online_num = 0;
+$newthre_num = 0;
 
 //=================================================
 // 板の指定
@@ -50,9 +50,9 @@ if (!(isset($host) && isset($bbs)) && !isset($spmode)) {
 }
 
 // 未読数制限
-if (isset($_GET['unum_limit'])) {
+if (ctype_digit($_GET['unum_limit'])) {
     $unum_limit = (int)$_GET['unum_limit'];
-} elseif (isset($_POST['unum_limit'])) {
+} elseif (ctype_digit($_POST['unum_limit'])) {
     $unum_limit = (int)$_POST['unum_limit'];
 } else {
     $unum_limit = 0;
@@ -72,7 +72,7 @@ $aThreadList = new ThreadList();
 // 板とモードのセット ===================================
 $ta_keys = array();
 if ($spmode) {
-    if ($spmode == "taborn" or $spmode == "soko") {
+    if ($spmode == 'taborn' or $spmode == 'soko') {
         $aThreadList->setIta($host, $bbs, P2Util::getItaName($host, $bbs));
     }
     $aThreadList->setSpMode($spmode);
@@ -234,6 +234,7 @@ for ($x = 0; $x < $linesize; $x++) {
     $aThread->torder = $x + 1;
 
     // データ読み込み
+    // spmodeなら
     if ($aThreadList->spmode) {
         switch ($aThreadList->spmode) {
         case "recent":    // 履歴
@@ -250,7 +251,7 @@ for ($x = 0; $x < $linesize; $x++) {
             $aThread->host = $aThreadList->host;
             $aThread->bbs = $aThreadList->bbs;
             break;
-        case "palace":    // 殿堂入り
+        case "palace": // スレの殿堂
             $aThread->getThreadInfoFromExtIdxLine($l);
             break;
         case "merge_favita": // お気に板をマージ
@@ -266,7 +267,7 @@ for ($x = 0; $x < $linesize; $x++) {
             }
             break;
         }
-    // subject (not spmode)
+    // subject (not spmode)の場合
     } else {
         $aThread->getThreadInfoFromSubjectTxtLine($l);
         $aThread->host = $aThreadList->host;
@@ -293,7 +294,7 @@ for ($x = 0; $x < $linesize; $x++) {
     }
 
     // スレッドあぼーんチェック =====================================
-    if ($aThreadList->spmode != "taborn" && !empty($ta_keys[$aThread->key])) {
+    if ($aThreadList->spmode != 'taborn' && !empty($ta_keys[$aThread->key])) {
         unset($ta_keys[$aThread->key]);
         continue; // あぼーんスレはスキップ
     }
@@ -321,7 +322,7 @@ for ($x = 0; $x < $linesize; $x++) {
         }
 
         // 新着のみ(for spmode) ===============================
-        if ($sb_view == "shinchaku" && empty($_GET['word'])) {
+        if ($sb_view == 'shinchaku' && empty($_GET['word'])) {
             if ($aThread->unum < 1) {
                 unset($aThread);
                 continue;

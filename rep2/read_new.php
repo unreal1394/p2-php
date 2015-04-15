@@ -27,15 +27,33 @@ $newthre_num = 0;
 //=================================================
 // 板の指定
 //=================================================
-if (isset($_GET['host'])) { $host = $_GET['host']; }
-if (isset($_POST['host'])) { $host = $_POST['host']; }
-if (isset($_GET['bbs'])) { $bbs = $_GET['bbs']; }
-if (isset($_POST['bbs'])) { $bbs = $_POST['bbs']; }
-if (isset($_GET['spmode'])) { $spmode = $_GET['spmode']; }
-if (isset($_POST['spmode'])) { $spmode = $_POST['spmode']; }
+if (isset($_GET['host'])) {
+    $host = $_GET['host'];
+} elseif (isset($_POST['host'])) {
+    $host = $_POST['host'];
+}
+if (isset($_GET['bbs'])) {
+    $bbs = $_GET['bbs'];
+} elseif (isset($_POST['bbs'])) {
+    $bbs = $_POST['bbs'];
+}
+if (isset($_GET['spmode'])) {
+    $spmode = $_GET['spmode'];
+} elseif (isset($_POST['spmode'])) {
+    $spmode = $_POST['spmode'];
+}
 
-if ((!isset($host) || !isset($bbs)) && !isset($spmode)) {
+if (!(isset($host) && isset($bbs)) && !isset($spmode)) {
     p2die('必要な引数が指定されていません');
+}
+
+// 未読数制限
+if (ctype_digit($_GET['unum_limit'])) {
+    $unum_limit = (int)$_GET['unum_limit'];
+} elseif (ctype_digit($_POST['unum_limit'])) {
+    $unum_limit = (int)$_POST['unum_limit'];
+} else {
+    $unum_limit = 0;
 }
 
 //=================================================
@@ -343,9 +361,7 @@ for ($x = 0; $x < $linesize ; $x++) {
     $subject_id = $aThread->host . '/' . $aThread->bbs;
 
     $aThread->setThreadPathInfo($aThread->host, $aThread->bbs, $aThread->key);
-
-    // 既得スレッドデータをidxから取得
-    $aThread->getThreadInfoFromIdx();
+    $aThread->getThreadInfoFromIdx(); // 既得スレッドデータをidxから取得
 
     // 新着のみ(for subject) =========================================
     if (!$aThreadList->spmode && $sb_view == 'shinchaku' && empty($_GET['word'])) {
@@ -390,6 +406,12 @@ for ($x = 0; $x < $linesize ; $x++) {
                 continue;
             }
         }
+    }
+
+    // 未読数制限
+    if ($unum_limit > 0 && $aThread->unum >= $unum_limit) {
+        unset($aThread);
+        continue;
     }
 
     if ($aThread->isonline) { $online_num++; } // 生存数set
@@ -515,7 +537,7 @@ function readNew($aThread)
         }
 
         //if (!$aThread->ls) {
-            $aThread->ls = "$from_num-";
+            $aThread->ls = "{$from_num}-";
         //}
     }
 
@@ -779,7 +801,13 @@ if (!$aThreadList->num) {
     echo "<hr>";
 }
 
-$shinchaku_matome_url = "{$_conf['read_new_php']}?host={$aThreadList->host}&amp;bbs={$aThreadList->bbs}&amp;spmode={$aThreadList->spmode}&amp;nt={$newtime}";
+if ($unum_limit > 0) {
+    $unum_limit_at_a = "&amp;unum_limit={$unum_limit}";
+} else {
+    $unum_limit_at_a = '';
+}
+
+$shinchaku_matome_url = "{$_conf['read_new_php']}?host={$aThreadList->host}&amp;bbs={$aThreadList->bbs}&amp;spmode={$aThreadList->spmode}&amp;nt={$newtime}{$unum_limit_at_a}";
 
 if ($aThreadList->spmode == 'merge_favita') {
     $shinchaku_matome_url .= $_conf['m_favita_set_at_a'];

@@ -183,8 +183,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			if (req.status == 200) {
 				if (req.responseText == '1') {
 					ic2info.setRank(rank);
-				} else {
-					window.alert('Internal error');
 				}
 			} else {
 				window.alert('HTTP error ' + req.statusText);

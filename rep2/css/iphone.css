@@ -69,6 +69,7 @@ div#toolbar_header {
 	text-align:right;
 	padding: 6px;
 	height: 45px;
+	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
 
