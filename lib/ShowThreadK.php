@@ -754,9 +754,12 @@ EOP;
     {
         global $_conf;
 
-        if (preg_match('{^http://(\\w+\\.(?:2ch\\.net|bbspink\\.com))/(\\w+)/$}', $purl[0], $m)) {
-            $subject_url = "{$_conf['subject_php']}?host={$m[1]}&amp;bbs={$m[2]}";
-            return "<a href=\"{$url}\">{$str}</a> [<a href=\"{$subject_url}{$_conf['k_at_a']}\">”Â‚ðp2‚ÅŠJ‚­</a>]";
+        if (preg_match('{^https?://(.+)/(.+)/$}', $purl[0], $m)) {
+            //rep2‚É“o˜^‚³‚ê‚Ä‚¢‚é”Â‚È‚ç‚ÎƒŠƒ“ƒN‚·‚é
+            if (BbsMap::isRegisteredBbs($m[1],$m[2])) {
+                $subject_url = "{$_conf['subject_php']}?host={$m[1]}&amp;bbs={$m[2]}";
+                return "<a href=\"{$url}\">{$str}</a> [<a href=\"{$subject_url}{$_conf['k_at_a']}\">”Â‚ðp2‚ÅŠJ‚­</a>]";
+            }
         }
         return false;
     }

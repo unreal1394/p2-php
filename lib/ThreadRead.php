@@ -699,7 +699,7 @@ class ThreadRead extends Thread {
         $read_response_html = '';
         if (! $reason) {
             try {
-                $req = P2Util::getHTTPRequest2 ($read_url, HTTP_Request2::METHOD_GET);
+                $req = P2Util::getHTTPRequest2 ($read_url + '1/', HTTP_Request2::METHOD_GET);
                 // ƒwƒbƒ_
                 $req->setHeader ('User-Agent', P2Util::getP2UA(false,P2Util::isHost2chs($this->host))); // ‚±‚±‚ÍA"Monazilla/" ‚ð‚Â‚¯‚é‚ÆNG
 

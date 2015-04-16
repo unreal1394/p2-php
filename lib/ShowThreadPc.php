@@ -154,7 +154,7 @@ class ShowThreadPc extends ShowThread
             $idstr = null;
         }
 
-		// +live (live.bbs_noname) 用 
+		// +live (live.bbs_noname) 用
 		if (!empty($this->BBS_NONAME_NAME) and $this->BBS_NONAME_NAME == $name) {
 			$name = '';
 		}
@@ -1274,9 +1274,12 @@ EOJS;
     {
         global $_conf;
 
-        if (preg_match('{^http://(\\w+\\.(?:2ch\\.net|bbspink\\.com))/(\\w+)/$}', $purl[0], $m)) {
-            $subject_url = "{$_conf['subject_php']}?host={$m[1]}&amp;bbs={$m[2]}";
-            return "<a href=\"{$url}\" target=\"subject\">{$str}</a> [<a href=\"{$subject_url}\" target=\"subject\">板をp2で開く</a>]";
+        if (preg_match('{^https?://(.+)/(.+)/$}', $purl[0], $m)) {
+            //rep2に登録されている板ならばリンクする
+            if (BbsMap::isRegisteredBbs($m[1],$m[2])) {
+                $subject_url = "{$_conf['subject_php']}?host={$m[1]}&amp;bbs={$m[2]}";
+                return "<a href=\"{$url}\" target=\"subject\">{$str}</a> [<a href=\"{$subject_url}{$_conf['k_at_a']}\" target=\"subject\">板をp2で開く</a>]";
+            }
         }
         return false;
     }
@@ -1298,7 +1301,7 @@ EOJS;
 
         list($nama_url, $host, $bbs, $key, $ls) = P2Util::detectThread($purl[0]);
         if ($host && $bbs && $key) {
-            $read_url = "{$_conf['read_php']}?host={$host}&amp;bbs={$bbs}&amp;key={$key}&amp;ls={$ls}";
+            $read_url = "{$_conf['read_php']}?host={$host}&amp;bbs={$bbs}&amp;key={$key}&amp;ls={$ls}{$_conf['k_at_a']}";
             if ($_conf['iframe_popup']) {
                 if ($ls && preg_match('/^[0-9\\-n]+$/', $ls)) {
                     $pop_url = $read_url;
@@ -1340,7 +1343,7 @@ EOJS;
         // http://www.youtube.com/watch?v=Mn8tiFnAUAI
         // http://m.youtube.com/watch?v=OhcX0xJsDK8&client=mv-google&gl=JP&hl=ja&guid=ON&warned=True
         if (preg_match('{^https?://(youtu\\.be/|(www|jp|m)\\.youtube\\.com/watch\\?(?:.+&amp;)?v=)([0-9a-zA-Z_\\-]+)}', $url, $m)) {
-            $url = preg_replace('{^http:}', 'https:', $url); 
+            $url = preg_replace('{^http:}', 'https:', $url);
             // ime
             if ($_conf['through_ime']) {
                 $link_url = P2Util::throughIme($url);

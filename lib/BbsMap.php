@@ -5,6 +5,7 @@
 /**
  * BbsMapクラス
  * 板-ホストの対応表を作成し、それに基づいてホストの同期を行う
+ * 外部板がrep2に登録されているかどうかの判定も兼ねる
  *
  * @static
  */
@@ -85,6 +86,52 @@ class BbsMap
         }
 
         return $itaj;
+    }
+
+    // }}}
+    // {{{ isRegisteredBbs()
+
+    /**
+     * 板がrep2に登録されているかどうか
+     *
+     * @param   string  $host   ホスト名
+     * @param   string  $bbs    板名
+     * @return  bool  rep2に追加されている板ならtrue
+     */
+    static public function isRegisteredBbs($host, $bbs)
+    {
+        global $_conf;
+
+        $type = self::_detectHostType($host);
+
+        // 登録無しでもrep2で扱える板はチェック無しでtrue
+        if($host != $type) {
+            return true;
+        }
+
+        // マッピング読み込み
+        $map = self::_getMapping();
+        if (!$map) {
+            return false;
+        }
+
+        // チェック
+        if (isset($map[$type]) && isset($map[$type][$bbs])) {
+            return true;
+        }
+
+        // もし見つからなければお気に板の内容も確認(外部板が登録可能になっているため)
+        if ($lines = FileCtl::file_read_lines($_conf['favita_brd'], FILE_IGNORE_NEW_LINES)) {
+            foreach ($lines as $l) {
+                if (preg_match("/^\t?(.+)\t(.+)\t(.+)\$/", $l, $matches)) {
+                    if ($host == $matches[1])
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     // }}}
@@ -289,7 +336,7 @@ class BbsMap
 
         // }}}
         // {{{ メニューをダウンロード
-        $brd_menus_online = BrdCtl::read_brd_online();
+        $brd_menus_online = BrdCtl::read_brds();
         $map = array();
 
         foreach ($brd_menus_online as $a_brd_menu) {

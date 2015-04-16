@@ -1879,28 +1879,13 @@ ERR;
         // スレURLの直接指定
         if ($nama_url) {
 
-            // 2ch or pink - http://choco.2ch.net/test/read.cgi/event/1027770702/
-            if (preg_match('<^http://(\\w+\\.(?:2ch\\.net|bbspink\\.com|vip2ch\\.com))/test/read\\.(?:cgi|html)
-                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
-            {
-                $host = $matches[1];
-                $bbs = $matches[2];
-                $key = $matches[3];
-                $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
-
-            // 2ch or pink 過去ログhtml - http://pc.2ch.net/mac/kako/1015/10153/1015358199.html
-            } elseif (preg_match('<^(http://(\\w+\\.(?:2ch\\.net|bbspink\\.com|vip2ch\\.com))(?:/[^/]+)?/(\\w+)
-                    /kako/\\d+(?:/\\d+)?/(\\d+)).html>x', $nama_url, $matches))
-            {
-                $host = $matches[2];
-                $bbs = $matches[3];
-                $key = $matches[4];
-                $ls = '';
-                $kakolog_url = $matches[1];
-                $_GET['kakolog'] = $kakolog_url;
+            $host = null;
+            $bbs = null;
+            $key = null;
+            $ls = null;
 
             // まちBBS - http://kanto.machi.to/bbs/read.cgi/kanto/1241815559/
-            } elseif (preg_match('<^http://(\\w+\\.machi(?:bbs\\.com|\\.to))/bbs/read\\.cgi
+            if (preg_match('<^http://(\\w+\\.machi(?:bbs\\.com|\\.to))/bbs/read\\.cgi
                     /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
             {
                 $host = $matches[1];
@@ -1930,11 +1915,29 @@ ERR;
                 $host = $matches[1];
                 list($bbs, $key, $ls) = self::parseMachiQuery($matches[4]);
 
-            } else {
-                $host = null;
-                $bbs = null;
-                $key = null;
-                $ls = null;
+            // 2ch or pink - http://choco.2ch.net/test/read.cgi/event/1027770702/
+            } elseif (preg_match('<^https?://(.+)/test/read\\.(?:cgi|html|so)
+                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
+            {
+                if(BbsMap::isRegisteredBbs($matches[1] ,$matches[2])) {
+                    $host = $matches[1];
+                    $bbs = $matches[2];
+                    $key = $matches[3];
+                    $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
+                }
+
+                // 2ch or pink 過去ログhtml - http://pc.2ch.net/mac/kako/1015/10153/1015358199.html
+            } elseif (preg_match('<^(https?://(.+)(?:/[^/]+)?/(\\w+)
+                    /kako/\\d+(?:/\\d+)?/(\\d+)).html>x', $nama_url, $matches))
+            {
+                if(BbsMap::isRegisteredBbs($matches[2] ,$matches[3])) {
+                    $host = $matches[2];
+                    $bbs = $matches[3];
+                    $key = $matches[4];
+                    $ls = '';
+                    $kakolog_url = $matches[1];
+                    $_GET['kakolog'] = $kakolog_url;
+                }
             }
 
             // 補正

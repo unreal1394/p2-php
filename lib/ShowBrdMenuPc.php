@@ -86,7 +86,7 @@ EOP;
 
         if ($_conf['merge_favita']) {
             echo <<<EOP
-    @ <a href="{$_conf['subject_php']}?spmode=merge_favita{$_conf['m_favita_set_at_a']}">{$favset_title} (‚Ü‚Æ‚ß)</a><br>\n
+     <a href="{$_conf['subject_php']}?spmode=merge_favita{$_conf['m_favita_set_at_a']}">{$favset_title} (‚Ü‚Æ‚ß)</a><br>\n
 EOP;
         }
 

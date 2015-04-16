@@ -417,14 +417,15 @@ if ($aThread->diedat) {
     } else {
         $diedat_msg = $aThread->getDefaultGetDatErrorMessageHTML();
     }
+    $motothre_url_t = P2Util::throughIme ($motothre_url);
 
-    $motothre_popup = " onmouseover=\"showHtmlPopUp('{$motothre_url}',event,{$_conf['iframe_popup_delay']})\" onmouseout=\"offHtmlPopUp()\"";
+    $motothre_popup = " onmouseover=\"showHtmlPopUp('{$motothre_url_t}',event,{$_conf['iframe_popup_delay']})\" onmouseout=\"offHtmlPopUp()\"";
     if ($_conf['iframe_popup'] == 1) {
-        $motothre_ht = "<a href=\"{$motothre_url}\"{$_conf['bbs_win_target_at']}{$motothre_popup}>{$motothre_url}</a>";
+        $motothre_ht = "<a href=\"{$motothre_url_t}\"{$_conf['bbs_win_target_at']}{$motothre_popup}>{$motothre_url}</a>";
     } elseif ($_conf['iframe_popup'] == 2) {
-        $motothre_ht = "(<a href=\"{$motothre_url}\"{$_conf['bbs_win_target_at']}{$motothre_popup}>p</a>)<a href=\"{$motothre_url}\"{$_conf['bbs_win_target_at']}>{$motothre_url}</a>";
+        $motothre_ht = "(<a href=\"{$motothre_url_t}\"{$_conf['bbs_win_target_at']}{$motothre_popup}>p</a>)<a href=\"{$motothre_url_t}\"{$_conf['bbs_win_target_at']}>{$motothre_url}</a>";
     } else {
-        $motothre_ht = "<a href=\"{$motothre_url}\"{$_conf['bbs_win_target_at']}>{$motothre_url}</a>";
+        $motothre_ht = "<a href=\"{$motothre_url_t}\"{$_conf['bbs_win_target_at']}>{$motothre_url}</a>";
     }
 
     echo $diedat_msg;
