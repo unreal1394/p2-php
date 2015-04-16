@@ -106,6 +106,7 @@ Webブラウザから変更できない項目は [conf/conf_admin.inc.php](https
 * **orzisun** https://github.com/orzisun/p2-php
 * **2ch774** https://github.com/2ch774/p2-php
 * **killer4989** https://github.com/killer4989/p2-php
+* **dgg712** https://github.com/dgg712/p2-php
 * **2ch p2/rep2スレの>>1-1000**
 
 
