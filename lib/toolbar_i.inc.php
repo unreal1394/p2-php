@@ -32,6 +32,28 @@ function _toolbar_i_icon($icon)
 }
 
 /**
+ * imgタグに解像度毎の代替パスを指定するsrcset属性を生成
+ *
+ * @param string $icon
+ * @return string
+ */
+function _toolbar_i_srcset($icon)
+{
+
+    $srcset = "{$icon} 1x";
+    $ratios = array(2,3); //指定するpixel ratioを列挙
+    foreach($ratios as $ratio) {
+    //hoge.pngに対し、hoge@?x.pngが存在する時だけ(?は倍数)
+	if (file_exists(str_replace(".png", "@{$ratio}x.png", $icon))==TRUE) {
+	   $srcset .= ", ".str_replace(".png", "@{$ratio}x.png", $icon)." {$ratio}x";
+	}
+    }
+    return $srcset;
+}
+
+
+
+/**
  * ツールバーボタン (リンク)
  *
  * @param string $icon
@@ -55,9 +77,10 @@ function _toolbar_i_button($icon, $label, $uri, $attrs = '')
     }
 
     $icon = _toolbar_i_icon($icon);
+    $srcset = _toolbar_i_srcset($icon);
 
     return <<<EOS
-<span class="available"><a href="{$uri}"{$attrs}><img src="{$icon}" width="48" height="32" alt="">{$label}</a></span>
+<span class="available"><a href="{$uri}"{$attrs}><img src="{$icon}" srcset="{$srcset}" width="48" height="32" alt="">{$label}</a></span>
 EOS;
 }
 
@@ -154,9 +177,10 @@ function toolbar_i_disabled_button($icon, $label)
     }
 
     $icon = _toolbar_i_icon($icon);
+    $srcset = _toolbar_i_srcset($icon);
 
     return <<<EOS
-<span class="unavailable"><img src="{$icon}" width="48" height="32" alt="">{$label}</span>
+<span class="unavailable"><img src="{$icon}" srcset="{$srcset}" width="48" height="32" alt="">{$label}</span>
 EOS;
 }
 
