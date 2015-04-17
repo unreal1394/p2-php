@@ -917,11 +917,10 @@ EOP;
                 }
 
                 // オリジナルの有無を確認
-                $_src_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
-                if (file_exists($_src_url)) {
+                if (file_exists($this->thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime))) {
                     $src_exists = true;
                     $img_url = $img_url2 . $icdb->id;
-                    $src_url = $_src_url;
+                    $src_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
                 } else {
                     $img_url = $this->thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
                     $src_url = $src_url2 . $icdb->id;
@@ -939,7 +938,7 @@ EOP;
                     // サムネイル表示制限数以内のとき
                     if ($inline_preview_flag) {
                         // プレビュー画像が作られているかどうかでimg要素の属性を決定
-                        if (file_exists($prv_url)) {
+                        if (file_exists($this->inline_prvw->thumbPath($icdb->size, $icdb->md5, $icdb->mime))) {
                             $prv_size = explode('x', $this->inline_prvw->calc($icdb->width, $icdb->height));
                             $img_str = "<img src=\"{$prv_url}\" width=\"{$prv_size[0]}\" height=\"{$prv_size[1]}\">";
                         } else {
@@ -1102,11 +1101,11 @@ EOP;
                 }
 
                 // オリジナルの有無を確認
-                $_src_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
-                if (file_exists($_src_url)) {
+                $_src_url = ;
+                if (file_exists($this->thumbnailer->srcPath($icdb->size, $icdb->md5, $icdb->mime))) {
                     $src_exists = true;
                     $img_url = $img_url2 . $icdb->id;
-                    $src_url = $_src_url;
+                    $src_url = $this->thumbnailer->srcUrl($icdb->size, $icdb->md5, $icdb->mime);
                 } else {
                     $img_url = $this->thumbnailer->thumbUrl($icdb->size, $icdb->md5, $icdb->mime);
                     $src_url = $src_url2 . $icdb->id;
@@ -1124,7 +1123,7 @@ EOP;
                     // サムネイル表示制限数以内のとき
                     if ($inline_preview_flag) {
                         // プレビュー画像が作られているかどうかでimg要素の属性を決定
-                        if (file_exists($prv_url)) {
+                        if (file_exists($this->inline_prvw->thumbPath($icdb->size, $icdb->md5, $icdb->mime))) {
                             $prvw_size = explode('x', $this->inline_prvw->calc($icdb->width, $icdb->height));
                             $img_str = "<img src=\"{$prv_url}\" width=\"{$prvw_size[0]}\" height=\"{$prvw_size[1]}\">";
                         } else {
