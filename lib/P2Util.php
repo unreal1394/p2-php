@@ -320,7 +320,7 @@ class P2Util
             */
             if (is_dir(dirname(realpath($aDir))) && is_writable(dirname(realpath($aDir)))) {
                 //$info_msg_ht .= "ディレクトリの自動作成を試みます...<br>";
-                if (mkdir($aDir)) {
+                if (FileCtl::mkdirRecursive($aDir)) {
                     //$info_msg_ht .= "ディレクトリの自動作成が成功しました。";
                 } else {
                     //$info_msg_ht .= "ディレクトリを自動作成できませんでした。<br>手動でディレクトリを作成し、パーミッションを設定して下さい。";

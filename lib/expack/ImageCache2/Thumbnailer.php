@@ -275,7 +275,7 @@ class ImageCache2_Thumbnailer
             return $thumbUrl;
         }
         $thumbDir = dirname($thumbPath);
-        if (!is_dir($thumbDir) && !mkdir($thumbDir)) {
+        if (!is_dir($thumbDir) && !FileCtl::mkdirRecursive($thumbDir)) {
             $error = PEAR::raiseError("ディレクトリを作成できませんでした。({$thumbDir})");
             return $error;
         }
@@ -563,7 +563,7 @@ class ImageCache2_Thumbnailer
         $dirID = $this->dirID($size, $md5, $mime);
         if ($fullPath) {
             if (!is_dir($basedir)) {
-                if (!mkdir($basedir)) {
+                if (!FileCtl::mkdirRecursive($basedir)) {
                     return false;
                 }
             }
