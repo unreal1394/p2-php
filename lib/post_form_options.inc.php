@@ -362,7 +362,6 @@ if ($upload_mode !== null) {
     $_SESSION['upload_token'] = $upload_token;
         $upload_form = <<<EOP
 <input id="fileupload" type="file" name="{$upload_name}" data-url="upload.php?mode={$upload_mode}&amp;token={$upload_token}" {$upload_multiple}>
-<script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
 <script src="js/jquery.ui.widget.js"></script>
 <script src="js/jquery.iframe-transport.js"></script>
 <script src="js/jquery.fileupload.js"></script>

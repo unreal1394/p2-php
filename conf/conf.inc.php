@@ -77,7 +77,7 @@ function p2_init()
     $_conf['favrank_url']           = 'http://akid.s17.xrea.com/favrank/favrank.php';
     $_conf['expack.web_url']        = 'http://2ch774.github.io/p2-php/';
     $_conf['expack.download_url']   = 'https://github.com/2ch774/p2-php/releases';
-    $_conf['expack.history_url']    = 'https://github.com/2ch774/p2-php/blob/master/doc/ChangeLog.txt';
+    $_conf['expack.history_url']    = 'https://github.com/2ch774/p2-php/blob/master/doc/README-774.txt';
     $_conf['expack.tgrep_url']      = 'http://page2.xrea.jp/tgrep/search';
     $_conf['test.dig2ch_url']       = 'http://dig.2ch.net/';
     $_conf['expack.gate_php']       = 'http://2ch774.github.io/p2-php/gate.html';

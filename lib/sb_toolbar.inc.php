@@ -27,7 +27,7 @@ if ($aThreadList->spmode != 'soko') {
     $shinchaku_matome_url = "{$_conf['read_new_php']}?host={$aThreadList->host}&amp;bbs={$aThreadList->bbs}&amp;spmode={$aThreadList->spmode}{$norefresh_q}&amp;nt={$newtime}";
     $shinchaku_matome_ht =<<<EOP
 <a id="smy{$new_matome_i}" class="matome" href="{$shinchaku_matome_url}" onclick="rep2.subject.changeNewAllColor();">新着まとめ読み{$shinchaku_num_ht} [全件]</a>
-<a class="matome" href="javascript:var unum_limit = window.prompt('新着が指定した件数以下のスレだけまとめ読みします。','100');if(unum_limit){window.location = '{$shinchaku_matome_url}&amp;unum_limit='+unum_limit;}">[一部]</a>
+<a class="matome" target="_self" href="javascript:rep2.subject.jumpMatomeLimit('{$shinchaku_matome_url}');">[一部]</a>
 EOP;
 } else {
     $shinchaku_matome_ht = '';
