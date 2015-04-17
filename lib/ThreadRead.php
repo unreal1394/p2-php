@@ -478,9 +478,7 @@ class ThreadRead extends Thread {
      */
     protected function _downloadDat2chNotFound($code = null) {
         // 2ch, bbspink ならread.cgiで確認
-        if (P2Util::isHost2chs ($this->host) || P2Util::isHostVip2ch ($this->host)) {
-            $this->getdat_error_msg_ht .= $this->get2chDatError ($code);
-        }
+        $this->getdat_error_msg_ht .= $this->get2chDatError ($code);
         $this->diedat = true;
         return false;
     }
@@ -679,15 +677,17 @@ class ThreadRead extends Thread {
         }
 
         $reason = null;
-        if ($code == '302') {
-            $body203 = $this->_get2ch203Body ();
-            if ($body203 !== false && preg_match ('/過去ログ ★/', $body203)) {
-                $this->getdat_error_body = $body203;
-                if (preg_match ('/このスレッドは過去ログ倉庫に格.{1,2}されています/', $body203)) {
-                    $reason = 'datochi';
-                    $this->setDatochiResiduums ();
-                } elseif (preg_match ('{http://[^/]+/[^/]+/kako/\\d+(/\\d+)?/(\\d+)\\.html}', $body203, $matches)) {
-                    $reason = 'kakohtml';
+        if (P2Util::isHost2chs ($this->host) || P2Util::isHostVip2ch ($this->host)) {
+            if ($code == '302') {
+                $body203 = $this->_get2ch203Body();
+                if ($body203 !== false && preg_match('/過去ログ ★/', $body203)) {
+                    $this->getdat_error_body = $body203;
+                    if (preg_match('/このスレッドは過去ログ倉庫に格.{1,2}されています/', $body203)) {
+                        $reason = 'datochi';
+                        $this->setDatochiResiduums();
+                    } elseif (preg_match('{http://[^/]+/[^/]+/kako/\\d+(/\\d+)?/(\\d+)\\.html}', $body203, $matches)) {
+                        $reason = 'kakohtml';
+                    }
                 }
             }
         }
@@ -699,7 +699,7 @@ class ThreadRead extends Thread {
         $read_response_html = '';
         if (! $reason) {
             try {
-                $req = P2Util::getHTTPRequest2 ($read_url + '1/', HTTP_Request2::METHOD_GET);
+                $req = P2Util::getHTTPRequest2 ($read_url.'1', HTTP_Request2::METHOD_GET);
                 // ヘッダ
                 $req->setHeader ('User-Agent', P2Util::getP2UA(false,P2Util::isHost2chs($this->host))); // ここは、"Monazilla/" をつけるとNG
 
@@ -738,6 +738,10 @@ class ThreadRead extends Thread {
         $kakosoko_match2 = "/http:\/\/turing1000\.nttec\.com\/?(403|404|500)\.dat/";
 
         $naidesu_match = "/<title>そんな板orスレッドないです。<\/title>/";
+
+        // 0ちゃんねるスクリプトに反応するように
+        $soukoni_match = "/<title>隊長！過去ログ倉庫に<\/title>/";
+
         $error3939_match = "{<title>２ちゃんねる error 3939</title>}"; // 過去ログ倉庫でhtml化の時（他にもあるかも、よく知らない）
 
         // <a href="http://qb5.2ch.net/sec2chd/kako/1091/10916/1091634596.html">
@@ -756,7 +760,11 @@ class ThreadRead extends Thread {
             $dat_response_msg = "<p>2ch info - このスレッドは過去ログ倉庫に格納されています。{$marutori_ht}{$moritori_ht}{$plugin_ht}</p>";
 
         // <title>がそんな板orスレッドないです。or error 3939
-        } elseif ($reason === 'kakohtml' or preg_match ($naidesu_match, $read_response_html, $matches) || preg_match ($error3939_match, $read_response_html, $matches) || preg_match ($vip2ch_kakosoko_match, $read_response_html, $matches)) {
+        } elseif ($reason === 'kakohtml' or
+            preg_match ($naidesu_match, $read_response_html, $matches) ||
+            preg_match ($error3939_match, $read_response_html, $matches) ||
+            preg_match ($vip2ch_kakosoko_match, $read_response_html, $matches) ||
+            preg_match ($soukoni_match, $read_response_html, $matches)) {
 
             if ($reason === 'kakohtml' or preg_match ($kakohtml_match, $read_response_html, $matches)) {
                 if ($reason === 'kakohtml') {
