@@ -63,6 +63,9 @@ a#backButton {
 	/* background: #333; border-radius: 5px; min-width:46px; text-align:center */
 	background: none;
 	-webkit-border-image: url(../iui/backButton.png?14011419) 0 8 0 14;
+	border-image: url(../iui/backButton.png?14011419) 0 8 0 14 fill;
+	-webkit-border-image: -webkit-image-set(url(../iui/backButton.png?14011419) 1x,url(../iui/backButton@2x.png?14011419) 2x,url(../iui/backButton@3x.png?14011419) 3x) 0 8 0 14;
+	border-image: image-set(url(../iui/backButton.png?14011419) 1x,url(../iui/backButton@2x.png?14011419) 2x,url(../iui/backButton@3x.png?14011419) 3x) 0 8 0 14;
 }
 
 div#toolbar_header {

@@ -123,6 +123,9 @@ body[orient="landscape"] > .toolbar > h1 {
     font-family: Helvetica;
     border-width: 0 8px 0 14px;
     -webkit-border-image: url(backButton.png) 0 8 0 14;
+    border-image: url(backButton.png) 0 8 0 14 fill;
+	-webkit-border-image: -webkit-image-set(url(backButton.png) 1x,url(backButton@2x.png) 2x,url(backButton@3x.png) 3x) 0 8 0 14;
+	border-image: image-set(url(backButton.png) 1x,url(backButton@2x.png) 2x,url(backButton@3x.png) 3x) 0 8 0 14;
 }
 
 .whiteButton,
