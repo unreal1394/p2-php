@@ -353,7 +353,7 @@ function ic2_register_uploaded_file($file)
         // –¢“o˜^‚Ì‰æ‘œ‚¾‚Á‚½‚Æ‚«
         } else {
             $newdir = dirname($file['img_src']);
-            if (!is_dir($newdir) && !@mkdir($newdir)) {
+            if (!is_dir($newdir) && !FileCtl::mkdirRecursive($newdir)) {
                 return sprintf($err_fmt['dir'], $file['path'], $newdir);
             }
             if (!@move_uploaded_file($file['tmp_name'], $file['img_src'])) {

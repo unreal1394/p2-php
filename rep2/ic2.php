@@ -475,7 +475,7 @@ if (($check = ic2_checkAbornedFile($tmpfile, $params)) !== false) {
 $newfile = $thumbnailer->srcPath($size, $md5, $mime);
 $newurl = $thumbnailer->srcUrl($size, $md5, $mime);
 $newdir = dirname($newfile);
-if (!is_dir($newdir) && !@mkdir($newdir)) {
+if (!is_dir($newdir) && !FileCtl::mkdirRecursive($newdir)) {
     ic2_error('x02', "ディレクトリを作成できませんでした。({$newdir})");
 }
 if (($force || !file_exists($newfile)) && !@rename($tmpfile, $newfile)) {

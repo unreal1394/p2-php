@@ -34,6 +34,16 @@ class BrdCtl
         $brd_menus = array();
         $brd_dir = $_conf['data_dir'] . '/board';
 
+        // ディレクトリがない場合は新規で作成
+        if (!file_exists($brd_dir)) {
+            FileCtl::mkdirRecursive($brd_dir);
+            if(!is_writable($brd_dir)){
+                // 書き込み権限を得られなかった場合はパーミッションの注意喚起をする
+                p2die("親ディレクトリのパーミッションを見直して下さい。");
+            }
+            return $brd_menus;
+        }
+
         if ($cdir = @dir($brd_dir)) {
             // ディレクトリ走査
             while ($entry = $cdir->read()) {
