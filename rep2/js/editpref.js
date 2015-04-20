@@ -73,6 +73,17 @@ function setCacheMetaDataPopUpHeight(popup)
 	}
 }
 
+function deleteCheck()
+{
+
+	if(window.confirm($('[name=delete] option:selected').text() + '‚ğ‘S‚Äíœ‚µ‚Ä‚æ‚ë‚µ‚¢‚Å‚·‚©H')){
+		return true;
+	}
+	else{
+		return false; // ‘—M‚ğ’†~
+	}
+}
+
 // }}}
 
 /*

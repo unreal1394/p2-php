@@ -7,6 +7,15 @@ require_once __DIR__ . '/../init.php';
 
 $_login->authorize(); // ユーザ認証
 
+$deltitles = array(
+    'cookie'    => 'Ccookie',
+    'matome'    => '新着まとめ読み',
+    'recent'    => '最近読んだスレ',
+    'reshist'  => '書き込み履歴',
+    'autong' => '自動 NG・あぼーん',
+    'boardlist' => '板一覧 (Online)',
+);
+
 // {{{ ホストの同期用設定
 
 $synctitles = array(
@@ -117,15 +126,23 @@ if (isset($_POST['sync'])) {
                 $delflag = true;
             }
             break;
+        case boardlist:
+            $cachefile = P2Util::cacheFileForDL($_conf['brdfile_online']);
+            if(deleteFile($_conf['cache_dir'] . '/host_bbs_map.txt') &&
+                deleteFile($cachefile) &&
+                deleteFile($cachefile . '.p2.brd') ) {
+                $delflag = true;
+            }
+            break;
         default:
             $delflag = false;
             P2Util::pushInfoHtml("<p>p2 error: 引数 {$_POST['delete']} が不正です。 ");
             break;
     }
     if ($delflag) {
-        P2Util::pushInfoHtml("<p>p2 info: {$_POST['submit']}を削除しました。");
+        P2Util::pushInfoHtml("<p>p2 info: {$deltitles[$_POST['delete']]}を削除しました。");
     } else {
-        P2Util::pushInfoHtml("<p>p2 error: {$_POST['submit']}の削除に失敗しました。");
+        P2Util::pushInfoHtml("<p>p2 error: {$deltitles[$_POST['delete']]}の削除に失敗しました。");
     }
 }
 
@@ -174,7 +191,8 @@ if (!$_conf['ktai']) {
     echo <<<EOP
     <link rel="stylesheet" type="text/css" href="css.php?css=style&amp;skin={$skin_en}">
     <link rel="stylesheet" type="text/css" href="css.php?css=editpref&amp;skin={$skin_en}">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">\n
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
     <script type="text/javascript" src="js/basic.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/changeskin.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/respopup.js?{$_conf['p2_version_id']}"></script>
@@ -330,25 +348,8 @@ EOP;
     echo <<<EOP
 <fieldset>
 <legend>履歴・キャッシュの削除</legend>\n
-<script type="text/javascript">
-//<![CDATA[
-function deleteCheck(submit){
-    if(window.confirm(submit + 'を全て削除してよろしいですか？')){
-        return true;
-    }
-    else{
-        return false; // 送信を中止
-    }
-}
-//]]>
-</script>
-
 EOP;
-    echo getDeleteHistoryFormHt('cookie', 'Cookie');
-    echo getDeleteHistoryFormHt('matome', 'まとめ読み');
-    echo getDeleteHistoryFormHt('reshist', '書込履歴');
-    echo getDeleteHistoryFormHt('recent', '閲覧履歴');
-    echo getDeleteHistoryFormHt('autong', '自動NGｱﾎﾞｰﾝ');
+    echo getDeleteHistoryFormHt();
     echo <<<EOP
 </fieldset>\n
 EOP;
@@ -678,21 +679,22 @@ EOFORM;
 /**
  * 履歴削除用フォームのHTMLを取得する
  *
- * @param   string  $path_value     削除するファイルの種類
- * @param   string  $submit_value   submitボタンの値
  * @return  string
  */
-function getDeleteHistoryFormHt($path_value, $submit_value)
+function getDeleteHistoryFormHt()
 {
-    global $_conf;
+    global $_conf, $deltitles;
 
     $ht = <<<EOFORM
-<form action="editpref.php" method="POST" target="_self" class="inline-form" onSubmit="return deleteCheck('{$submit_value}')">
+<form action="editpref.php" method="POST" target="_self" class="inline-form" onSubmit="return deleteCheck()">
     {$_conf['k_input_ht']}
-    <input type="hidden" name="delete" value="{$path_value}">
-    <input type="submit" name="submit" value="{$submit_value}">
-</form>\n
+
 EOFORM;
+    $ht .= "<select name=\"delete\">";
+    foreach ($deltitles as $delmode => $delname) {
+        $ht .= "<option value=\"{$delmode}\">{$delname}</option>";
+    }
+    $ht .= "</select><input type=\"submit\" name=\"submit\" value=\"削除\"></form>\n";
 
     if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
         $ht = '&nbsp;' . preg_replace('/>\s+</', '><', $ht);
