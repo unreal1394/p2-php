@@ -30,14 +30,15 @@ rep2-expack test https://github.com/orzisun/p2-php
 
 ### 仕様変更
 * ローカル板一覧用.brdファイルの置き場所をrep2/boardから$_conf['data_dir']/brardに変更
-  - openJaneと同じ形式です。
+  - .brdはopenJaneと同じ形式です。
 * スマホ用画面のツールバーアイコンを高解像度画面に対応(thx https://github.com/dgg712/p2-php)
 * スマホ用レスポップアップ、SPM、IC2の外側をタップすると閉じるように変更
   - レスポップアップから開いたレスポップアップをタップした際に元のレスポップアップが消えるのは仕様とさせていただきます。
   - スクロールは指の終着点がポップアップ内になるようにすれば消えません。
 * headline.2ch.netを最近読んだスレに追記しないように変更
 
-* その他今時のアレに合わせた修正等gitのコミットログも確認してください。
+その他今時のアレに合わせた修正等gitのコミットログも確認してください。
+
 
 ●免責
 
@@ -56,6 +57,14 @@ rep2-expack test https://github.com/orzisun/p2-php
  本家p2と同じく、X11ライセンスです。
 
 ●ChangeLog
+150426.1033
+* ガラケー向けreadのsyntax error修正
+* 302が発生するURLでRSSリーダ正常動作しない不具合を修正
+* RSSリーダからHTTP_Request2に存在しない関数を呼び出していた部分を削除
+* P2Util::fileDownloadでIf-Modified-Sinceを送信しない不具合を修正
+* キャッシュ削除に板一覧の削除機能追加
+* 左上戻るボタンを高解像度対応に変更
+
 150418.1111
 * スマホ用画面のツールバーアイコンを高解像度画面に対応(thx https://github.com/dgg712/p2-php)
 * rep2に登録された外部板へリンクする機能を追加
