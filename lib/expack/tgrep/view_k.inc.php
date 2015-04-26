@@ -116,7 +116,7 @@ foreach ($threads as $o => $t) {
         $itaj = $t->ita;
     }
 ?>
-<p><?php echo $o; ?>.<a href="<?php echo $turl; ?>"><?php echo $ttitle; ?></a><br>
+<p><?php echo $o+1; ?>.<a href=\"<?php echo $turl; ?>\"><?php echo $ttitle; ?></a><br>
 <small><?php echo date('y/m/d ', $t->tkey); ?><a href="<?php echo $burl; ?>"><?php echo $itaj; ?>(<?php echo $profile['boards'][$t->bid]->hits; ?>)</a></small></p>
 <?php } ?>
 <div><a href="#top" align="right" title="è„Ç÷"<?php echo $_conf['k_accesskey_at']['above']; ?>><?php echo $_conf['k_accesskey_st']['above']; ?>Å£</a></div>

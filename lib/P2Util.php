@@ -255,15 +255,15 @@ class P2Util
     {
         global $_conf;
 
-        if (file_exists($localfile)) {
-            $modified = http_date(filemtime($localfile));
-        } else {
-            $modified = false;
-        }
-
         try {
             // DL
             $req = self::getHTTPRequest2($url, HTTP_Request2::METHOD_GET);
+
+            $req->setConfig(array('follow_redirects' => $trace_redirection));
+
+            if (file_exists($localfile)) {
+                $req->setHeader ('If-Modified-Since', http_date(filemtime($localfile)) );
+            }
 
             $response = $req->send();
 

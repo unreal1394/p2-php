@@ -229,7 +229,7 @@ class NgAbornCtl {
                 'regex' => false,       // パターンマッチ関数
                 'ignorecase' => false,  // 大文字小文字を無視
         );
-        return;
+        return true;
     }
     // }}}
     // {{{ _readNgAbornFromFile()

@@ -53,11 +53,11 @@ function p2GetRSS($remotefile, $atom = 0)
     if (!file_exists($localpath) || $refresh ||
         filemtime($localpath) < (time() - $_conf['expack.rss.check_interval'] * 60)
     ) {
-        $dl = P2Util::fileDownload($remotefile, $localpath, true, 301);
+        $dl = P2Util::fileDownload($remotefile, $localpath, true, true);
     }
 
     // キャッシュが更新されなかったか、ダウンロード成功ならRSSをパース
-    if (file_exists($localpath) && (!isset($dl) || $dl->isSuccess())) {
+    if (file_exists($localpath) && (!isset($dl))) {
         if ($atom) {
             $atom = (isset($dl) && $dl->getStatus() == 200) ? 2 : 1;
         }
