@@ -6,7 +6,7 @@
     <meta name="description" content="rep2ex all-in-one : ServerSide 2ch viewer">
     <meta name="viewport" content="width=device-width">
     <meta name="robots" content="noindex">
-
+    <script type="text/javascript" src="javascripts/ecl.js"></script>
     <script type="text/javascript">
         window.onload = function onLoad() {
             param = getQueryString();
@@ -54,15 +54,20 @@
                     var element = parameters[i].split('=');
 
                     var paramName = decodeURIComponent(element[0]);
-                    var paramValue = decodeURIComponent(element[1]);
+                    //var paramValue = decodeURIComponent(element[1]);
+                    var paramValue = UnescapeAutoDetect(element[1]);
 
                     // パラメータ名をキーとして連想配列に追加する
-                    result[paramName] = decodeURIComponent(paramValue);
+                    result[paramName] = paramValue;
                 }
                 return result;
             }
             return null;
         }
+        
+        function UnescapeAutoDetect(str){
+			return window["Unescape"+GetEscapeCodeType(str)](str);
+		}
     </script>
 </head>
 <body>
