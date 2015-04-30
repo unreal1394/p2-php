@@ -1365,7 +1365,7 @@ EOJS;
 
             if ($_conf['link_youtube'] == 2) {
                 return <<<EOP
-{$link} <img class="preview-video-switch" src="img/show.png" width="30" height="12" alt="show" onclick="preview_video_youtube('{$id}', this);">
+{$link} <img class="preview-video-switch" src="img/show.png" alt="show" data-video_url="https://www.youtube.com/embed/{$id}" data-video_width="425" data-video_height="350" data-video_harf="{$_conf['live.youtube_winsize']}" data-video_option='{"allowfullscreen":"1"}'>
 EOP;
             } else {
                 return <<<EOP
@@ -1416,7 +1416,7 @@ EOP;
 
             if ($_conf['link_niconico'] == 2) {
                 return <<<EOP
-{$link} <img class="preview-video-switch" src="img/show.png" width="30" height="12" alt="show" onclick="preview_video_niconico('{$id}', this);">
+{$link} <img class="preview-video-switch" src="img/show.png" alt="show" data-video_url="http://ext.nicovideo.jp/thumb/{$id}" data-video_width="425" data-video_height="175" data-video_harf="0" data-video_option='{"scrolling":"auto"}'>
 EOP;
             } else {
                 return <<<EOP

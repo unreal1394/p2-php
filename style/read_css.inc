@@ -374,6 +374,8 @@ div.respopup div.reslist {
 
 .preview-video-switch {
 	cursor: pointer;
+	width: 32px;
+	height: 12px;
 }
 
 /* ツールバー */
@@ -385,20 +387,20 @@ table.toolbar {
 
 table.toolbar td.lblock {
 	text-align: left;
-} 
+}
 
 table.toolbar td.cblock {
 	text-align: center;
-} 
+}
 
 table.toolbar td.rblock {
 	text-align: right;
-} 
+}
 
 div.reslist_inner {
 	position:relative;
 //	margin:0 0 0 17px;
-	
+
 }
 
 blockquote.folding_container{

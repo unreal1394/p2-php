@@ -1,0 +1,18 @@
+リンクプラグインで使える774独自機能
+
+● showボタン
+jQueryの力により、クリックするとiframeに変身します。
+
+一例
+Match
+^(?:https?://(?:www\.|m\.)?youtube\.(?:com|jp)/(?:watch\?(?:.*&)?(?:v|video_id)=|v/)|(?:https?://youtu\.be/|https://www\.youtube-nocookie\.com/v/))([\w\-_]+)(?:.*)?$
+
+Replace
+<img class="preview-video-switch" src="img/show.png" alt="show" data-video_url="https://www.youtube.com/embed/\1" data-video_width="640" data-video_height="360" data-video_harf="0" data-video_option='{"allowfullscreen":"1"}'>
+
+data-video_url(必須) iframeのsrc属性
+data-video_width(必須) iframeのwidth属性
+data-video_height(必須) iframeのheight属性
+data-video_style(オプション) iframeのstyle属性
+data-video_harf(オプション) 1にするとwidthとheightが半分になります
+data-video_option(オプション) Javascriptの連想配列形式でiframeの追加属性を指定します。名前と値は必ずペアである必要があります。

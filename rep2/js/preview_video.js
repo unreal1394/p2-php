@@ -5,62 +5,40 @@
 // {{{ preview_video_youtube()
 
 /*
- * YouTubeのプレビューを表示する
+ * プレビューを表示する
  *
- * @param String id
- * @param Element placeholder
- * @return void
  */
-function preview_video_youtube(id, placeholder)
-{
-	var container = document.createElement('div');
-	container.className = 'preview-video preview-video-youtube';
+$(function() {
+	$("img.preview-video-switch").click(function (event) {
+		var $container = $("<div>").addClass('preview-video preview-video-youtube');
+		var $preview = $("<iframe>").attr('src', $(this).data('video_url')).attr('frameborder', '0');
 
-    var preview = document.createElement('iframe');
-    preview.setAttribute('width', '425');
-    preview.setAttribute('height', '350');
-    preview.setAttribute('src', 'https://www.youtube.com/embed/' + id);
-    preview.setAttribute('frameborder', '0');
-    preview.setAttribute('allowfullscreen','');
-    container.appendChild(preview);
+		if($(this).data('video_harf') == "1") {
+			$preview.attr('width', $(this).data('video_width')/2);
+			$preview.attr('height', $(this).data('video_height')/2);
+		} else {
+			$preview.attr('width', $(this).data('video_width'));
+			$preview.attr('height', $(this).data('video_height'));
+		}
 
-	if (placeholder && placeholder.parentNode) {
-		placeholder.parentNode.replaceChild(container, placeholder);
-	} else {
-		document.body.appendChild(container);
-	}
-}
+		if($(this).data('video_style')) {
+			$preview.attr('style', $(this).data('video_style'));
+		}
 
-// }}}
-// {{{ preview_video_niconico()
+		var video_option = $(this).data('video_option');
+		for (var key in video_option) {
+			$preview.attr(key, video_option [key]);
+		}
 
-/*
- * ニコニコ動画のプレビューを表示する
- *
- * @param String id
- * @param Element placeholder
- * @return void
- */
-function preview_video_niconico(id, placeholder)
-{
-	var container = document.createElement('div');
-	container.className = 'preview-video preview-video-niconico';
+		$container.append($preview);
 
-	var preview = document.createElement('iframe');
-	preview.setAttribute('src', 'http://ext.nicovideo.jp/thumb/' + id);
-	preview.setAttribute('width', '425');
-	preview.setAttribute('height', '175');
-	preview.setAttribute('frameborder', '0');
-	preview.setAttribute('scrolling', 'auto');
-
-	container.appendChild(preview);
-
-	if (placeholder && placeholder.parentNode) {
-		placeholder.parentNode.replaceChild(container, placeholder);
-	} else {
-		document.body.appendChild(container);
-	}
-}
+		if ($(this) && $(this).parent()) {
+			$(this).replaceWith($container);
+		} else {
+			$("body").append($container);
+		}
+	});
+});
 
 // }}}
 
