@@ -510,8 +510,8 @@ function recRecent($data)
         foreach ($lines as $l) {
             $lar = explode('<>', $l);
             $data_ar = explode('<>', $data);
-            if ($lar[1] == $data_ar[1]) { continue; } // keyで重複回避
-            if (!$lar[1]) { continue; } // keyのないものは不正データ
+            if (!$lar[1] || !strlen($lar[11])) { continue; } // 不正データを削除
+            if ($lar[1] == $data_ar[1] && $lar[11] == $data_ar[11]) { continue; } // key, bbsで重複回避
             $neolines[] = $l;
         }
     }
