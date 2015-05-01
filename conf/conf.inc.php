@@ -74,7 +74,7 @@ function p2_init()
 
     $_conf['p2web_url']             = 'http://akid.s17.xrea.com/';
     $_conf['p2ime_url']             = 'http://akid.s17.xrea.com/p2ime.php';
-    $_conf['favrank_url']           = 'http://akid.s17.xrea.com/favrank/favrank.php';
+//  $_conf['favrank_url']           = 'http://akid.s17.xrea.com/favrank/favrank.php';
     $_conf['expack.web_url']        = 'http://2ch774.github.io/p2-php/';
     $_conf['expack.download_url']   = 'https://github.com/2ch774/p2-php/releases';
     $_conf['expack.history_url']    = 'https://github.com/2ch774/p2-php/blob/master/doc/README-774.txt';
