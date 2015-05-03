@@ -72,12 +72,6 @@ class ShowThreadPc extends ShowThread
         } elseif ($_conf['preview_thumbnail']) {
             $this->_url_handlers[] = 'plugin_viewImage';
         }
-        if ($_conf['link_youtube']) {
-            $this->_url_handlers[] = 'plugin_linkYouTube';
-        }
-        if ($_conf['link_niconico']) {
-            $this->_url_handlers[] = 'plugin_linkNicoNico';
-        }
         $this->_url_handlers[] = 'plugin_linkURL';
 
         // imepitaのURLを加工してImageCache2させるプラグインを登録
@@ -1313,117 +1307,6 @@ EOJS;
             return "<a href=\"{$read_url}{$_conf['bbs_win_target_at']}\">{$str}</a>";
         }
 
-        return false;
-    }
-
-    // }}}
-    // {{{ plugin_linkYouTube()
-
-    /**
-     * YouTubeリンク変換プラグイン
-     *
-     * Zend_Gdata_Youtubeを使えばサムネイルその他の情報を簡単に取得できるが...
-     *
-     * @param   string $url
-     * @param   array $purl
-     * @param   string $str
-     * @return  string|false
-     */
-    public function plugin_linkYouTube($url, $purl, $str)
-    {
-        global $_conf;
-
-		// +live YouTubeプレビュー表示のサイズ指定
-		if ($_conf['live.youtube_winsize'] == 1) {
-			$youtube_winsize = "width=\"212\" height=\"175\""; // ハーフ
-		} else {
-			$youtube_winsize = "width=\"425\" height=\"350\""; // ノーマル
-		}
-
-        // http://www.youtube.com/watch?v=Mn8tiFnAUAI
-        // http://m.youtube.com/watch?v=OhcX0xJsDK8&client=mv-google&gl=JP&hl=ja&guid=ON&warned=True
-        if (preg_match('{^https?://(youtu\\.be/|(www|jp|m)\\.youtube\\.com/watch\\?(?:.+&amp;)?v=)([0-9a-zA-Z_\\-]+)}', $url, $m)) {
-            $url = preg_replace('{^http:}', 'https:', $url);
-            // ime
-            if ($_conf['through_ime']) {
-                $link_url = P2Util::throughIme($url);
-            } else {
-                $link_url = $url;
-            }
-
-			$link_url = $link_url . "&fmt=18"; // 高画質用
-
-            // HTMLポップアップ
-            if ($_conf['iframe_popup']) {
-                $link = $this->iframePopup($link_url, $str, $_conf['ext_win_target_at']);
-            } else {
-                $link = "<a href=\"{$link_url}\"{$_conf['ext_win_target_at']}>{$str}</a>";
-            }
-
-            $subd = $m[1];
-            $id = $m[3];
-
-            if ($_conf['link_youtube'] == 2) {
-                return <<<EOP
-{$link} <img class="preview-video-switch" src="img/show.png" alt="show" data-video_url="https://www.youtube.com/embed/{$id}" data-video_width="425" data-video_height="350" data-video_harf="{$_conf['live.youtube_winsize']}" data-video_option='{"allowfullscreen":"1"}'>
-EOP;
-            } else {
-                return <<<EOP
-{$link}<div class="preview-video preview-video-youtuve">
-<iframe {$youtube_winsize} src="https://www.youtube.com/embed/{$id}" frameborder="0" allowfullscreen></iframe>
-</div>
-EOP;
-            }
-        }
-        return false;
-    }
-
-    // }}}
-    // {{{ plugin_linkNicoNico()
-
-    /**
-     * ニコニコ動画変換プラグイン
-     *
-     * @param   string $url
-     * @param   array $purl
-     * @param   string $str
-     * @return  string|false
-     */
-    public function plugin_linkNicoNico($url, $purl, $str)
-    {
-        global $_conf;
-
-        // http://www.nicovideo.jp/watch?v=utbrYUJt9CSl0
-        // http://www.nicovideo.jp/watch/utvWwAM30N0No
-        // http://m.nicovideo.jp/watch/sm7044684
-        if (preg_match('{^http://(?:www|m)\\.nicovideo\\.jp/watch(?:/|(?:\\?v=))([0-9a-zA-Z_-]+)}', $url, $m) ||
-        preg_match('{^http://nico\\.(?:ms|sc)/([0-9a-zA-Z_-]+)}', $url, $m)) {
-            // ime
-            if ($_conf['through_ime']) {
-                $link_url = P2Util::throughIme($purl[0]);
-            } else {
-                $link_url = $url;
-            }
-
-            // HTMLポップアップ
-            if ($_conf['iframe_popup']) {
-                $link = $this->iframePopup($link_url, $str, $_conf['ext_win_target_at']);
-            } else {
-                $link = "<a href=\"{$link_url}\"{$_conf['ext_win_target_at']}>{$str}</a>";
-            }
-
-            $id = $m[1];
-
-            if ($_conf['link_niconico'] == 2) {
-                return <<<EOP
-{$link} <img class="preview-video-switch" src="img/show.png" alt="show" data-video_url="http://ext.nicovideo.jp/thumb/{$id}" data-video_width="425" data-video_height="175" data-video_harf="0" data-video_option='{"scrolling":"auto"}'>
-EOP;
-            } else {
-                return <<<EOP
-{$link}<div class="preview-video preview-video-niconico"><iframe src="http://ext.nicovideo.jp/thumb/{$id}" width="425" height="175" scrolling="auto" frameborder="0"></iframe></div>
-EOP;
-            }
-        }
         return false;
     }
 

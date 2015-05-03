@@ -51,6 +51,9 @@ class ShowThreadI extends ShowThread
             'plugin_link2chSubject',
         );
         // +Wiki
+        if (isset($GLOBALS['linkPluginCtl'])) {
+            $this->_url_handlers[] = 'plugin_linkPlugin';
+        }
         if (isset($GLOBALS['replaceImageUrlCtl'])) {
             $this->_url_handlers[] = 'plugin_replaceImageUrl';
         }
@@ -58,9 +61,6 @@ class ShowThreadI extends ShowThread
             $this->_url_handlers[] = 'plugin_imageCache2';
         } elseif ($_conf['mobile.use_picto']) {
             $this->_url_handlers[] = 'plugin_viewImage';
-        }
-        if ($_conf['mobile.link_youtube']) {
-            $this->_url_handlers[] = 'plugin_linkYouTube';
         }
         $this->_url_handlers[] = 'plugin_linkURL';
 
@@ -872,50 +872,6 @@ EOP;
     }
 
     // }}}
-    // {{{ plugin_linkYouTube()
-
-    /**
-     * YouTubeリンク変換プラグイン
-     *
-     * Zend_Gdata_Youtubeを使えばサムネイルその他の情報を簡単に取得できるが...
-     *
-     * @param   string $url
-     * @param   array $purl
-     * @param   string $str
-     * @return  string|false
-     */
-    public function plugin_linkYouTube($url, $purl, $str)
-    {
-        global $_conf;
-
-        // http://www.youtube.com/watch?v=Mn8tiFnAUAI
-        if (preg_match('{^http://(www|jp)\\.youtube\\.com/watch\\?v=([0-9A-Za-z_\\-]+)}', $purl[0], $m)) {
-            $subd = $m[1];
-            $id = $m[2];
-
-            if ($_conf['mobile.link_youtube'] == 2) {
-                $link = $str;
-            } else {
-                $link = $this->plugin_linkURL($url, $purl, $str);
-                if ($link === false) {
-                    // plugin_linkURL()がちゃんと機能している限りここには来ない
-                    if ($_conf['through_ime']) {
-                        $link_url = P2Util::throughIme($purl[0]);
-                    } else {
-                        $link_url = $url;
-                    }
-                    $link = "<a href=\"{$link_url}\">{$str}</a>";
-                }
-            }
-
-            return <<<EOP
-{$link}<br><img src="http://img.youtube.com/vi/{$id}/default.jpg" alt="YouTube {$id}">
-EOP;
-        }
-        return false;
-    }
-
-    // }}}
     // {{{ plugin_viewImage()
 
     /**
@@ -1322,6 +1278,15 @@ EOP;
     }
 
     // }}}
+    // {{{ plugin_linkPlugin()
+
+    /**
+     * +Wiki:リンクプラグイン
+     */
+    public function plugin_linkPlugin($url, $purl, $str)
+    {
+        return $GLOBALS['linkPluginCtl']->replaceLinkToHTML($url, $str);
+    }
     // }}}
     // {{{ _quotebackHorizontalListHtml()
 
