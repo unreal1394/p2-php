@@ -214,11 +214,13 @@ echo <<<EOP
     {$_conf['extra_headers_ht']}
     <title>{$ptitle_ht}</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
     <script type="text/javascript" src="js/basic.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/respopup.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/motolspopup.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/ngabornctl.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/setfavjs.js?{$_conf['p2_version_id']}"></script>
+    <script type="text/javascript" src="js/preview_video.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/delelog.js?{$_conf['p2_version_id']}"></script>\n
 EOP;
 
@@ -240,13 +242,6 @@ EOP;
 EOP;
 }
 
-if ($_conf['link_youtube'] == 2 || $_conf['link_niconico'] == 2) {
-    echo <<<EOP
-    <script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
-    <script type="text/javascript" src="js/preview_video.js?{$_conf['p2_version_id']}"></script>\n
-EOP;
-
-}
 if ($_conf['expack.am.enabled']) {
     echo <<<EOP
     <script type="text/javascript" src="js/asciiart.js?{$_conf['p2_version_id']}"></script>\n

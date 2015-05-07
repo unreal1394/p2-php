@@ -1337,7 +1337,7 @@ EOJS;
 
         if (preg_match('{^https?://.+?\\.(jpe?g|gif|png)$}i', $purl[0]) && empty($purl['query'])) {
             $pre_thumb_limit--; // 表示制限カウンタを下げる
-            $img_tag = "<img class=\"thumbnail\" src=\"{$url}\" height=\"{$_conf['pre_thumb_height']}\" weight=\"{$_conf['pre_thumb_width']}\" hspace=\"4\" vspace=\"4\" align=\"middle\">";
+            $img_tag = "<img class=\"thumbnail\" src=\"{$url}\" height=\"{$_conf['pre_thumb_height']}\" width=\"{$_conf['pre_thumb_width']}\" hspace=\"4\" vspace=\"4\" align=\"middle\">";
 
             if ($_conf['iframe_popup']) {
                 $view_img = $this->imageHtmlPopup($url, $img_tag, $str);
