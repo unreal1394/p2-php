@@ -31,10 +31,6 @@ $conf_user_rad['live.id_b'] = array('1' => 'する', '0' => 'しない');
 $conf_user_def['live.highlight_chain'] = 0; // (0)
 $conf_user_rad['live.highlight_chain'] = array('1' => 'する', '0' => 'しない');
 
-// YouTubeプレビュー表示のサイズ
-$conf_user_def['live.youtube_winsize'] = 0; // (0)
-$conf_user_sel['live.youtube_winsize'] = array('0' => 'ノーマルサイズ', '1' => 'ハーフサイズ');
-
 // }}}
 // {{{ ■実況中設定
 

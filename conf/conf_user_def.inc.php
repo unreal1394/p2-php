@@ -170,14 +170,6 @@ $conf_user_def['pre_thumb_height'] = "32"; // ("32")
 $conf_user_def['pre_thumb_width'] = "32"; // ("32")
 //$conf_user_rules['pre_thumb_width'] = array('emptyToDef', 'notIntExceptMinusToDef');
 
-// YouTubeのリンクをプレビュー表示（する:1, しない:0, 手動でする:2）
-$conf_user_def['link_youtube'] = 1; // (1)
-$conf_user_rad['link_youtube'] = array('1' => 'する', '0' => 'しない', '2' => '手動でする');
-
-// ニコニコ動画のリンクをプレビュー表示（する:1, しない:0, 手動でする:2）
-$conf_user_def['link_niconico'] = 1; // (1)
-$conf_user_rad['link_niconico'] = array('1' => 'する', '0' => 'しない', '2' => '手動でする');
-
 // HTMLポップアップ（する:1, しない:0, pでする:2, 画像でする:3）
 $conf_user_def['iframe_popup'] = 2; // (2)
 $conf_user_sel['iframe_popup'] = array('1' => 'する', '0' => 'しない', '2' => 'pでする', '3' => '画像でする');
@@ -497,7 +489,7 @@ $conf_user_rad['through_ime_http_only'] = array('1' => 'HTTPSでは直', '0' => '常
 // ゲートで自動転送しない拡張子（カンマ区切りで、拡張子の前のピリオドは不要）
 $conf_user_def['ime_manual_ext'] = "exe,zip"; // ("exe,zip")
 
-/* 
+/*
 // お気にスレ共有に参加（する:1, しない:0）
 $conf_user_def['join_favrank'] = 0; // (0)
 $conf_user_rad['join_favrank'] = array('1' => 'する', '0' => 'しない');

@@ -310,8 +310,6 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('pre_thumb_limit', '画像URLの先読みサムネイルを一度に表示する制限数 (0で無制限)'),
 //        array('pre_thumb_height', '画像サムネイルの縦の大きさを指定 (ピクセル)'),
 //        array('pre_thumb_width', '画像サムネイルの横の大きさを指定 (ピクセル)'),
-        array('link_youtube', 'YouTubeのリンクをプレビュー表示<br>(手動の場合はURLの横の<img src="img/show.png" width="30" height="12" alt="show">をクリックして表示)'),
-        array('link_niconico', 'ニコニコ動画のリンクをプレビュー表示<br>(手動の場合はURLの横の<img src="img/show.png" width="30" height="12" alt="show">をクリックして表示)'),
         array('iframe_popup', 'HTMLポップアップ'),
         array('iframe_popup_event', 'HTMLポップアップをする場合のイベント'),
         array('iframe_popup_type', 'HTMLポップアップの種類'),
@@ -891,7 +889,6 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
 		array('live.view_type', 'レス表示の種類'),
 		array('live.id_b', 'ID末尾の O (携帯) P (公式p2) Q (フルブラウザ) i (iPhone)を太字に'),
 		array('live.highlight_chain', '連鎖ハイライト (連鎖範囲は ngaborn_chain_all にて設定)'),
-		array('live.youtube_winsize', 'YouTubeプレビュー表示のサイズ'),
 	);
 	printEditConfGroupHtml($groupname, $conflist, $flags);
 }

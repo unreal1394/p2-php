@@ -137,11 +137,13 @@ echo <<<EOHEADER
     <link rel="stylesheet" type="text/css" href="css.php?css=style&amp;skin={$skin_en}">
     <link rel="stylesheet" type="text/css" href="css.php?css=read&amp;skin={$skin_en}">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
     <script type="text/javascript" src="js/basic.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/respopup.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/motolspopup.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/ngabornctl.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/setfavjs.js?{$_conf['p2_version_id']}"></script>
+    <script type="text/javascript" src="js/preview_video.js?{$_conf['p2_version_id']}"></script>
     <script type="text/javascript" src="js/delelog.js?{$_conf['p2_version_id']}"></script>\n
 EOHEADER;
 
@@ -163,16 +165,6 @@ EOP;
 EOP;
 }
 
-if ($_conf['link_youtube'] == 2 || $_conf['link_niconico'] == 2) {
-	// +live YouTubeプレビュー表示のサイズ指定
-	if ($_conf['live.youtube_winsize'] == 1) {
-		echo "\t<script type=\"text/javascript\" src=\"js/preview_video_half.js?{$_conf['p2_version_id']}\"></script>\n";
-	} else {
-    echo <<<EOP
-    <script type="text/javascript" src="js/preview_video.js?{$_conf['p2_version_id']}"></script>\n
-EOP;
-	}
-}
 if ($_conf['expack.am.enabled']) {
     echo <<<EOP
     <script type="text/javascript" src="js/asciiart.js?{$_conf['p2_version_id']}"></script>\n
