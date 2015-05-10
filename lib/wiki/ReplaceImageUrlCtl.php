@@ -322,6 +322,9 @@ class ReplaceImageUrlCtl extends WikiPluginCtlBase
             $ret = self::_identByCacheData($ret, $this->cacheData[$url]['data'], $ident);
         }
 
+        // 結果から重複を削除
+        $ret = array_unique($ret);
+
         // 結果を永続キャッシュに保存
         $this->storeCache($url, array('code' => $code,
             'responseHeaders' => $req->getResponseHeader(),

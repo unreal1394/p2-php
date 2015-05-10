@@ -374,7 +374,7 @@ div.respopup div.reslist {
 
 .preview-video-switch {
 	cursor: pointer;
-	width: 32px;
+	width: 30px;
 	height: 12px;
 }
 

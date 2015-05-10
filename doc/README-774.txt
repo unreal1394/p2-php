@@ -36,6 +36,8 @@ rep2-expack test https://github.com/orzisun/p2-php
   - レスポップアップから開いたレスポップアップをタップした際に元のレスポップアップが消えるのは仕様とさせていただきます。
   - スクロールは指の終着点がポップアップ内になるようにすれば消えません。
 * headline.2ch.netを最近読んだスレに追記しないように変更
+* Youtubeとニコニコ動画を表示する機能を削除
+  - リンクプラグインを使用してください http://akid.s17.xrea.com/p2puki/index.phtml?%A5%EA%A5%F3%A5%AF%A5%D7%A5%E9%A5%B0%A5%A4%A5%F3
 
 その他今時のアレに合わせた修正等gitのコミットログも確認してください。
 
@@ -56,7 +58,17 @@ rep2-expack test https://github.com/orzisun/p2-php
 
  本家p2と同じく、X11ライセンスです。
 
+
 ●ChangeLog
+
+150510.1111
+* Youtubeとニコ動の内蔵リンクプラグインを削除
+* Youtube関連の設定を全て削除
+* showボタンをリンクプラグインから利用出来るように変更
+* スマホ向けreadにPCのリンクプラグインが反映されるようにした
+* 画像置換URLのEXTRACTの重複URLを無視するように変更
+* サービス終了に伴って使用できなくなった機能の設定を一部削除
+
 150426.1033
 * ガラケー向けreadのsyntax error修正
 * 302が発生するURLでRSSリーダ正常動作しない不具合を修正
