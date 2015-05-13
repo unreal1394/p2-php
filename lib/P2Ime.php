@@ -152,9 +152,9 @@ class P2Ime
         case 'google':
             $this->_method = '_throughGoogleGateway';
             if ($_conf['ktai'] && !$_conf['iphone']) {
-                $this->_gateUrl = 'http://www.google.co.jp/gwt/x?u=';
+                $this->_gateUrl = '//www.google.co.jp/gwt/x?u=';
             } else {
-                $this->_gateUrl = 'http://www.google.co.jp/url?q=';
+                $this->_gateUrl = '//www.google.co.jp/url?q=';
             }
             break;
         // }}}

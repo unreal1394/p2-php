@@ -663,7 +663,7 @@ EOP;
         ), '', '&amp;') . $_conf['k_at_a'];
 
         if ($_conf['iframe_popup']) {
-            return $this->iframePopup($filter_url, $idstr, $_conf['bbs_win_target_at']) . $num_ht;
+            return self::iframePopup($filter_url, $idstr, $_conf['bbs_win_target_at']) . $num_ht;
         }
         return "<a href=\"{$filter_url}\"{$_conf['bbs_win_target_at']}>{$idstr}</a>{$num_ht}";
     }
@@ -767,7 +767,7 @@ EOP;
 
         if ($_conf['iframe_popup']) {
             $pop_url = $read_url . "&amp;renzokupop=true";
-            return $this->iframePopup(array($read_url, $pop_url), $full, $_conf['bbs_win_target_at'], 1);
+            return self::iframePopup(array($read_url, $pop_url), $full, $_conf['bbs_win_target_at'], 1);
         }
 
         // •’Ê‚ÉƒŠƒ“ƒN
@@ -797,7 +797,7 @@ EOP;
      * @param   bool            $marker
      * @return  string
      */
-    public function iframePopup($url, $str, $attr = '', $mode = null, $marker = false)
+    static public function iframePopup($url, $str, $attr = '', $mode = null, $marker = false)
     {
         global $_conf;
 
@@ -888,7 +888,7 @@ EOP;
      */
     public function iframePopupCallback($s)
     {
-        return $this->iframePopup(p2h($s[1], false), p2h($s[3], false), $s[2]);
+        return self::iframePopup(p2h($s[1], false), p2h($s[3], false), $s[2]);
     }
 
     // }}}
@@ -1047,7 +1047,7 @@ EOP;
         }
 
         $pops = ($_conf['iframe_popup'] == 1) ? $img_tag . $link_str : array($link_str, $img_tag);
-        return $this->iframePopup(array($img_url, $popup_url), $pops, $_conf['ext_win_target_at'], null, true);
+        return self::iframePopup(array($img_url, $popup_url), $pops, $_conf['ext_win_target_at'], null, true);
     }
 
     // }}}
@@ -1208,7 +1208,7 @@ EOJS;
                 } else {
                     $pop_url = $link_url;
                 }
-                $link = $this->iframePopup(array($link_url, $pop_url), $str, $_conf['ext_win_target_at']);
+                $link = self::iframePopup(array($link_url, $pop_url), $str, $_conf['ext_win_target_at']);
             } else {
                 $link = "<a href=\"{$link_url}\"{$_conf['ext_win_target_at']}>{$str}</a>";
             }
@@ -1241,7 +1241,7 @@ EOJS;
                         $check_mark_prefix = '';
                         $check_mark_suffix = '';
                     }
-                    $brocra_checker_link = $this->iframePopup(array($brocra_checker_url, $brocra_pop_url), $check_mark, $_conf['ext_win_target_at']);
+                    $brocra_checker_link = self::iframePopup(array($brocra_checker_url, $brocra_pop_url), $check_mark, $_conf['ext_win_target_at']);
                 } else {
                     $brocra_checker_link = "<a href=\"{$brocra_checker_url}\"{$_conf['ext_win_target_at']}>{$check_mark}</a>";
                 }
@@ -1302,7 +1302,7 @@ EOJS;
                 } else {
                     $pop_url = $read_url . '&amp;one=true';
                 }
-                return $this->iframePopup(array($read_url, $pop_url), $str, $_conf['bbs_win_target_at']);
+                return self::iframePopup(array($read_url, $pop_url), $str, $_conf['bbs_win_target_at']);
             }
             return "<a href=\"{$read_url}{$_conf['bbs_win_target_at']}\">{$str}</a>";
         }

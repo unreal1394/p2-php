@@ -16,3 +16,16 @@ data-video_height(必須) iframeのheight属性
 data-video_style(オプション) iframeのstyle属性
 data-video_harf(オプション) 1にするとwidthとheightが半分になります
 data-video_option(オプション) Javascriptの連想配列形式でiframeの追加属性を指定します。名前と値は必ずペアである必要があります。
+
+● 定数
+リンクプラグイン内のReplaceに以下の項目を指定すると、その内容に変換します。
+・$atag rep2の設定と接続端末に応じた内容のaタグに変換します。
+$atagの一例
+Match
+^(?:https?://(?:www\.|m\.)?youtube\.(?:com|jp)/(?:watch\?(?:.*&)?(?:v|video_id)=|v/)|(?:https?://youtu\.be/|https://www\.youtube-nocookie\.com/v/))([\w\-_]+)(?:.*)?$
+
+Replace
+$atag <div class="preview-video"><iframe style="width:640px;height:360px;max-width:100%;border:none" src="//www.youtube.com/embed/\1" allowfullscreen></iframe></div>
+
+iframe_popup=「pでする」に設定した状態ででPCからアクセスした場合は$atagを
+「<a href="$ime_url" target="_blank" onmouseover="showHtmlPopUp('$ime_url',event,0.2)" onmouseout="offHtmlPopUp()">(p)</a><a href="$url" target="_blank">$str</a>」に変換します。

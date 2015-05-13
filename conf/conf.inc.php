@@ -80,7 +80,7 @@ function p2_init()
     $_conf['expack.history_url']    = 'https://github.com/2ch774/p2-php/blob/master/doc/README-774.txt';
     $_conf['expack.tgrep_url']      = 'http://page2.xrea.jp/tgrep/search';
     $_conf['test.dig2ch_url']       = 'http://dig.2ch.net/';
-    $_conf['expack.gate_php']       = 'http://2ch774.github.io/p2-php/gate.html';
+    $_conf['expack.gate_php']       = '//2ch774.github.io/p2-php/gate.html';
     $_conf['menu_php']              = 'menu.php';
     $_conf['subject_php']           = 'subject.php';
     $_conf['read_php']              = 'read.php';

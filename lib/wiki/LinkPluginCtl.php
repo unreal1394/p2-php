@@ -73,6 +73,8 @@ class LinkPluginCtl extends WikiPluginCtlBase
 
     public function replaceLinkToHTML($url, $str)
     {
+        global $_conf;
+
         $this->setup();
 
         $src = false;
@@ -84,6 +86,28 @@ class LinkPluginCtl extends WikiPluginCtlBase
                 }
                 if (strstr($v['replace'], '$str')) {
                     $src = str_replace('$str', $str, $src);
+                }
+                if (strstr($v['replace'], '$atag')) {
+                    // ime
+                    if ($_conf['through_ime']) {
+                        $link_url = P2Util::throughIme($url);
+                    } else {
+                        $link_url = $url;
+                    }
+                    // HTMLポップアップ(PCの時だけ)
+                    if ($_conf['iframe_popup'] && !$_conf['ktai']) {
+                        // *pm 指定の場合のみ、特別に手動転送指定を追加する
+                        if (substr($_conf['through_ime'], -2) == 'pm') {
+                            $pop_url = P2Util::throughIme($url, -1);
+                        } else {
+                            $pop_url = $link_url;
+                        }
+                        $atag = ShowThreadPc::iframePopup(array($link_url, $pop_url), $str, $_conf['ext_win_target_at']);
+                    } else {
+                        $atag = "<a href=\"{$link_url}\"{$_conf['ext_win_target_at']}>{$str}</a>";
+                    }
+
+                    $src = str_replace('$atag', $atag, $src);
                 }
                 break;
             }
