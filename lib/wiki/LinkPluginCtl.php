@@ -79,13 +79,17 @@ class LinkPluginCtl extends WikiPluginCtlBase
 
         $src = false;
         foreach ($this->data as $v) {
-            if (preg_match('{'.$v['match'].'}', $url)) {
-                $src = @preg_replace ('{'.$v['match'].'}', $v['replace'], $url);
+            // 置換を試行
+            $temp = @preg_replace ('{'.$v['match'].'}', $v['replace'], $url, -1, $count);
+            // 置換された場合
+            if ($count) {
+                $src = $temp;
+                $replace_pairs = array();
                 if (strstr($v['replace'], '$ime_url')) {
-                    $src = str_replace('$ime_url', P2Util::throughIme($url), $src);
+                    $replace_pairs['$ime_url'] = P2Util::throughIme($url);
                 }
                 if (strstr($v['replace'], '$str')) {
-                    $src = str_replace('$str', $str, $src);
+                    $replace_pairs['$str'] = $str;
                 }
                 if (strstr($v['replace'], '$atag')) {
                     // ime
@@ -102,13 +106,13 @@ class LinkPluginCtl extends WikiPluginCtlBase
                         } else {
                             $pop_url = $link_url;
                         }
-                        $atag = ShowThreadPc::iframePopup(array($link_url, $pop_url), $str, $_conf['ext_win_target_at']);
+                        $replace_pairs['$atag'] = ShowThreadPc::iframePopup(array($link_url, $pop_url), $str, $_conf['ext_win_target_at']);
                     } else {
-                        $atag = "<a href=\"{$link_url}\"{$_conf['ext_win_target_at']}>{$str}</a>";
+                        $replace_pairs['$atag'] = "<a href=\"{$link_url}\"{$_conf['ext_win_target_at']}>{$str}</a>";
                     }
-
-                    $src = str_replace('$atag', $atag, $src);
                 }
+                // 変数を展開
+                $src = strtr($src, $replace_pairs);
                 break;
             }
         }

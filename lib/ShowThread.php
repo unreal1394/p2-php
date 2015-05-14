@@ -1107,6 +1107,27 @@ abstract class ShowThread
      */
     public function transLinkDo(array $s)
     {
+        // 結果のキャッシュ
+        static $cache = array();
+        // sha1で囲んだ方が多少速くなるが低確率で衝突する
+        $key = sha1(serialize($s));
+        // キャッシュしてない場合
+        if (!isset($cache[$key])) {
+            // 結果を計算
+            $cache[$key] = self::_transLinkDo($s);
+        }
+        return $cache[$key];
+    }
+    // {{{ _transLinkDo()
+
+    /**
+     * transLinkDoの子関数
+     *
+     * @param   array   $s
+     * @return  string
+     */
+    private function _transLinkDo(array $s)
+    {
         global $_conf;
 
         $orig = $s[0];
@@ -1132,13 +1153,13 @@ abstract class ShowThread
                 return $s[3];
             }
 
-        // 引用
+            // 引用
         } elseif ($s['quote']) {
             return  preg_replace_callback(
                 self::getAnchorRegex('/(%prefix%)?(%a_range%)/'),
                 array($this, '_quoteResCallback'), $s['quote']);
 
-        // http or ftp のURL
+            // http or ftp のURL
         } elseif ($s['url']) {
             if ($_conf['ktai'] && $s[9] == 'ftp') {
                 return $orig;
@@ -1162,11 +1183,11 @@ abstract class ShowThread
                 }
             }
 
-        // ID
+            // ID
         } elseif ($s['id'] && $_conf['flex_idpopup']) { // && $_conf['flex_idlink_k']
             return $this->idFilter($s['id'], $s[12]);
 
-        // その他（予備）
+            // その他（予備）
         } else {
             return strip_tags($orig);
         }
