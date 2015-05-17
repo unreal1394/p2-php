@@ -27,7 +27,7 @@ rep2.subject.changeNewAllColor = function () {
 rep2.subject.jumpMatomeLimit = function (matome_url) {
 	var unum_limit = window.prompt('新着が指定した件数以下のスレだけまとめ読みします。','100');
 	if (unum_limit) {
-		matome_url +='&amp;unum_limit='+unum_limit;
+		matome_url +='&unum_limit='+unum_limit;
 		if (top == self) {
 			window.location = matome_url;
 		} else {

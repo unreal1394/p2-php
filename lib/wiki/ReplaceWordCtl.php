@@ -5,12 +5,12 @@ save(array)                 データを保存
 load()                      データを読み込んで返す(自動的に実行される)
 clear()                     データを削除
 */
-
 class ReplaceWordCtl
 {
     protected $isLoaded = false;
     protected $data = array();
-
+    protected $data_filtered = array();
+    protected $data_nocache = array();
     public function setup()
     {
         if (!$this->isLoaded) {
@@ -53,7 +53,9 @@ class ReplaceWordCtl
 
         $lines = array();
         $path = $_conf['pref_dir'].'/'.$this->filename($cont);
+        $this->data_nocache[$cont] = false;
         if ($lines = @file($path)) {
+            $check_mode = $_conf['ktai'] ? 1 : 2;
             foreach ($lines as $l) {
                 if (substr($l, 0, 1) === ';' || substr($l, 0, 1) === "'" ||
                     substr($l, 0, 1) === '#' || substr($l, 0, 2) === '//') {
@@ -71,6 +73,13 @@ class ReplaceWordCtl
                 );
 
                 $this->data[$cont][] = $ar;
+                if ($lar[2] != $check_mode) {
+                    $this->data_filtered[$cont][] = $ar;
+                    // replaceにレス固有の変数$i($id, $id_base64)が含まれる場合
+                    if (!$this->data_nocache[$cont] && strpos($lar[1], '$' !== FALSE)) {
+                        $this->data_nocache[$cont] = true;
+                    }
+                }
             }
         }
         return $this->data[$cont];
@@ -110,47 +119,66 @@ class ReplaceWordCtl
     */
     public function replace($cont, $aThread, $ares, $i)
     {
-        global $_conf;
+        // キャッシュ
+        /*
+        キャッシュが有効になる条件
+        ・replaceで$i, $id, $id_base64を使ってない
+        これらを使うと置換ワードの結果は同じデータでもレス番号ごとに異なる結果になるため、キャッシュできなくなる。
+
+        キャッシュの働きやすさはメール欄＞名前欄＞＞本文＞＞＞＞＞＞＞＞日付欄といったところ。
+        */
+        static $cache = array('name' => array(), 'mail' => array(), 'date' => array(), 'msg' => array());
 
         $this->setup();
 
         $resar   = $aThread->explodeDatLine($ares);
-        $name    = $resar[0];
-        $mail    = $resar[1];
-        $date_id = $resar[2];
-        $msg     = $resar[3];
 
         switch ($cont) {
             case 'name':
-                $word = $name;
+                $word = $resar[0];
                 break;
             case 'mail':
-                $word = $mail;
+                $word = $resar[1];
                 break;
             case 'date':
-                $word = $date_id;
+                $word = $resar[2];
                 break;
             case 'msg':
-                $word = $msg;
+                $word = $resar[3];
                 break;
             // エラー
             default:
                 // そのまま返す
                 return $word;
         }
+
         // 置換設定が無い場合はそのまま返す
-        if (!isset($this->data[$cont])) {
+        if (!isset($this->data_filtered[$cont])) {
             return $word;
         }
+        // キャッシュ可能な場合
+        if (!$this->data_nocache[$cont]) {
+            // キャッシュ
+            // sha1を使うと速くなるが低確率で衝突する
+            // sha1の計算結果自体をキャッシュしても速くならなかった
+            $cache_ = &$cache[$cont][sha1($word)];
+            // キャッシュがあればそれを返す
+            if (isset($cache_)) {
+                return $cache_;
+            }
+        }
 
-        preg_match('|ID: ?([0-9A-Za-z/.+]{8,11})|',$date_id, $matches);
-        $id = $matches[1];
-        foreach ($this->data[$cont] as $v) {
-            // 携帯モードでデータがPC用なら飛ばす
-            if ($_conf['ktai']  && $v['mode'] == 1) continue;
-            // PCモードでデータが携帯用なら飛ばす
-            if (!$_conf['ktai'] && $v['mode'] == 2) continue;
-
+        preg_match('|ID: ?([0-9A-Za-z/.+]{8,11})|',$resar[2], $matches);
+        $replace_pairs = array(
+            '$ttitle_hd' => $aThread->ttitle_hd,
+            '$host'      => $aThread->host,
+            '$bbs'       => $aThread->bbs,
+            '$key'       => $aThread->key,
+            '$id'        => $matches[1],
+            '$id_base64' => base64_encode($matches[1]),
+            '$i'         => $i
+        );
+        foreach ($this->data_filtered[$cont] as $v) {
             /* Match用の変数展開(用途が思い浮かばないのでコメントアウト)
             $v['match'] = str_replace ('$i',         $i, $v['match']);
             $v['match'] = str_replace ('$ttitle',    $aThread->ttitle, $v['match']);
@@ -169,18 +197,14 @@ class ReplaceWordCtl
             これ自体に正規表現が入っていたらどうしよう。
             実質的に使うのは$i, $host, $bbs, $key, $date_idくらいだから問題ないだろうけど。
             */
-            $v['replace'] = strtr($v['replace'], array(
-                    '$ttitle_hd' => $aThread->ttitle_hd,
-                    '$host' => $aThread->host,
-                    '$bbs' => $aThread->bbs,
-                    '$key' => $aThread->key,
-                    '$id' => $id,
-                    '$id_base64' => base64_encode($id),
-                    '$i' => $i
-            ));
+            $v['replace'] = strtr($v['replace'], $replace_pairs);
             $word = @preg_replace ('{'.$v['match'].'}', $v['replace'], $word);
         }
 
+        // キャッシュ可能ならキャッシュする
+        if (!$this->data_nocache[$cont]) {
+            $cache_ = $word;
+        }
         return $word;
     }
 }

@@ -114,6 +114,13 @@ abstract class ShowThread
      */
     static private $_anchorRegexParts = null;
 
+    /**
+     * transLinkDo() のキャッシュ
+     *
+     * @var array
+     */
+    static private  $_link_cache = array();
+
     // }}}
     // {{{ properties
 
@@ -1107,16 +1114,18 @@ abstract class ShowThread
      */
     public function transLinkDo(array $s)
     {
-        // 結果のキャッシュ
-        static $cache = array();
-        // sha1で囲んだ方が多少速くなるが低確率で衝突する
-        $key = sha1(serialize($s));
-        // キャッシュしてない場合
-        if (!isset($cache[$key])) {
-            // 結果を計算
-            $cache[$key] = self::_transLinkDo($s);
+        if ($s['url']) {
+            // sha1で囲んだ方が多少速くなるが低確率で衝突する
+            $key = sha1(serialize($s));
+            // キャッシュしてない場合
+            if (!isset(self::$_link_cache[$key])) {
+                // 結果を計算
+                self::$_link_cache[$key] = self::_transLinkDo($s);
+            }
+            return self::$_link_cache[$key];
+        } else {
+            return self::_transLinkDo($s);
         }
-        return $cache[$key];
     }
     // {{{ _transLinkDo()
 
