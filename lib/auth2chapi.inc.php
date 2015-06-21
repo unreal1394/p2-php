@@ -37,7 +37,7 @@
             return '';
         }
 
-        if ($_conf['2chapi_rounin'] == 1&& $array = P2Util::readIdPw2ch()) {
+        if ($array = P2Util::readIdPw2ch()) {
             list($login2chID, $login2chPW, $autoLogin2ch) = $array;
         }
 
