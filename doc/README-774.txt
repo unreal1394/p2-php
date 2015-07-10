@@ -60,6 +60,13 @@ rep2-expack test https://github.com/orzisun/p2-php
 
 
 ●ChangeLog
+151710.1400
+* キャッシュ確認で30分おきに更新するはずが30時間になっていたので修正
+* DAT の2行目が過去ログであることを示しているようであれば過去ログ扱いにする
+* 公式 P2 関連のコードを削除
+* offlaw2(shiro=kuma)を削除
+* 上記の変更点はkiller4989さんのパッチを取り込み
+* 設定項目2chapi_rouninを削除（強制ONに変更）
 
 150510.1111
 * Youtubeとニコ動の内蔵リンクプラグインを削除
