@@ -332,6 +332,7 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('coloredid.click', 'ID出現数をクリックすると着色をトグル(「しない」にするとJavascriptではなくPHPで着色)'),
         array('coloredid.marking.colors', 'ID出現数をダブルクリックしてマーキングの色リスト(カンマ区切り)'),
         array('coloredid.coloring.type', 'カラーリングのタイプ（thermon版はPHPで着色(coloredid.click=しない)の場合のみ有効）'),
+        array('machibbs.disphost.enable', 'まちBBSでリモートホスト名を表示'),
     );
     printEditConfGroupHtml($groupname, $conflist, $flags);
 }

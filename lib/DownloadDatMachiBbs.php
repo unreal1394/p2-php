@@ -53,7 +53,11 @@ class DownloadDatMachiBbs implements DownloadDatInterface
         }
 
         // http://[SERVER]/bbs/offlaw.cgi/[BBS]/[KEY]/[OPTION];
-        $url = "http://{$host}/bbs/offlaw.cgi/{$bbs}/{$key}/{$option}";
+        if($_conf['machibbs.disphost.enable']){
+            $url = "http://{$host}/bbs/offlaw.cgi/2/{$bbs}/{$key}/{$option}";
+        } else {
+            $url = "http://{$host}/bbs/offlaw.cgi/{$bbs}/{$key}/{$option}";
+        }
 
         $tempfile = $thread->keydat . '.tmp';
         FileCtl::mkdirFor($tempfile);
@@ -104,6 +108,12 @@ class DownloadDatMachiBbs implements DownloadDatInterface
                     fwrite($fp, $abn);
                     $thread->gotnum++;
                 }
+
+                if($_conf['machibbs.disphost.enable']){
+                    $lar[2] .= sprintf(" [ %s ]", $lar[5]);
+                }
+                unset($lar[5]);
+
                 // s‚ğ‘‚«‚Ş
                 fwrite($fp, implode('<>', $lar) . "\n");
             } else {

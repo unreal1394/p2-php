@@ -326,6 +326,10 @@ $conf_user_def['coloredid.marking.colors'] = '#f00,#0f0,#00f,#f90,#f0f,#ff0,#90f
 $conf_user_def['coloredid.coloring.type'] = 0;
 $conf_user_rad['coloredid.coloring.type'] = array('0' => 'オリジナル', '1' => 'thermon版');
 
+// まちBBSでリモートホスト名を表示
+$conf_user_def['machibbs.disphost.enable'] = 1;
+$conf_user_rad['machibbs.disphost.enable'] = array('1' => 'する', '0' => 'しない');
+
 // }}}
 // {{{ NG/あぼーん
 
