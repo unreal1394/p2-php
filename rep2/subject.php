@@ -117,7 +117,7 @@ if (!empty($_REQUEST['sort'])) {
 // }}}
 // {{{ 表示スレッド数設定
 
-$threads_num_max = 2000;
+$threads_num_max = 65535;
 
 if (!$spmode || $spmode == 'merge_favita') {
     $threads_num = $p2_setting['viewnum'];
