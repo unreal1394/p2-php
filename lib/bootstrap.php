@@ -99,7 +99,7 @@ if (!empty($_GET) || !empty($_POST)) {
     // エンコーディング判定用文字列の取得
     if (!empty($_POST)) {
         // 新規ログインとメンバーログインの同時指定はありえないので、エラーを出す
-        if (isset($_POST['submit_new']) && isset($_POST['submit_member'])) {
+        if (isset($_POST['submit_new']) && isset($_POST['submit_member']) && isset($_POST['submit_userlogin'])) {
             p2die('無効なリクエストです。');
         }
 

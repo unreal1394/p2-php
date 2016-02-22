@@ -317,7 +317,7 @@ class Login
 
         // {{{ フォームからログインした時
 
-        if (!empty($_POST['submit_member'])) {
+        if (!empty($_POST['submit_userlogin'])) {
 
             // フォームログイン成功なら
             if ($_POST['form_login_id'] == $this->user_u and sha1($_POST['form_login_pass']) == $this->pass_x) {
@@ -463,8 +463,8 @@ EOP;
     {
         $r = true;
 
-        if (!empty($_REQUEST['ctl_keep_login'])) {
-            if (!empty($_REQUEST['keep_login'])) {
+        if (!empty($_REQUEST['ctl_register_cookie'])) {
+            if (!empty($_REQUEST['register_cookie'])) {
                 $r = $this->setCookieCid($this->user_u, $this->pass_x);
             } else {
                 // クッキーをクリア

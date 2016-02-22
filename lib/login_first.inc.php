@@ -59,16 +59,16 @@ function printLoginFirst(Login $_login)
     //==============================================
     $mobile = Net_UserAgent_Mobile::singleton();
 
-    $keep_login_checked = ' checked';
-    if (isset($_POST['submit_new']) || isset($_POST['submit_member'])) {
-        if (!isset($_POST['keep_login']) || $_POST['keep_login'] !== '1') {
-            $keep_login_checked = '';
+    $register_cookie_checked = ' checked';
+    if (isset($_POST['submit_new']) || isset($_POST['submit_member']) || isset($_POST['submit_userlogin'])) {
+        if (!isset($_POST['register_cookie']) || $_POST['register_cookie'] !== '1') {
+            $register_cookie_checked = '';
         }
     }
     $auth_sub_input_ht = <<<EOP
 <input type="hidden" name="device_pixel_ratio" id="device_pixel_ratio" value="1">
-<input type="hidden" name="ctl_keep_login" value="1">
-<input type="checkbox" id="keep_login" name="keep_login" value="1"{$keep_login_checked}><label for="keep_login">Cookieにログイン状態を保持</label><br>
+<input type="hidden" name="ctl_register_cookie" value="1">
+<input type="checkbox" id="register_cookie" name="register_cookie" value="1"{$register_cookie_checked}><label for="register_cookie">Cookieにログイン状態を保持</label><br>
 EOP;
 
     // }}}
@@ -114,7 +114,7 @@ EOP;
     }
 
     if (file_exists($_conf['auth_user_file'])) {
-        $submit_ht = '<input type="submit" name="submit_member" value="ユーザログイン">';
+        $submit_ht = '<input type="submit" name="submit_userlogin" value="ユーザログイン">';
     } else {
         $submit_ht = '<input type="submit" name="submit_new" value="新規登録">';
     }

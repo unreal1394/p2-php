@@ -15,7 +15,6 @@ $hd['FROM'] = '';
 $hd['mail'] = '';
 $hd['MESSAGE'] = '';
 $hd['subject'] = '';
-$hd['beres_checked'] = '';
 $hd['p2res_checked'] = '';
 
 $htm['beres'] = '';
@@ -102,9 +101,6 @@ if ($post_backup = PostDataStore::get($post_backup_key)) {
 
 // beres/p2res
 if ($post_config = PostDataStore::get($post_config_key)) {
-    if ($post_config['beres']) {
-        $hd['beres_checked'] = ' checked';
-    }
     if ($post_config['p2res']) {
         $hd['p2res_checked'] = ' checked';
     }
@@ -175,8 +171,7 @@ if (P2Util::isHost2chs($host) and file_exists($_conf['sid2ch_php'])) {
 
 // Be
 if (P2Util::isHost2chs($host) and P2Util::isEnableBe2ch()) {
-    $htm['beres'] = '<input type="checkbox" id="beres" name="beres" value="1"'. $hd['beres_checked'] . '>'
-                  . '<label for="beres">BeÇ≈èëÇ´çûÇﬁ</label>';
+    $htm['beres'] = '<input type="submit" id="submit_beres" name="submit_beres" value="BeÇ≈èëÇ´çûÇﬁ" onclick="setHiddenValue(this);" tabindex="5">';
 }
 
 // }}}
