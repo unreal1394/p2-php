@@ -1942,6 +1942,15 @@ ERR;
                     $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
                 }
 
+            // 2ch or pink by ula.cc(bintan / bekkanko) - http://choco.2ch.net/test/read.cgi/event/1027770702/
+            } elseif (preg_match('<^http://(?:bintan|same)\\.ula\\.cc/test/(?:read\\.(?:cgi|html|so)|r\\.so)
+                    /(.+)/(\\w+)/([0-9]+)(?:/([^/]*))>x', $nama_url, $matches))
+            {
+                $host = $matches[1];
+                $bbs = $matches[2];
+                $key = $matches[3];
+                $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
+
                 // 2ch or pink âﬂãéÉçÉOhtml - http://pc.2ch.net/mac/kako/1015/10153/1015358199.html
             } elseif (preg_match('<^(https?://(.+)(?:/[^/]+)?/(\\w+)
                     /kako/\\d+(?:/\\d+)?/(\\d+)).html>x', $nama_url, $matches))
