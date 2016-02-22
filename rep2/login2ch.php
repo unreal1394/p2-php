@@ -157,6 +157,9 @@ if ($autoLogin2ch) {
 $tora3_url = "http://2ch.tora3.net/";
 $tora3_url_r = P2Util::throughIme($tora3_url);
 
+$tool_url = "https://maraga.jp/1.1/RoninTool.php";
+$tool_url_r = P2Util::throughIme($tool_url);
+
 if (!$_conf['ktai']) {
     $id_input_size_at = " size=\"30\"";
     $pass_input_size_at = " size=\"24\"";
@@ -190,7 +193,10 @@ if ($_conf['ktai']) {
 //================================================================
 
 echo <<<EOP
-<p>2ch IDについての詳細はこちら→ <a href="{$tora3_url_r}" target="_blank">{$tora3_url}</a></p>
+<p>
+浪人お役立ちツールはこちら→ <a href="{$tool_url_r}" target="_blank">{$tool_url}</a><br />
+２ちゃんねる浪人についての詳細はこちら→ <a href="{$tora3_url_r}" target="_blank">{$tora3_url}</a>
+</p>
 EOP;
 
 if ($_conf['ktai']) {
