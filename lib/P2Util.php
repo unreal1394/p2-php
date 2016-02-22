@@ -1915,6 +1915,22 @@ ERR;
                 $host = $matches[1];
                 list($bbs, $key, $ls) = self::parseMachiQuery($matches[4]);
 
+            // vip2ch.com - http://ex14.vip2ch.com/test/read.cgi/news4ssnip/1450958506/
+            } elseif (preg_match('<^https?://((\\w+)\\.vip2ch\\.com)/test/(?:read\\.(?:cgi|html|so)|mread\\.cgi)/(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
+            {
+                $host = $matches[1];
+                $bbs = $matches[3];
+                $key = $matches[4];
+                $ls = (isset($matches[5]) && strlen($matches[5])) ? $matches[5] : '';
+
+            // vip2ch.com - http://ex14.vip2ch.com/i/responce.html?bbs=news4ssnip&dat=1450958506
+            } elseif (preg_match('<^https?://((\\w+)\\.vip2ch\\.com)/i/responce\\.html\\?bbs=(\\w+)&dat=([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
+            {
+                $host = $matches[1];
+                $bbs = $matches[3];
+                $key = $matches[4];
+                $ls = (isset($matches[5]) && strlen($matches[5])) ? $matches[5] : '';
+
             // 2ch or pink - http://choco.2ch.net/test/read.cgi/event/1027770702/
             } elseif (preg_match('<^https?://(.+)/test/read\\.(?:cgi|html|so)
                     /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
