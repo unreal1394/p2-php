@@ -118,6 +118,15 @@ $conf_user_rules['mobile.sb_ttitle_trim_len'] = array('emptyToDef', 'notIntExcep
 $conf_user_def['mobile.sb_ttitle_trim_pos'] = 1; // (1)
 $conf_user_rad['mobile.sb_ttitle_trim_pos'] = array('-1' => '先頭', '0' => '中央', '1' => '末尾');
 
+// スレッド作成日時の表示フォーマット
+$conf_user_def['birth_format'] = 'y/m/d';
+$conf_user_sel['birth_format'] = array(
+                                     'y/m/d'       => 'YY/MM/DD',
+                                     'y/m/d H:i:s' => 'YY/MM/DD HH:MM:SS',
+                                     'Y/m/d'       => 'YYYY/MM/DD',
+                                     'Y/m/d H:i:s' => 'YYYY/MM/DD HH:MM:SS',
+                                 );
+
 // }}}
 // {{{ read
 

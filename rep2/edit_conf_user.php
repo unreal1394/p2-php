@@ -283,6 +283,7 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
         array('viewall_kitoku', '既得スレは表示件数に関わらず表示'),
         array('delete_copyright', 'スレッドのタイトルから著作権表記を削除する'),
         array('delete_copyright.list', '削除する著作権表記の文字列(カンマ区切り)'),
+        array('birth_format', 'スレッド作成日時の表示フォーマット'),
     );
     printEditConfGroupHtml($groupname, $conflist, $flags);
 }

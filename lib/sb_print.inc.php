@@ -190,9 +190,9 @@ EOP;
 <th{$class_ti} id="sb_th_ikioi"><a{$class_sort_ikioi} href="{$_conf['subject_php']}?sort=ikioi{$sortq_common}{$rsortq_ikioi}{$norefresh_q}" target="_self">勢い</a></th>\n
 EOP;
     }
-    // Birthday
+    // Birth
     echo <<<EOP
-<th{$class_t} id="sb_th_bd"><a{$class_sort_bd} href="{$_conf['subject_php']}?sort=bd{$sortq_common}{$rsortq_bd}{$norefresh_q}" target="_self">Birthday</a></th>\n
+<th{$class_t} id="sb_th_bd"><a{$class_sort_bd} href="{$_conf['subject_php']}?sort=bd{$sortq_common}{$rsortq_bd}{$norefresh_q}" target="_self">since</a></th>\n
 EOP;
     // お気に入り
     if ($_conf['sb_show_fav'] && $aThreadList->spmode != 'taborn') {
@@ -448,9 +448,11 @@ EOP;
             $td['ikioi'] = "<td{$class_ti}>{$dayres_st}</td>\n";
         }
 
-        // Birthday
-        $birthday = date('y/m/d', $aThread->key); // (y/m/d H:i)
-        $td['birth'] = "<td{$class_t}>{$birthday}</td>\n";
+        // Birth
+        $birth_format = isset($_conf['birth_format']) ? $_conf['birth_format'] : 'y/m/d';
+        $birth = date($birth_format, $aThread->key); // (y/m/d H:i)
+        $td['birth'] = "<td{$class_t}>{$birth}</td>\n";
+        unset($birth_format);
 
         // +live 実況ボタンの処理
         // +live 実況中ic2のサムネイル作成をonoff
