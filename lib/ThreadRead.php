@@ -307,7 +307,10 @@ class ThreadRead extends Thread {
                     }
                 }
 
-                $this->isonline = true;
+                if ($apiThreadStatus == '1') {
+                    // 現行スレの時だけセット
+                    $this->isonline = true;
+                }
                 return true;
             } elseif ($code == '302') { // Found
                                         // ホストの移転を追跡
