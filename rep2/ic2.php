@@ -45,6 +45,9 @@ $referer  = (isset($_REQUEST['ref']) && strlen($_REQUEST['ref']) > 0)   ? $_REQU
 /*if (!isset($uri) && false !== ($url = getenv('PATH_INFO'))) {
     $uri = 'http:/' . $url;
 }*/
+
+error_log("IC2 Init Finish  ".$uri, 0);
+
 if (empty($id) && empty($uri) && empty($file)) {
     ic2_error('x06', 'URLまたはファイル名がありません。', false);
 }
@@ -156,10 +159,12 @@ class IC2TempFile
 // {{{ sleep
 
 if ($doDL) {
+    error_log("IC2 Dup prevention ".$uri, 0);
     // 同じ画像のURIに対するクエリが（ほぼ）同時に発行されたときの重複GETを防ぐ
     // sleepした時間はプロセスの実行時間に含まれないので独自にタイマーを用意する（無限ループ回避）
     $dl_lock_file = $_conf['tmp_dir'] . DIRECTORY_SEPARATOR . 'ic2_lck_' . md5($uri);
     if (file_exists($dl_lock_file)) {
+        error_log("IC2 dl_lock_file exists ".$uri, 0);
         $offtimer = ini_get('max_execution_time');
         if ($offtimer == 0) {
             $offtimer = 30;
@@ -303,101 +308,94 @@ $ic2_ua = (!empty($_conf['expack.user_agent']))
     ? $_conf['expack.user_agent'] : $_SERVER['HTTP_USER_AGENT'];
 
 // キャッシュされていなければ、取得を試みる
-$client = new HTTP_Client();
-$client->setRequestParameter('timeout', $conn_timeout);
-$client->setRequestParameter('readTimeout', array($read_timeout, 0));
-$client->setMaxRedirects(3);
-$client->setDefaultHeader('User-Agent', $ic2_ua);
-if ($mtime > 0) {
-    $client->setDefaultHeader('If-Modified-Since', http_date($mtime));
-}
-
-// プロキシ設定
-if ($ini['Proxy']['enabled'] && $ini['Proxy']['host'] && $ini['Proxy']['port']) {
-    $client->setRequestParameter('proxy_host', $ini['Proxy']['host']);
-    $client->setRequestParameter('proxy_port', $ini['Proxy']['port']);
-    if ($ini['Proxy']['user']) {
-        $client->setRequestParameter('proxy_user', $ini['Proxy']['user']);
-        $client->setRequestParameter('proxy_pass', $ini['Proxy']['pass']);
-        $proxy_auth_data = base64_encode($ini['Proxy']['user'] . ':' . $ini['Proxy']['pass']);
-        $client->setDefaultHeader('Proxy-Authorization', 'Basic ' . $proxy_auth_data);
+try {
+    error_log("getHTTPRequest2  ".$uri, 0);
+    $req = P2Util::getHTTPRequest2($uri, HTTP_Request2::METHOD_GET);
+    $req->setConfig(array('follow_redirects' => true));
+    $req->setHeader('User-Agent', $ic2_ua);
+    if ($mtime > 0) {
+        $req->setHeader('If-Modified-Since', http_date($mtime));
     }
-}
 
 // リファラ設定
-if (is_null($referer)) {
-    $send_referer = (boolean)$ini['Getter']['sendreferer'];
-    if ($send_referer) {
-        if ($ini['Getter']['norefhosts']) {
-            $pattern = preg_quote($ini['Getter']['norefhosts'], '/');
+    if (is_null($referer)) {
+        $send_referer = (boolean)$ini['Getter']['sendreferer'];
+        if ($send_referer) {
+            if ($ini['Getter']['norefhosts']) {
+                $pattern = preg_quote($ini['Getter']['norefhosts'], '/');
+                $pattern = str_replace(',', '|', $pattern);
+                $pattern = '/' . $pattern . '/i';
+                if (preg_match($pattern, $pURL['host'])) {
+                    $send_referer = false;
+                }
+            }
+        } elseif ($ini['Getter']['refhosts']) {
+            $pattern = preg_quote($ini['Getter']['refhosts'], '/');
             $pattern = str_replace(',', '|', $pattern);
             $pattern = '/' . $pattern . '/i';
             if (preg_match($pattern, $pURL['host'])) {
-                $send_referer = false;
+                $send_referer = true;
             }
         }
-    } elseif ($ini['Getter']['refhosts']) {
-        $pattern = preg_quote($ini['Getter']['refhosts'], '/');
-        $pattern = str_replace(',', '|', $pattern);
-        $pattern = '/' . $pattern . '/i';
-        if (preg_match($pattern, $pURL['host'])) {
-            $send_referer = true;
+        if ($send_referer) {
+            $referer = $uri . '.html';
         }
     }
-    if ($send_referer) {
-        $referer = $uri . '.html';
-    }
-}
 
-if (is_string($referer)) {
-    $client->setDefaultHeader('Referer', $referer);
-}
+    if (is_string($referer)) {
+        $req->setHeader('Referer', $referer);
+    }
 
 // }}}
 // {{{ get
 
 // ダウンロード
-if ($ini['Getter']['retry_regex'] &&
-    strlen(trim($ini['Getter']['retry_regex'])) > 0 &&
-    intval($ini['Getter']['retry_max']) > 0 &&
-    preg_match($ini['Getter']['retry_regex'], $uri))
-{
-    $retryCount = 0;
-    do {
-        $code = $client->get($uri);
-        if ($code != 403) {
-            break;
-        }
-        $retryCount++;
-        sleep($ini['Getter']['retry_interval']);
-    } while ($retryCount < intval($ini['Getter']['retry_max']));
-} else {
-    $code = $client->get($uri);
-}
+    if ($ini['Getter']['retry_regex'] &&
+        strlen(trim($ini['Getter']['retry_regex'])) > 0 &&
+        intval($ini['Getter']['retry_max']) > 0 &&
+        preg_match($ini['Getter']['retry_regex'], $uri)
+    ) {
+        $retryCount = 0;
+        do {
+            error_log("Start Download ".$uri, 0);
+            $response = P2Util::getHTTPResponse($req);
+            $code = $response->getStatus();
+            if ($code != 403) {
+                break;
+            }
+            $retryCount++;
+            sleep($ini['Getter']['retry_interval']);
+        } while ($retryCount < intval($ini['Getter']['retry_max']));
+    } else {
+        error_log("Start Download ".$uri, 0);
+        $response = P2Util::getHTTPResponse($req);
+        $code = $response->getStatus();
+    }
 
-if (PEAR::isError($code)) {
-    ic2_error('x02', $code->getMessage());
-} elseif ($fileurl && $mtime > 0 && $code == 304) {
-    // 304 Not Modified のとき
-    ic2_finish($fileurl, $thumb, $params, false);
-} elseif ($code != 200) {
-    ic2_error($code);
-}
+    if ($fileurl && $mtime > 0 && $code == 304) {
+        // 304 Not Modified のとき
+        ic2_finish($fileurl, $thumb, $params, false);
+    } elseif ($code != 200) {
+        ic2_error($code);
+    }
 
-$response = $client->currentResponse();
-if (isset($response['headers']['content-type'])) {
-    $serv_mime = $response['headers']['content-type'];
-}
+    if ($response->getHeader('content-type')) {
+        $serv_mime = $response->getHeader('content-type');
+    }
 
-// 一時ファイルに保存
-$tmpfile = tempnam($_conf['tmp_dir'], 'ic2_get_');
-$tmpobj = new IC2TempFile($tmpfile);
-$fp = fopen($tmpfile, 'wb');
-if (!$fp) {
-    ic2_error('x02', "fopen失敗。($tmpfile)");
+    // 一時ファイルに保存
+    $tmpfile = tempnam($_conf['tmp_dir'], 'ic2_get_');
+    $tmpobj = new IC2TempFile($tmpfile);
+    $fp = fopen($tmpfile, 'wb');
+    if (!$fp) {
+        ic2_error('x02', "fopen失敗。($tmpfile)");
+    }
+    fwrite($fp, $response->getBody());
+    fclose($fp);
+
+} catch (Exception $e) {
+    ic2_error('x02',  $e->getMessage ());
 }
-fwrite($fp, $response['body']);
-fclose($fp);
 
 // }}}
 // {{{ check

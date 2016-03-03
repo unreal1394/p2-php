@@ -254,27 +254,53 @@ class ReplaceImageUrlCtl extends WikiPluginCtlBase
                 ? $this->cacheData[$url]['data'] : $ret;
         }
 
-        $params = array();
-        $params['timeout'] = $_conf['http_conn_timeout'];
-        $params['readTimeout'] = array($_conf['http_read_timeout'], 0);
-        if ($_conf['proxy_use']) {
-            $params['proxy_host'] = $_conf['proxy_host'];
-            $params['proxy_port'] = $_conf['proxy_port'];
+        try {
+            $req = P2Util::getHTTPRequest2 ($get_url, HTTP_Request2::METHOD_GET);
+            if ($this->cacheData[$url] && $this->cacheData[$url]['responseHeaders']
+                    && $this->cacheData[$url]['responseHeaders']['last-modified']
+                    && strlen($this->cacheData[$url]['responseHeaders']['last-modified'])) {
+                $req->setHeader("If-Modified-Since",
+                    $this->cacheData[$url]['responseHeaders']['last-modified']);
+            }
+
+            $req->setHeader('User-Agent',
+                (!empty($_conf['expack.user_agent'])) ? $_conf['expack.user_agent']
+                : $_SERVER['HTTP_USER_AGENT']);
+
+            $response = P2Util::getHTTPResponse($req);
+
+            $code = $response->getStatus ();
+
+            if ($code == 304 && $this->cacheData[$url]) {
+                return $this->cacheData[$url]['data'];
+            }
+
+            $body = $response->getBody();
+            preg_match_all('{' . $source . '}i', $body, $extracted, PREG_SET_ORDER);
+            foreach ($extracted as $i => $extract) {
+                $_url = $replace; $_referer = $referer;
+                foreach ($extract as $j => $part) {
+                    if ($j < 1) continue;
+                    $_url       = str_replace('$EXTRACT'.$j, $part, $_url);
+                    $_referer   = str_replace('$EXTRACT'.$j, $part, $_referer);
+                }
+                if ($extract[1]) {
+                    $_url       = str_replace('$EXTRACT', $part, $_url);
+                    $_referer   = str_replace('$EXTRACT', $part, $_referer);
+                }
+                $ret[$i]['url']     = $_url;
+                $ret[$i]['referer'] = $_referer;
+            }
+        } catch (Exception $e) {
+            $errmsg = $e->getMessage ();
         }
-        $req = new HTTP_Request($get_url, $params);
-        if ($this->cacheData[$url] && $this->cacheData[$url]['responseHeaders']
-                && $this->cacheData[$url]['responseHeaders']['last-modified']
-                && strlen($this->cacheData[$url]['responseHeaders']['last-modified'])) {
-            $req->addHeader("If-Modified-Since",
-                $this->cacheData[$url]['responseHeaders']['last-modified']);
-        }
-        $req->addHeader('User-Agent',
-            (!empty($_conf['expack.user_agent'])) ? $_conf['expack.user_agent']
-            : $_SERVER['HTTP_USER_AGENT']);
-        $response = $req->sendRequest();
-        $code = $req->getResponseCode();
-        if (PEAR::isError($response) || ($code != 200 && $code != 206 && $code != 304)) {
-            $errmsg = PEAR::isError($response) ? $response->getMessage() : $code;
+
+        // 取得エラーが発生した場合
+        if (isset($errmsg) || ($code != 200 && $code != 206 && $code != 304)) {
+            if(!isset($errmsg))
+            {
+                $errmsg = $code;
+            }
             // 今回リクエストでのエラーをオンラインキャッシュ
             $this->extractErrors[$get_url] = $errmsg;
             // サーバエラー以外なら永続キャッシュに保存
@@ -290,26 +316,6 @@ class ReplaceImageUrlCtl extends WikiPluginCtlBase
             }
             return ($this->cacheData[$url] && $this->cacheData[$url]['data'])
                 ? $this->cacheData[$url]['data'] : $ret;
-        }
-        if ($code == 304 && $this->cacheData[$url]) {
-            return $this->cacheData[$url]['data'];
-        }
-
-        $body = $req->getResponseBody();
-        preg_match_all('{' . $source . '}i', $body, $extracted, PREG_SET_ORDER);
-        foreach ($extracted as $i => $extract) {
-            $_url = $replace; $_referer = $referer;
-            foreach ($extract as $j => $part) {
-                if ($j < 1) continue;
-                $_url       = str_replace('$EXTRACT'.$j, $part, $_url);
-                $_referer   = str_replace('$EXTRACT'.$j, $part, $_referer);
-            }
-            if ($extract[1]) {
-                $_url       = str_replace('$EXTRACT', $part, $_url);
-                $_referer   = str_replace('$EXTRACT', $part, $_referer);
-            }
-            $ret[$i]['url']     = $_url;
-            $ret[$i]['referer'] = $_referer;
         }
 
         // ページが消えている場合
