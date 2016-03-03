@@ -92,7 +92,7 @@
             }
 
             if($sid[0]!='SESSION-ID=Monazilla/1.00') {
-                P2Util::pushInfoHtml("<p>p2 Error: レスポンスからSessionIDを取得出来ませんでした。</p>");
+                P2Util::pushInfoHtml("<p>p2 Error: 2ch API のレスポンスからSessionIDを取得出来ませんでした。</p>");
                 return '';
             }
 
