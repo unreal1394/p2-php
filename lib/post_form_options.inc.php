@@ -176,8 +176,7 @@ if (P2Util::isHost2chs($host) and file_exists($_conf['sid2ch_php'])) {
 // Be
 if (P2Util::isHost2chs($host) and P2Util::isEnableBe2ch()) {
     $htm['beres'] = '<input type="checkbox" id="beres" name="beres" value="1"'. $hd['beres_checked'] . '>'
-                  . '<label for="beres">Be‚Å‘‚«‚Ş</label>'
-                  . '<input style="display: none;" type="submit" id="submit_beres" name="submit_beres"  value="Be‚Å‘‚«‚Ş" onclick="setHiddenValue(this);" tabindex="5">';
+                  . '<label for="beres">Be‚Å‘‚«‚Ş</label>';
 }
 
 // }}}
