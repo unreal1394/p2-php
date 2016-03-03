@@ -200,7 +200,23 @@ class ThreadRead extends Thread {
             // POSTデータの送信
             $response = $req->send ();
 
+            // 2ch API の状態がヘッダーに記載されているので取得する。
+            // User-Status: 0 (sessionID無効) or 1 (sessionID有効) or
+            //              2 (sessionID有効／https://2chv.tora3.net/futen.cgiで取得したもの)
+            //              3 (sessionID有効／API認証時にRoninアカウントを付けて取得したもの)
+            //              ※ User-Status: が 2,3 の時はdat落ち/過去ログも取れる
+            $apiUserStatus = $response->getHeader('User-Status');
+
+            // Thread-Status: 0 (dat取得不可) or 1 (現行スレ) or 2 (dat落ち) or 3 (過去ログ) or
+            //                8 (dat取得不可／Ronin無しでdat落ち/過去ログを取ろうとしたとき)
+            $apiThreadStatus = $response->getHeader('Thread-Status');
+
             $code = $response->getStatus ();
+
+            if($_conf['2chapi_debug_print']==1)
+            {
+                P2Util::pushInfoHtml('<p>p2 debug(ThreadRead::API): User-Status='.$apiUserStatus.' Thread-Status='.$apiThreadStatus.' HTTP-Status='.$code.'</p>');
+            }
 
             if ($code == '200' || $code == '206') { // Partial Content
                 $body = $response->getBody ();
@@ -303,6 +319,13 @@ class ThreadRead extends Thread {
                 $this->onbytes = 0;
                 $this->modified = null;
                 return $this->_downloadDat2chAPI ($sid, 0); // あぼーん検出。全部取り直し。
+            } elseif ($code == '401' && $apiUserStatus == '0') { // 401はAPI認証失敗(再認証する)
+                if (empty ($_REQUEST['relogin2chapi'])) {
+                    $_REQUEST['relogin2chapi'] = true;
+                    return $this->downloadDat ();
+                }
+            } elseif ($code == '501' && $apiUserStatus == '1') { // 浪人無しで尚且つRange付でDAT落ちにアクセスした場合は501
+                return $this->_downloadDat2chNotFound ('302');
             } else {
                 return $this->_downloadDat2chNotFound ($code);
             }
