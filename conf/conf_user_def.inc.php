@@ -538,6 +538,36 @@ $conf_user_def['proxy_user'] = ""; // ("")
 // プロキシパスワード (使用する場合のみ)
 $conf_user_def['proxy_password'] = ""; // ("")
 
+// プロキシの種類
+$conf_user_def['proxy_mode'] = "http"; // ("http")
+$conf_user_sel['proxy_mode'] = array(
+    'socks5' => 'SOCKS5 プロキシ',
+    'http' => 'HTTP プロキシ',
+);
+
+// Tor 掲示板(.onion ドメイン)のアクセスに Tor を使用(する:1, しない:0)
+$conf_user_def['tor_use'] = 0; // (0)
+$conf_user_rad['tor_use'] = array('1' => 'する', '0' => 'しない');
+
+// Tor プロキシホスト ex)"127.0.0.1", "www.p2proxy.com"
+$conf_user_def['tor_proxy_host'] = ""; // ("")
+
+// Tor プロキシポート ex)"8080"
+$conf_user_def['tor_proxy_port'] = ""; // ("")
+
+// Tor プロキシユーザー名 (使用する場合のみ)
+$conf_user_def['tor_proxy_user'] = ""; // ("")
+
+// Tor プロキシパスワード (使用する場合のみ)
+$conf_user_def['tor_proxy_password'] = ""; // ("")
+
+// Tor プロキシの種類
+$conf_user_def['tor_proxy_mode'] = "socks5"; // ("socks5")
+$conf_user_sel['tor_proxy_mode'] = array(
+    'socks5' => 'SOCKS5 プロキシ',
+    'http' => 'HTTP プロキシ',
+);
+
 // フレーム左 板メニュー の表示幅
 $conf_user_def['frame_menu_width'] = "158"; // ("158")
 

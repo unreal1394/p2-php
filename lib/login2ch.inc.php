@@ -54,7 +54,7 @@ function login2ch()
         $req->addPostParameter('PW', $login2chPW);
 
         // POSTデータの送信
-        $res = $req->send();
+        $res = P2Util::getHTTPResponse($req);
 
         $code = $res->getStatus();
         if ($code =! 200) {

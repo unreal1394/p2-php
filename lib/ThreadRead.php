@@ -180,7 +180,7 @@ class ThreadRead extends Thread {
             ));
 
             // POSTデータの送信
-            $response = $req->send ();
+            $response = P2Util::getHTTPResponse($req);
 
             // 2ch API の状態がヘッダーに記載されているので取得する。
             // User-Status: 0 (sessionID無効) or 1 (sessionID有効) or
@@ -390,7 +390,7 @@ class ThreadRead extends Thread {
             }
 
             // Requestの送信
-            $response = $req->send ();
+            $response = P2Util::getHTTPResponse($req);
 
             $code = $response->getStatus ();
 
@@ -527,7 +527,7 @@ class ThreadRead extends Thread {
             $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
 
             // Requestの送信
-            $response = $req->send ();
+            $response = P2Util::getHTTPResponse($req);
 
             $code = $response->getStatus ();
 
@@ -624,7 +624,7 @@ class ThreadRead extends Thread {
                 $req->setHeader ('User-Agent', P2Util::getP2UA(false,P2Util::isHost2chs($this->host))); // ここは、"Monazilla/" をつけるとNG
 
                 // Requestの送信
-                $response = $req->send ();
+                $response = P2Util::getHTTPResponse($req);
 
                 $res_code = $response->getStatus ();
 
@@ -1199,7 +1199,7 @@ class ThreadRead extends Thread {
             $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
             $req = P2Util::getHTTPRequest2 ($url,HTTP_Request2::METHOD_GET);
 
-            $res = $req->send ();
+            $res = P2Util::getHTTPResponse($req);
 
             // レスポンスコードを検証
             if ('203' == $res->getStatus ()) {

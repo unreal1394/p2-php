@@ -54,7 +54,7 @@
             $req->addPostParameter('HB', $HB);
 
             // POSTデータの送信
-            $res = $req->send();
+            $res = P2Util::getHTTPResponse($req);
 
             $code = $res->getStatus();
             if ($code =! 200) {

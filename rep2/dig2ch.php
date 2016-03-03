@@ -18,7 +18,7 @@ function dig2chsearch($query)
         $req->setHeader('Cache-Control', 'no-cache');
         $req->setHeader('Accept', 'application/json');
 
-        $response = $req->send();
+        $response = P2Util::getHTTPResponse($req);
 
         $code = $response->getStatus();
         if ($code != 200) {

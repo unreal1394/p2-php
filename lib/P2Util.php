@@ -265,7 +265,7 @@ class P2Util
                 $req->setHeader ('If-Modified-Since', http_date(filemtime($localfile)) );
             }
 
-            $response = $req->send();
+            $response = self::getHTTPResponse($req);
 
             $code = $response->getStatus();
             if (!($code == 200 || $code == 206 || $code == 304)) {
@@ -441,7 +441,11 @@ class P2Util
         // machibbs.com
         } elseif (self::isHostMachiBbs($host)) {
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . 'machibbs.com';
-
+        // tor
+        } elseif (self::isHostTor($host)) {
+            $tor_host = preg_replace('/\.onion\.(\w+)$/', '.onion', $host);
+            $host_dir = $base_dir . DIRECTORY_SEPARATOR . $tor_host;
+            unset($tor_host);
         // jbbs.livedoor.jp (livedoor レンタル掲示板)
         } elseif (self::isHostJbbsShitaraba($host)) {
             if (DIRECTORY_SEPARATOR == '/') {
@@ -902,6 +906,35 @@ class P2Util
             self::$_hostIsBbsPink[$host] = (bool)preg_match('<^\\w+\\.bbspink\\.com$>', $host);
         }
         return self::$_hostIsBbsPink[$host];
+    }
+
+    // }}}
+    // {{{ isHostTor()
+
+    /**
+    * host が tor 系板 なら true を返す
+    *
+    * @access public
+    * @param string $host
+    * @return boolean
+    */
+    static function isHostTor($host, $isGatewayMode = 99)
+    {
+        switch($isGatewayMode){
+            case 0:
+                $ret = (bool)preg_match('/\\.onion$/', $host);
+                break;
+
+            case 1:
+                $ret = (bool)preg_match('/\\.(onion\\.cab|onion\\.city|onion\\.direct|onion\\.link|onion\\.nu|onion\\.to)$/', $host);
+                break;
+
+            default:
+                $ret = (bool)preg_match('/\\.(onion\\.cab|onion\\.city|onion\\.direct|onion\\.link|onion\\.nu|onion\\.to|onion)$/', $host);
+                break;
+    }
+
+    return $ret;
     }
 
     // }}}
@@ -1695,7 +1728,7 @@ ERR;
             $req = self::getHTTPRequest2($url, HTTP_Request2::METHOD_GET);
             //$req->addHeader("X-PHP-Version", phpversion());
 
-            $response = $req->send();
+            $response = self::getHTTPResponse($req);
 
             $code = $response->getStatus();
             if ($code == 200 || $code == 206) { // || $code == 304) {
@@ -2206,7 +2239,7 @@ ERR;
             $req->addPostParameter('pass', $pass);
             $req->addPostParameter('login', 'ログインする');
 
-            $response = $req->send();
+            $response = self::getHTTPResponse($req);
 
             $code = $response->getStatus();
             // 成功とみなすコード
@@ -2279,18 +2312,42 @@ ERR;
         }
 
         // プロキシ
-        if ($_conf['proxy_use']) {
+        if ($_conf['tor_use'] && P2Util::isHostTor($this->host, 0)) { // Tor(.onion)はTor用の設定をセット
+            $req->setConfig (array (
+                    'proxy_host' => $_conf['tor_proxy_host'],
+                    'proxy_port' => $_conf['tor_proxy_port'],
+                    'proxy_user' => $_conf['tor_proxy_user'],
+                    'proxy_password' => $_conf['tor_proxy_password']
+            ));
+            if($_conf['tor_proxy_mode'] == 'socks5'){
+                $req->setConfig('proxy_type', $_conf['tor_proxy_mode']);
+            }
+        } elseif ($_conf['proxy_use']) {
             $req->setConfig (array (
                     'proxy_host' => $_conf['proxy_host'],
                     'proxy_port' => $_conf['proxy_port'],
                     'proxy_user' => $_conf['proxy_user'],
                     'proxy_password' => $_conf['proxy_password']
             ));
+            if($_conf['proxy_mode'] == 'socks5'){
+                $req->setConfig('proxy_type', $_conf['proxy_mode']);
+            }
         }
 
         unset ($purl);
 
         return $req;
+    }
+
+    static public function getHTTPResponse($req) {
+        if($req->getConfig('proxy_type') == 'socks5') {
+            $socks =  HTTP_Request2_Adapter_Socket();
+            $res = $socks->sendRequest($req);
+            unset($socks);
+        } else {
+            $res = $req->send ();
+        }
+        return $res;
     }
 
     // }}}

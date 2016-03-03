@@ -424,7 +424,7 @@ function postIt($host, $bbs, $key, $post)
         }
 
         // POSTデータの送信
-        $response = $req->send();
+        $response = P2Util::getHTTPResponse($req);
 
         // Cookieを取得
         $cookies = $response->getCookies();

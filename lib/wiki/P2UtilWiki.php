@@ -41,7 +41,7 @@ class P2UtilWiki
     {
         try {
             $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_HEAD);
-            $response = $req->send();
+            $response = P2Util::getHTTPResponse($req);
             return $response->getStatus();
 
         } catch (Exception $e) {
