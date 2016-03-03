@@ -674,9 +674,9 @@ class ThreadRead extends Thread {
         // <title>がこのスレッドは過去ログ倉庫に
         if ($reason === 'datochi' || preg_match ($kakosoko_match, $read_response_html, $matches) || preg_match ($kakosoko_match2, $read_response_html, $matches)) {
             $dat_response_status = "このスレッドは過去ログ倉庫に格納されています。";
-            $marutori_ht = $this->_generateMarutoriLink ();
+            //$marutori_ht = $this->_generateMarutoriLink ();
             $plugin_ht = $this->_generateWikiDatLink ($read_url);
-            $dat_response_msg = "<p>2ch info - このスレッドは過去ログ倉庫に格納されています。{$marutori_ht}{$moritori_ht}{$plugin_ht}</p>";
+            $dat_response_msg = "<p>2ch info - このスレッドは過去ログ倉庫に格納されています。浪人ログインすると取得出来るかもしれません。{$plugin_ht}</p>";
 
         // <title>がそんな板orスレッドないです。or error 3939
         } elseif ($reason === 'kakohtml' or
@@ -696,8 +696,9 @@ class ThreadRead extends Thread {
                 $dat_response_msg = "<p>2ch info - 隊長! 過去ログ倉庫で、<a href=\"{$kakolog_uri}.html\"{$_conf['bbs_win_target_at']}>スレッド {$matches[3]}.html</a> を発見しました。 [<a href=\"{$read_kako_url}\">rep2に取り込んで読む</a>]</p>";
             } elseif (preg_match ($waithtml_match, $read_response_html, $matches)) {
                 $dat_response_status = "隊長! スレッドはhtml化されるのを待っているようです。";
-                $marutori_ht = $this->_generateMarutoriLink ();
-                $dat_response_msg = "<p>2ch info - 隊長! スレッドはhtml化されるのを待っているようです。{$marutori_ht}{$moritori_ht}</p>";
+                //$marutori_ht = $this->_generateMarutoriLink ();
+                $plugin_ht = $this->_generateWikiDatLink ($read_url);
+                $dat_response_msg = "<p>2ch info - 隊長! スレッドはhtml化されるのを待っているようです。浪人ログインすると取得出来るかもしれません。{$plugin_ht}</p>";
             } elseif (preg_match ($vip2ch_kakodat_match, $read_response_html, $matches)) {
                 $dat_response_status = "隊長! 過去ログ倉庫で、datを発見しました。";
                 $kakolog_uri = "http://{$this->host}/{$matches[1]}";
@@ -1317,26 +1318,6 @@ EOP;
         return $plugin_ht;
     }
 
-    // }}}
-    // {{{ _generateMarutoriHtml()
-    /**
-     * ●とofflawでdatを取得するためのリンクを生成する。
-     *
-     * @param bool $retry
-     * @return string HTML
-     */
-    protected function _generateMarutoriLink($retry = false) {
-        global $_conf;
-
-        if ($retry) {
-            $retry_q = "&amp;relogin2ch=true";
-            $atext = "●IDで再取得する";
-        } else {
-            $atext = "●IDでrep2に取り込む";
-        }
-        $marutori_ht = " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;maru=true{$retry_q}{$_conf['k_at_a']}\">{$atext}</a>]";
-        return $marutori_ht;
-    }
     // }}}
 }
 
