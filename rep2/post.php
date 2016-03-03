@@ -400,7 +400,7 @@ function postIt($host, $bbs, $key, $post)
         }
 
         // be.2ch.net 認証クッキー
-        if (P2Util::isHostBe2chNet($host) || !empty($_REQUEST['submit_beres'])) {
+        if (P2Util::isHostBe2chNet($host) || !empty($_REQUEST['beres']) || !empty($_REQUEST['submit_beres'])) {
             if ($_conf['be_2ch_DMDM'] && $_conf['be_2ch_MDMD']) {
                 $req->addCookie('DMDM', urlencode( rawurldecode( $_conf['be_2ch_DMDM']) ) );
                 $req->addCookie('MDMD', urlencode( rawurldecode( $_conf['be_2ch_MDMD']) ) );

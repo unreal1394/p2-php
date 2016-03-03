@@ -199,8 +199,8 @@ P2Util::printInfoHtml();
 
 echo '<div id="login_status">';
 echo <<<EOP
-{$p_str['autho_user']}: {$_login->user_u} <font color="gray">(p2 ID: 9999999999)</font><br>
-{$p_htm['auth_cookie']}モリタポ残高: 99999 （<a href="http://find.moritapo.jp/moritapo/amount.php" target="_blank">モリタポ通帳</a>）<br><br>
+{$p_str['autho_user']}: {$_login->user_u} <font style="display: none;" color="gray">(p2 ID: 9999999999)</font><br>
+{$p_htm['auth_cookie']}<span style="display: none;">モリタポ残高: 99999 （<a href="http://find.moritapo.jp/moritapo/amount.php" target="_blank">モリタポ通帳</a>）</span><br><br>
 <br>
 [<a href="./index.php?logout=1" target="_parent">{$p_str['logout']}する</a>]
 EOP;
