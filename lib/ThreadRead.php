@@ -218,6 +218,11 @@ class ThreadRead extends Thread {
                 P2Util::pushInfoHtml('<p>p2 debug(ThreadRead::API): User-Status='.$apiUserStatus.' Thread-Status='.$apiThreadStatus.' HTTP-Status='.$code.'</p>');
             }
 
+            // APIの返答が過去ログ(Ronin無)だったら過去ログリンクを表示して終了
+            if($apiThreadStatus == '8') {
+                return $this->_downloadDat2chNotFound ('302');
+            }
+
             if ($code == '200' || $code == '206') { // Partial Content
                 $body = $response->getBody ();
 
@@ -235,9 +240,11 @@ class ThreadRead extends Thread {
 
                 $this->modified = $response->getHeader ('Last-Modified');
 
+                // 行毎に分割
+                $lines = explode("\n", $body ,3);
+
                 // 1行目を切り出す
-                $posLF = mb_strpos ($body, "\n");
-                $firstmsg = mb_substr ($body, 0, $posLF === false ? mb_strlen ($body) : $posLF);
+                $firstmsg = $lines[0];
 
                 // ngで始まってたらapiのエラーの可能性
                 if (preg_match ("/^ng \((.*)\)$/", $firstmsg)) {
@@ -258,6 +265,18 @@ class ThreadRead extends Thread {
                 }
                 unset ($firstmsg);
 
+                // 2行目を切り出す
+                $secondmsg = $lines[1];
+
+                // 2行目が過去ログであることを示しているようであれば過去ログリンクを表示
+                // APIのヘッダーで判定してここまで来ないように変更したがDAT破損防止のため残す
+                if (mb_strpos ($secondmsg, "２ちゃんねる ★<><>2015/05/31(日) 00:00:00.00 ID:????????<> このスレッドは過去ログです。") === 0) {
+                    return $this->_downloadDat2chNotFound ('302');
+                }
+
+                unset ($secondmsg);
+                unset ($lines);
+
                 // 末尾の改行であぼーんチェック
                 if (! $zero_read) {
                     if (substr ($body, 0, 1) != "\n") {
@@ -268,17 +287,6 @@ class ThreadRead extends Thread {
                     }
                     $body = substr ($body, 1);
                 }
-
-                // 2行目を切り出す
-                $lines = explode("\n", $body);
-                $secondmsg = $lines[1];
-
-                // 2行目が過去ログであることを示しているようであれば過去ログリンクを表示
-                if (mb_strpos ($secondmsg, "２ちゃんねる ★<><>2015/05/31(日) 00:00:00.00 ID:????????<> このスレッドは過去ログです。") === 0) {
-                    return $this->_downloadDat2chNotFound ('302');
-                }
-                unset ($secondmsg);
-                unset ($lines);
 
                 $file_append = ($zero_read) ? 0 : FILE_APPEND;
 
