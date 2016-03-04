@@ -46,8 +46,6 @@ $referer  = (isset($_REQUEST['ref']) && strlen($_REQUEST['ref']) > 0)   ? $_REQU
     $uri = 'http:/' . $url;
 }*/
 
-error_log("IC2 Init Finish  ".$uri, 0);
-
 if (empty($id) && empty($uri) && empty($file)) {
     ic2_error('x06', 'URLまたはファイル名がありません。', false);
 }
@@ -159,12 +157,10 @@ class IC2TempFile
 // {{{ sleep
 
 if ($doDL) {
-    error_log("IC2 Dup prevention ".$uri, 0);
     // 同じ画像のURIに対するクエリが（ほぼ）同時に発行されたときの重複GETを防ぐ
     // sleepした時間はプロセスの実行時間に含まれないので独自にタイマーを用意する（無限ループ回避）
     $dl_lock_file = $_conf['tmp_dir'] . DIRECTORY_SEPARATOR . 'ic2_lck_' . md5($uri);
     if (file_exists($dl_lock_file)) {
-        error_log("IC2 dl_lock_file exists ".$uri, 0);
         $offtimer = ini_get('max_execution_time');
         if ($offtimer == 0) {
             $offtimer = 30;
@@ -309,7 +305,6 @@ $ic2_ua = (!empty($_conf['expack.user_agent']))
 
 // キャッシュされていなければ、取得を試みる
 try {
-    error_log("getHTTPRequest2  ".$uri, 0);
     $req = P2Util::getHTTPRequest2($uri, HTTP_Request2::METHOD_GET);
     $req->setConfig(array('follow_redirects' => true));
     $req->setHeader('User-Agent', $ic2_ua);
@@ -357,7 +352,6 @@ try {
     ) {
         $retryCount = 0;
         do {
-            error_log("Start Download ".$uri, 0);
             $response = P2Util::getHTTPResponse($req);
             $code = $response->getStatus();
             if ($code != 403) {
@@ -367,7 +361,6 @@ try {
             sleep($ini['Getter']['retry_interval']);
         } while ($retryCount < intval($ini['Getter']['retry_max']));
     } else {
-        error_log("Start Download ".$uri, 0);
         $response = P2Util::getHTTPResponse($req);
         $code = $response->getStatus();
     }

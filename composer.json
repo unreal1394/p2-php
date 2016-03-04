@@ -22,8 +22,6 @@
     "pear-pear.php.net/file_util": "1.0.0",
     "pear-pear.php.net/html_common": "1.2.5",
     "pear-pear.php.net/html_quickform": "3.2.13",
-    "pear-pear.php.net/http_client": "1.2.1",
-    "pear-pear.php.net/http_request": "1.4.4",
     "pear-pear.php.net/http_request2": "2.2.1",
     "pear-pear.php.net/net_socket": "1.0.10",
     "pear-pear.php.net/net_url": "1.0.15",
