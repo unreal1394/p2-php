@@ -1927,7 +1927,7 @@ ERR;
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
 
             // ‚µ‚½‚ç‚ÎJBBS - http://jbbs.livedoor.com/bbs/read.cgi/computer/2999/1081177036/-100
-            } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))/bbs/read\\.cgi
+            } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))/(?:bbs|bbs/lite)/read\\.cgi
                     /(\\w+)/(\\d+)/(\\d+)/((?:\\d+)?-(?:\\d+)?)?[^"]*>x', $nama_url, $matches))
             {
                 $host = $matches[1] . '/' . $matches[2];
