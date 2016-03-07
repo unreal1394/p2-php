@@ -2312,7 +2312,7 @@ ERR;
         }
 
         // プロキシ
-        if ($_conf['tor_use'] && P2Util::isHostTor($this->host, 0)) { // Tor(.onion)はTor用の設定をセット
+        if ($_conf['tor_use'] && self::isHostTor($purl['host'], 0)) { // Tor(.onion)はTor用の設定をセット
             $req->setConfig (array (
                     'proxy_host' => $_conf['tor_proxy_host'],
                     'proxy_port' => $_conf['tor_proxy_port'],
@@ -2341,7 +2341,7 @@ ERR;
 
     static public function getHTTPResponse($req) {
         if($req->getConfig('proxy_type') == 'socks5') {
-            $socks =  HTTP_Request2_Adapter_Socket();
+            $socks = new HTTP_Request2_Adapter_Socket();
             $res = $socks->sendRequest($req);
             unset($socks);
         } else {
