@@ -64,6 +64,11 @@ rep2-expack test https://github.com/orzisun/p2-php
 
 
 ●ChangeLog
+160309.0710
+* 以下の変更点はkiller4989さんのパッチを取り込み
+* SOCKS5接続とtor接続が機能していない不具合を修正
+* スマホ版したらばのURLを開けるように変更
+
 160304.1333
 * 不足していた高解像度アイコンを追加 thx! http://potato.2ch.net/test/read.cgi/software/1431258367/767
 * ●でDATをダウンロードする為のコードとリンクを除去
