@@ -311,7 +311,7 @@ class ReplaceImageUrlCtl extends WikiPluginCtlBase
                 }
                 $this->storeCache($url, array('code' => $code,
                     'errmsg' => $errmsg,
-                    'responseHeaders' => $req->getResponseHeader(),
+                    'responseHeaders' => $response->getHeader(),
                     'data' => $ret));
             }
             return ($this->cacheData[$url] && $this->cacheData[$url]['data'])
@@ -332,7 +332,7 @@ class ReplaceImageUrlCtl extends WikiPluginCtlBase
 
         // Œ‹‰Ê‚ğ‰i‘±ƒLƒƒƒbƒVƒ…‚É•Û‘¶
         $this->storeCache($url, array('code' => $code,
-            'responseHeaders' => $req->getResponseHeader(),
+            'responseHeaders' => $response->getHeader(),
             'data' => $ret));
 
         return $ret;

@@ -1976,7 +1976,7 @@ ERR;
                 }
 
             // 2ch or pink by ula.cc(bintan / bekkanko) - http://choco.2ch.net/test/read.cgi/event/1027770702/
-            } elseif (preg_match('<^http://(?:bintan|same)\\.ula\\.cc/test/(?:read\\.(?:cgi|html|so)|r\\.so)
+            } elseif (preg_match('<^https?://(?:(?:bintan|same)\\.ula\\.cc|ula\\.2ch\\.net)/test/(?:read\\.(?:cgi|html|so)|r\\.so)
                     /(.+)/(\\w+)/([0-9]+)(?:/([^/]*))>x', $nama_url, $matches))
             {
                 $host = $matches[1];
