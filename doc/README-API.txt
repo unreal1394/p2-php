@@ -16,10 +16,6 @@ PHPがOpenSSLに対応している必要があります。
 dat取得以外のUser-Agentをrep2標準から2chapi_appnameを使用した物に変更します。
 外部板のUser-Agentとdat取得ははrep2標準のままです。
 
-2chapi_rounin
-「する」に設定した場合はAPI 認証時に●(浪人)を送信します。
-送信したら何が起こるのか判らないため切り替えることが出来るようになっています。
-
 2chapi_ssl.auth
 2chapi_ssl.read
 この設定はSSL通信がエラーとなる環境向けの設定です。

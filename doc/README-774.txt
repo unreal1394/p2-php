@@ -64,6 +64,12 @@ rep2-expack test https://github.com/orzisun/p2-php
 
 
 ●ChangeLog
+160409.1000
+* NGスレッド機能が動作しない不具合を修正
+* 画像置換URLが動作しない不具合修正
+* びんたんのURL判定を更新
+* composer.json内のURLを更新して新規インストール時の不具合修正
+
 160309.0710
 * 以下の変更点はkiller4989さんのパッチを取り込み
 * SOCKS5接続とtor接続が機能していない不具合を修正
