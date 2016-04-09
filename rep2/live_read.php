@@ -340,8 +340,9 @@ if ($aThread->rescount) {
 
 //===========================================================
 // 履歴を記録
+// 速報headlineは最近読んだスレに記録しないようにしてみる
 //===========================================================
-if ($aThread->rescount && !$is_ajax) {
+if ($aThread->rescount && !$is_ajax && $aThread->host != 'headline.2ch.net') {
     recRecent(implode('<>', array($aThread->ttitle, $aThread->key, $idx_data[2], '', '',
                                   $aThread->readnum, $idx_data[6], $idx_data[7], $idx_data[8], $newline,
                                   $aThread->host, $aThread->bbs)));
@@ -401,8 +402,8 @@ function recRecent($data)
         foreach ($lines as $l) {
             $lar = explode('<>', $l);
             $data_ar = explode('<>', $data);
-            if ($lar[1] == $data_ar[1]) { continue; } // keyで重複回避
-            if (!$lar[1]) { continue; } // keyのないものは不正データ
+            if (!$lar[1] || !strlen($lar[11])) { continue; } // 不正データを削除
+            if ($lar[1] == $data_ar[1] && $lar[11] == $data_ar[11]) { continue; } // key, bbsで重複回避
             $neolines[] = $l;
         }
     }
