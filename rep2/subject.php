@@ -8,12 +8,6 @@
 
 require_once __DIR__ . '/../init.php';
 
-// +Wiki NGスレッド機能
-if ($_conf['wiki.ng_thread']) {
-    require_once P2_LIB_DIR . '/wiki/NgThreadCtl.php';
-    $GLOBALS['ngThreadCtl'] = new NgThreadCtl();
-}
-
 //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection('HEAD');
 
 $_login->authorize(); // ユーザ認証
@@ -123,7 +117,7 @@ if (!empty($_REQUEST['sort'])) {
 // }}}
 // {{{ 表示スレッド数設定
 
-$threads_num_max = 65535;
+$threads_num_max = 2000;
 
 if (!$spmode || $spmode == 'merge_favita') {
     $threads_num = $p2_setting['viewnum'];
@@ -538,10 +532,6 @@ for ($x = 0; $x < $linesize; $x++) {
         continue;
     }
 
-    // {{{ ■+Wiki:NGスレッドチェック
-    if (isset($ngaborns)) if ($ngaborns->check($aThread)) continue;
-    // }}}
-
     // {{{ ■ favlistチェック
 
     //$GLOBALS['debug'] && $GLOBALS['profiler']->enterSection('favlist_check');
@@ -890,9 +880,6 @@ if (!$spmode) {
 if ($aborn_threads !== null) {
     NgAbornCtl::saveAbornThreads($aborn_threads);
 }
-
-// +Wiki:NGスレッド
-if (isset($ngaborns)) $ngaborns->save();
 
 //$GLOBALS['debug'] && $GLOBALS['profiler']->leaveSection('FOOT');
 

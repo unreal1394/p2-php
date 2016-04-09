@@ -377,7 +377,7 @@ EOP;
         if($_conf['live.livelink_subject']==2||$livebbs_bool)
         {
             // $ttitle_en_q ‚ÍßŒ¸È—ª
-            $live_url = "live_frame.php?{$host_bbs_key_q}&amp;live=1{$rescount_q}{$anum_ht}";
+            $live_url = "live_frame.php?{$host_bbs_key_q}&amp;live=1{$rescount_q}";
         }
 
         // ƒIƒ“ƒŠ[>>1

@@ -849,6 +849,9 @@ if ($flags & P2_EDIT_CONF_USER_SKIPPED) {
     $keep_old = true;
 } else {
     $conflist = array(
+        'samba タイマー',
+    	array('wiki.samba_timer', 'samba タイマーを利用'),
+    	array('wiki.samba_cache', 'samba のキャッシュ時間'),
         '画像置換URL',
         array('wiki.replaceimageurl.extract_cache', '画像置換URLのEXTRACTキャッシュ制御'),
         'スマートポップアップメニュー外部ツール',

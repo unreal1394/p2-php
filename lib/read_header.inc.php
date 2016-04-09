@@ -198,7 +198,7 @@ if(empty($_GET['live'])) {
     if($_conf['live.livelink_thread']==2||$livebbs_bool)
     {
         $toolbar_right_ht .= <<<EOTOOLBAR
- <a href="live_frame.php?{$host_bbs_key_q}{$ttitle_en_q}&amp;ls={$aThread->rescount}-{$word_q}{$anum_ht}">実況</a>
+ <a href="live_frame.php?{$host_bbs_key_q}{$ttitle_en_q}">実況</a>
 EOTOOLBAR;
     }
 }
@@ -475,7 +475,7 @@ $htm['p2frame'] = <<<live
 <script type="text/javascript">
 //<![CDATA[
 if (top == self) {
-    document.writeln('<a href="live_frame.php?{$host_bbs_key_q}{$ttitle_en_q}&amp;ls={$aThread->rescount}-{$word_q}{$anum_ht}">実況フレーム 2ペインで開く<' + '/a> |');
+    document.writeln('<a href="live_frame.php?{$host_bbs_key_q}{$ttitle_en_q}">実況フレーム 2ペインで開く<' + '/a> |');
 }
 //]]>
 </script>\n
