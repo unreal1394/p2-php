@@ -290,17 +290,19 @@ EOP;
 // ■新着数を表示する場合
 if ($_conf['enable_menu_new'] == 1 && $_GET['new']) {
     // 並列ダウンロードの設定
-    if ($_conf['expack.use_pecl_http'] == 1) {
-        P2HttpExt::activate();
-        $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
-    } elseif ($_conf['expack.use_pecl_http'] == 2) {
+    if ($_conf['expack.use_curl_multi'] != 0 || $_conf['expack.use_pecl_http'] != 0) {
+        if ($_conf['expack.use_pecl_http'] == 1) {
+            P2HttpExt::activate();
+        }
         $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
     }
 
     // {{{ お気にスレ
 
     // ダウンロード
-    if ($_conf['expack.use_pecl_http'] == 1) {
+    if ($_conf['expack.use_curl_multi'] == 1) {
+        P2CurlMulti::fetchSubjectTxt($_conf['favlist_idx']);
+    } elseif ($_conf['expack.use_pecl_http'] == 1) {
         P2HttpRequestPool::fetchSubjectTxt($_conf['favlist_idx']);
     } elseif ($_conf['expack.use_pecl_http'] == 2) {
         P2CommandRunner::fetchSubjectTxt('fav', $_conf);
@@ -317,7 +319,9 @@ EOP;
     // {{{ 最近読んだスレ
 
     // ダウンロード
-    if ($_conf['expack.use_pecl_http'] == 1) {
+    if ($_conf['expack.use_curl_multi'] == 1) {
+        P2CurlMulti::fetchSubjectTxt($_conf['recent_idx']);
+    } elseif ($_conf['expack.use_pecl_http'] == 1) {
         P2HttpRequestPool::fetchSubjectTxt($_conf['recent_idx']);
     } elseif ($_conf['expack.use_pecl_http'] == 2) {
         P2CommandRunner::fetchSubjectTxt('recent', $_conf);
@@ -334,7 +338,9 @@ EOP;
     // {{{ 書き込み履歴
 
     // ダウンロード
-    if ($_conf['expack.use_pecl_http'] == 1) {
+    if ($_conf['expack.use_curl_multi'] == 1) {
+        P2CurlMulti::fetchSubjectTxt($_conf['res_hist_idx']);
+    } elseif ($_conf['expack.use_pecl_http'] == 1) {
         P2HttpRequestPool::fetchSubjectTxt($_conf['res_hist_idx']);
     } elseif ($_conf['expack.use_pecl_http'] == 2) {
         P2CommandRunner::fetchSubjectTxt('res_hist', $_conf);

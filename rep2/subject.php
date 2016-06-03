@@ -264,29 +264,46 @@ if ($spmode == 'merge_favita') {
 }
 
 //============================================================
-// 更新する場合、前もって一括＆並列ダウンロード (要pecl_http)
+// 更新する場合、前もって一括＆並列ダウンロード (要pecl_http or curl)
 //============================================================
 
 if (empty($_REQUEST['norefresh']) && !(empty($_REQUEST['refresh']) && isset($_REQUEST['word']))) {
-    if ($_conf['expack.use_pecl_http'] == 1) {
+    if ($_conf['expack.use_curl_multi'] == 1) {
+        switch ($spmode) {
+            case 'fav':
+                P2CurlMulti::fetchSubjectTxt($_conf['favlist_idx']);
+                break;
+            case 'recent':
+                P2CurlMulti::fetchSubjectTxt($_conf['recent_idx']);
+                break;
+            case 'res_hist':
+                P2CurlMulti::fetchSubjectTxt($_conf['res_hist_idx']);
+                break;
+            case 'merge_favita':
+                P2CurlMulti::fetchSubjectTxt($favitas);
+                break;
+        }
+        $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
+
+    } elseif ($_conf['expack.use_pecl_http'] == 1) {
         P2HttpExt::activate();
         switch ($spmode) {
-        case 'fav':
-            P2HttpRequestPool::fetchSubjectTxt($_conf['favlist_idx']);
-            $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
-            break;
-        case 'recent':
-            P2HttpRequestPool::fetchSubjectTxt($_conf['recent_idx']);
-            $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
-            break;
-        case 'res_hist':
-            P2HttpRequestPool::fetchSubjectTxt($_conf['res_hist_idx']);
-            $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
-            break;
-        case 'merge_favita':
-            P2HttpRequestPool::fetchSubjectTxt($favitas);
-            $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
-            break;
+            case 'fav':
+                P2HttpRequestPool::fetchSubjectTxt($_conf['favlist_idx']);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
+                break;
+            case 'recent':
+                P2HttpRequestPool::fetchSubjectTxt($_conf['recent_idx']);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
+                break;
+            case 'res_hist':
+                P2HttpRequestPool::fetchSubjectTxt($_conf['res_hist_idx']);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
+                break;
+            case 'merge_favita':
+                P2HttpRequestPool::fetchSubjectTxt($favitas);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
+                break;
         }
     } elseif ($_conf['expack.use_pecl_http'] == 2) {
         if (P2CommandRunner::fetchSubjectTxt($spmode, $_conf)) {

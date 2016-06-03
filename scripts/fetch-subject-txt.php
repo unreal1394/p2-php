@@ -136,9 +136,19 @@ if ($mode == 'merge_favita') {
             $favitas[$_id] = array('host' => $_host, 'bbs' => $_bbs);
         }
     }
-    P2HttpRequestPool::fetchSubjectTxt($favitas);
+
+    if($_conf['expack.use_curl_multi'] == 1) {
+        P2HttpExt::fetchSubjectTxt($favitas);
+    } elseif($_conf['expack.use_pecl_http'] == 1) {
+        P2HttpRequestPool::fetchSubjectTxt($favitas);
+    }
+
 } else {
-    P2HttpRequestPool::fetchSubjectTxt($source);
+    if($_conf['expack.use_curl_multi'] == 1) {
+        P2CurlMulti::fetchSubjectTxt($source);
+    } elseif($_conf['expack.use_pecl_http'] == 1) {
+        P2HttpRequestPool::fetchSubjectTxt($source);
+    }
 }
 
 // }}}
