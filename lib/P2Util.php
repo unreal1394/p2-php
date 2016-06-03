@@ -892,6 +892,20 @@ class P2Util
     }
 
     // }}}
+    // {{{ isNotUse2chAPI()
+
+    /**
+     * host ‚ª API ‚ğ—p‚¢‚È‚­‚Ä‚àæ“¾‚Å‚«‚éê‡‚È‚ç true ‚ğ•Ô‚·
+     *
+     * @param string $host
+     * @return bool
+     */
+    static public function isNotUse2chAPI($host)
+    {
+        return ($host == 'qb5.2ch.net' || $host == 'carpenter.2ch.net');
+    }
+
+    // }}}
     // {{{ isHostBbsPink()
 
     /**
