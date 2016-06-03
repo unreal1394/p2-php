@@ -663,6 +663,7 @@ class ThreadRead extends Thread {
         $soukoni_match = "/<title>隊長！過去ログ倉庫に<\/title>/";
 
         $error3939_match = "{<title>２ちゃんねる error 3939</title>}"; // 過去ログ倉庫でhtml化の時（他にもあるかも、よく知らない）
+        $error4002_match = "{<title>２ちゃんねる error 4002</title>}"; // 過去ログ倉庫でhtml化の時（他にもあるかも、よく知らない）
 
         // <a href="http://qb5.2ch.net/sec2chd/kako/1091/10916/1091634596.html">
         // <a href="../../../../mac/kako/1004/10046/1004680972.html">
@@ -682,6 +683,7 @@ class ThreadRead extends Thread {
         } elseif ($reason === 'kakohtml' or
             preg_match ($naidesu_match, $read_response_html, $matches) ||
             preg_match ($error3939_match, $read_response_html, $matches) ||
+            preg_match ($error4002_match, $read_response_html, $matches) ||
             preg_match ($vip2ch_kakosoko_match, $read_response_html, $matches) ||
             preg_match ($soukoni_match, $read_response_html, $matches)) {
 
@@ -694,6 +696,14 @@ class ThreadRead extends Thread {
                 $kakolog_url_en = rawurlencode ($kakolog_uri);
                 $read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_url_en}&amp;kakoget=1";
                 $dat_response_msg = "<p>2ch info - 隊長! 過去ログ倉庫で、<a href=\"{$kakolog_uri}.html\"{$_conf['bbs_win_target_at']}>スレッド {$matches[3]}.html</a> を発見しました。 [<a href=\"{$read_kako_url}\">rep2に取り込んで読む</a>]</p>";
+            } elseif (preg_match ($error4002_match, $read_response_html, $matches)) {
+                $dat_response_status = "隊長! 過去ログ倉庫で、html化されたスレッドを発見しました。";
+                $key4 = substr($this->key, 0, 4);
+                $key5 = substr($this->key, 0, 5);
+                $kakolog_uri = "http://{$this->host}/{$this->bbs}/kako/{$key4}/{$key5}/{$this->key}";
+                $kakolog_url_en = rawurlencode ($kakolog_uri);
+                $read_kako_url = "{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;kakolog={$kakolog_url_en}&amp;kakoget=1";
+                $dat_response_msg = "<p>2ch info - 隊長! 過去ログ倉庫で、<a href=\"{$kakolog_uri}.html\"{$_conf['bbs_win_target_at']}>スレッド {$this->key}.html</a> を発見しました。 [<a href=\"{$read_kako_url}\">rep2に取り込んで読む</a>]</p>";
             } elseif (preg_match ($waithtml_match, $read_response_html, $matches)) {
                 $dat_response_status = "隊長! スレッドはhtml化されるのを待っているようです。";
                 //$marutori_ht = $this->_generateMarutoriLink ();
