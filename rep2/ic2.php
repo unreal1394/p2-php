@@ -297,9 +297,9 @@ if (!$force && $ini['Getter']['checkerror']) {
 
 // 設定を確認
 $conn_timeout = (isset($ini['Getter']['conn_timeout']) && $ini['Getter']['conn_timeout'] > 0)
-    ? (float) $ini['Getter']['conn_timeout'] : 60.0;
+    ? $ini['Getter']['conn_timeout'] : $_conf['http_conn_timeout'];
 $read_timeout = (isset($ini['Getter']['read_timeout']) && $ini['Getter']['read_timeout'] > 0)
-    ? (int) $ini['Getter']['read_timeout'] : 60;
+    ? $ini['Getter']['read_timeout'] : $_conf['http_read_timeout'];
 $ic2_ua = (!empty($_conf['expack.user_agent']))
     ? $_conf['expack.user_agent'] : $_SERVER['HTTP_USER_AGENT'];
 
@@ -311,6 +311,12 @@ try {
     if ($mtime > 0) {
         $req->setHeader('If-Modified-Since', http_date($mtime));
     }
+
+    // タイムアウトの設定
+    $req->setConfig (array (
+        'connect_timeout' => $conn_timeout,
+        'timeout'         => $read_timeout,
+    ));
 
 // リファラ設定
     if (is_null($referer)) {

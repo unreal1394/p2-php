@@ -138,10 +138,10 @@ $_conf['expack.ic2.manager.rows'] = 5;
 // ページタイトル
 $_conf['expack.ic2.getter.title'] = "ImageCache2::Getter";
 
-// サーバに接続する際にタイムアウトするまでの時間（秒）
+// サーバに接続する際にタイムアウトするまでの時間（秒）[0 => http_conn_timeout に依存]
 $_conf['expack.ic2.getter.conn_timeout'] = 5;
 
-// ダウンロードがタイムアウトするまでの時間（秒）
+// ダウンロードがタイムアウトするまでの時間（秒）[0 => http_read_timeout に依存]
 $_conf['expack.ic2.getter.read_timeout'] = 60;
 
 // エラーログにある画像はダウンロードを試みない (no:0;yes:1)
