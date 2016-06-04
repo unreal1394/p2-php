@@ -70,7 +70,7 @@ class ThreadRead extends Thread {
                 return $this->_downloadDat2chKako ($_GET['kakolog'], $ext);
 
             // 2ch はAPI経由で落とす
-            } elseif (P2Util::isHost2chs ($this->host) && $_conf['2chapi_use'] && empty ($_GET['olddat'])) {
+            } elseif (P2Util::isHost2chs ($this->host) && !P2Util::isNotUse2chAPI ($this->host) && $_conf['2chapi_use'] && empty ($_GET['olddat'])) {
 
                 // ログインしてなければ or ログイン後、設定した時間経過していたら自動再ログイン
                 if (! file_exists ($_conf['sid2chapi_php']) || ! empty ($_REQUEST['relogin2chapi']) || (filemtime ($_conf['sid2chapi_php']) < time () - 60 * 60 * $_conf['2chapi_interval'])) {
