@@ -948,6 +948,10 @@ class P2Util
      */
     static public function isHostMachiBbs($host)
     {
+        if ($host === "machi.to") {
+            return true;
+        }
+
         if (!array_key_exists($host, self::$_hostIsMachiBbs)) {
             self::$_hostIsMachiBbs[$host] = (bool)preg_match('<^\\w+\\.machi(?:bbs\\.com|\\.to)$>', $host);
         }
@@ -1926,6 +1930,15 @@ ERR;
                 $key = $matches[3];
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
 
+            // Ç‹ÇøBBS(ÉhÉÅÉCÉìÇÃÇ›) - http://machi.to/bbs/read.cgi/kanto/1241815559/
+            } elseif (preg_match('<^http?://(machi\\.to)/bbs/read\\.cgi
+                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
+            {
+                $host = $matches[1];
+                $bbs = $matches[2];
+                $key = $matches[3];
+                $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
+                
             // ÇµÇΩÇÁÇŒJBBS - http://jbbs.livedoor.com/bbs/read.cgi/computer/2999/1081177036/-100
             } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))/(?:bbs|bbs/lite)/read\\.cgi
                     /(\\w+)/(\\d+)/(\\d+)/((?:\\d+)?-(?:\\d+)?)?[^"]*>x', $nama_url, $matches))
