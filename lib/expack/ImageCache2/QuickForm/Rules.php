@@ -15,7 +15,7 @@ class ImageCache2_QuickForm_Rule_NumberInRange extends HTML_QuickForm_Rule
     /**
      * @return bool
      */
-    public function validate($value, $options)
+    public function validate($value, $options = NULL)
     {
         if (isset($options['min']) && floatval($value) < $options['min']) {
             return false;
@@ -60,7 +60,7 @@ class ImageCache2_QuickForm_Rule_InArray extends HTML_QuickForm_Rule
     /**
      * @return bool
      */
-    public function validate($value, $options)
+    public function validate($value, $options = NULL)
     {
         return in_array($value, $options);
     }
@@ -81,7 +81,7 @@ class ImageCache2_QuickForm_ArrayKeyExists extends HTML_QuickForm_Rule
     /**
      * @return bool
      */
-    public function validate($value, $options)
+    public function validate($value, $options = NULL)
     {
         return array_key_exists($value, $options);
     }
