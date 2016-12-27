@@ -3,8 +3,6 @@
 
 class P2CurlMulti
 {
-    const MAX_REQUESTS_PER_HOST = 2;
-
     private $mh;
     private $ch;
     private $file_update;
@@ -64,7 +62,7 @@ class P2CurlMulti
             curl_setopt($this->ch[$key], CURLOPT_HTTPHEADER, $header);
             curl_setopt($this->ch[$key], CURLINFO_HEADER_OUT, true);
             curl_setopt($this->ch[$key], CURLOPT_HEADER, true);
-            curl_setopt($this->ch[$key], CURLOPT_MAXCONNECTS, self::MAX_REQUESTS_PER_HOST);
+            curl_setopt($this->ch[$key], CURLOPT_MAXCONNECTS, $_conf['expack.curl_per_host']);
 
             // User-Agent
             if(P2Util::isHost2chs($host) && !P2Util::isNotUse2chAPI($host) && $_conf['2chapi_use']){
