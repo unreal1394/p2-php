@@ -3,7 +3,6 @@
 
 class P2CurlMulti
 {
-    const TIMEOUT = 300;
     const MAX_REQUESTS_PER_HOST = 2;
 
     private $mh;
@@ -126,7 +125,7 @@ class P2CurlMulti
 
         // wait
         do {
-            switch (curl_multi_select($this->mh, self::TIMEOUT)) {
+            switch (curl_multi_select($this->mh, $_conf['http_conn_timeout'] + $_conf['http_read_timeout'])) {
                 case -1: // select‚É¸”s‚·‚éƒP[ƒX‚ª‚ ‚é‚ç‚µ‚¢ https://bugs.php.net/bug.php?id=61141
                     usleep(10);
                     do{
