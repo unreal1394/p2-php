@@ -272,18 +272,21 @@ if (empty($_REQUEST['norefresh']) && !(empty($_REQUEST['refresh']) && isset($_RE
         switch ($spmode) {
             case 'fav':
                 P2CurlMulti::fetchSubjectTxt($_conf['favlist_idx']);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
                 break;
             case 'recent':
                 P2CurlMulti::fetchSubjectTxt($_conf['recent_idx']);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
                 break;
             case 'res_hist':
                 P2CurlMulti::fetchSubjectTxt($_conf['res_hist_idx']);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
                 break;
             case 'merge_favita':
                 P2CurlMulti::fetchSubjectTxt($favitas);
+                $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
                 break;
         }
-        $GLOBALS['expack.subject.multi-threaded-download.done'] = true;
 
     } elseif ($_conf['expack.use_pecl_http'] == 1) {
         P2HttpExt::activate();

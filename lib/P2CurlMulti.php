@@ -121,7 +121,7 @@ class P2CurlMulti
         // Žb’è‚ÅŽc‚·(not start Download ‚È‚çI—¹‚Å‚à?)
 //      if (!$running || $stat !== CURLM_OK) {
 //      //  throw new RuntimeException("$running $stat");
-//          error_log("not start download. please check. running:[$running], stat:[$stat]\n", 3, "D:/Apache/Apache2.4/logs/test.log");
+//          error_log("not start download. please check. running:[$running], stat:[$stat]\n");
 //      }
 
         // wait
@@ -159,11 +159,11 @@ class P2CurlMulti
 
             $file = P2Util::datDirOfHostBbs($host, $bbs) . 'subject.txt';
 
-            if(is_null($this->mh) && is_null($ch_array)){
+            if(is_null($this->mh)){
                 return;
             }
 
-            if(empty($ch)){
+            if(empty($ch_array)){
                 continue;
             }
 
@@ -182,7 +182,7 @@ class P2CurlMulti
             if($tmp['http_code']  != "304" && $tmp['before_time'] <= $tmp['after_time']){
                 $body   = substr($data, $header_size);
                 if (file_put_contents($file, $body) === false) {
-                    error_log("cannot write file.[$file]\n", 3, "D:/Apache/Apache2.4/logs/test.log");
+                    error_log("cannot write file.[$file]\n");
                 }
             }
         }

@@ -138,7 +138,7 @@ if ($mode == 'merge_favita') {
     }
 
     if($_conf['expack.use_curl_multi'] == 1) {
-        P2HttpExt::fetchSubjectTxt($favitas);
+        P2CurlMulti::fetchSubjectTxt($favitas);
     } elseif($_conf['expack.use_pecl_http'] == 1) {
         P2HttpRequestPool::fetchSubjectTxt($favitas);
     }
