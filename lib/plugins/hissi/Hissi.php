@@ -65,7 +65,7 @@ class Hissi
 
         $path = P2Util::cacheFileForDL($this->menuUrl);
         // メニューのキャッシュ時間の10倍キャッシュ
-        P2UtilWiki::cacheDownload($this->menuUrl, $path, $_conf['menu_dl_interval'] * 36000);
+        P2Commun::fileDownload($this->menuUrl, $path, $_conf['menu_dl_interval'] * 36000);
 
         $this->boards = array();
         $file = @file_get_contents($path);

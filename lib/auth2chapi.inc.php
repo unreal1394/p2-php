@@ -42,7 +42,7 @@
         }
 
         try {
-            $req = P2Util::getHTTPRequest2($url,HTTP_Request2::METHOD_POST);
+            $req = P2Commun::createHTTPRequest($url,HTTP_Request2::METHOD_POST);
 
             $req->setHeader('User-Agent', $AuthUA);
             $req->setHeader('X-2ch-UA', $AppName);
@@ -54,7 +54,7 @@
             $req->addPostParameter('HB', $HB);
 
             // POSTデータの送信
-            $res = P2Util::getHTTPResponse($req);
+            $res = P2Commun::getHTTPResponse($req);
 
             $code = $res->getStatus();
             if ($code =! 200) {

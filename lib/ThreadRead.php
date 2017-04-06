@@ -151,7 +151,7 @@ class ThreadRead extends Thread {
         $purl = parse_url ($url); // URL分解
 
         try {
-            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_POST);
+            $req = P2Commun::createHTTPRequest ($url, HTTP_Request2::METHOD_POST);
 
             // ヘッダ
             $req->setHeader ('User-Agent', $ReadUA);
@@ -180,7 +180,7 @@ class ThreadRead extends Thread {
             ));
 
             // POSTデータの送信
-            $response = P2Util::getHTTPResponse($req);
+            $response = P2Commun::getHTTPResponse($req);
 
             // 2ch API の状態がヘッダーに記載されているので取得する。
             // User-Status: 0 (sessionID無効) or 1 (sessionID有効) or
@@ -369,7 +369,7 @@ class ThreadRead extends Thread {
                                     // $request .= "Accept-Encoding: gzip, deflate\r\n";
 
         try {
-            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
+            $req = P2Commun::createHTTPRequest ($url, HTTP_Request2::METHOD_GET);
             // ヘッダ
             $req->setHeader ('Referer', "http://{$purl['host']}/{$this->bbs}/");
 
@@ -390,7 +390,7 @@ class ThreadRead extends Thread {
             }
 
             // Requestの送信
-            $response = P2Util::getHTTPResponse($req);
+            $response = P2Commun::getHTTPResponse($req);
 
             $code = $response->getStatus ();
 
@@ -524,10 +524,10 @@ class ThreadRead extends Thread {
         $purl = parse_url ($url); // URL分解
 
         try {
-            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
+            $req = P2Commun::createHTTPRequest ($url, HTTP_Request2::METHOD_GET);
 
             // Requestの送信
-            $response = P2Util::getHTTPResponse($req);
+            $response = P2Commun::getHTTPResponse($req);
 
             $code = $response->getStatus ();
 
@@ -619,12 +619,12 @@ class ThreadRead extends Thread {
         $read_response_html = '';
         if (! $reason) {
             try {
-                $req = P2Util::getHTTPRequest2 ($read_url.'1', HTTP_Request2::METHOD_GET);
+                $req = P2Commun::createHTTPRequest ($read_url.'1', HTTP_Request2::METHOD_GET);
                 // ヘッダ
-                $req->setHeader ('User-Agent', P2Util::getP2UA(false,P2Util::isHost2chs($this->host))); // ここは、"Monazilla/" をつけるとNG
+                $req->setHeader ('User-Agent', P2Commun::getP2UA(false,P2Util::isHost2chs($this->host))); // ここは、"Monazilla/" をつけるとNG
 
                 // Requestの送信
-                $response = P2Util::getHTTPResponse($req);
+                $response = P2Commun::getHTTPResponse($req);
 
                 $res_code = $response->getStatus ();
 
@@ -1216,9 +1216,9 @@ class ThreadRead extends Thread {
          */
         try {
             $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
-            $req = P2Util::getHTTPRequest2 ($url,HTTP_Request2::METHOD_GET);
+            $req = P2Commun::createHTTPRequest ($url,HTTP_Request2::METHOD_GET);
 
-            $res = P2Util::getHTTPResponse($req);
+            $res = P2Commun::getHTTPResponse($req);
 
             // レスポンスコードを検証
             if ('203' == $res->getStatus ()) {
@@ -1304,7 +1304,7 @@ class ThreadRead extends Thread {
             foreach ($datPlugin->getData () as $v) {
                 if (preg_match ('{' . $v['match'] . '}', $read_url)) {
                     $replace = @preg_replace ('{' . $v['match'] . '}', $v['replace'], $read_url);
-                    $code = P2UtilWiki::getResponseCode ($replace);
+                    $code = P2Commun::getResponseCode ($replace);
                     if ($code == 200) {
                         $code = '○' . $code;
                     } else {

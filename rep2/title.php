@@ -210,22 +210,11 @@ function checkUpdatan()
 {
     global $_conf, $p2web_url_r, $expack_url_r, $expack_dl_url_r, $expack_hist_url_r;
 
-    $no_p2status_dl_flag  = false;
-
     $ver_txt_url = $_conf['expack.web_url'] . 'version.txt';
     $cachefile = P2Util::cacheFileForDL($ver_txt_url);
     FileCtl::mkdirFor($cachefile);
 
-    if (file_exists($cachefile)) {
-        // キャッシュの更新が指定時間以内なら
-        if (filemtime($cachefile) > time() - $_conf['p2status_dl_interval'] * 86400) {
-            $no_p2status_dl_flag = true;
-        }
-    }
-
-    if (empty($no_p2status_dl_flag)) {
-        P2Util::fileDownload($ver_txt_url, $cachefile);
-    }
+    P2Commun::fileDownload($ver_txt_url, $cachefile, $_conf['p2status_dl_interval'] * 86400);
 
     $ver_txt = FileCtl::file_read_lines($cachefile, FILE_IGNORE_NEW_LINES);
     $update_ver = $ver_txt[0];

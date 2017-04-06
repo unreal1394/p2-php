@@ -66,7 +66,7 @@ class DownloadDatMachiBbs implements DownloadDatInterface
         } elseif (file_exists($tempfile)) {
             unlink($tempfile);
         }
-        $response = P2Util::fileDownload($url, $tempfile);
+        $response = P2Commun::fileDownload($url, $tempfile);
 
         if (empty($response)) {
             $thread->diedat = true;

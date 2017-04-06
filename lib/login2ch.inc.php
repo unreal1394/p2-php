@@ -39,11 +39,11 @@ function login2ch()
             return false;
         }
     } else {
-        $x_2ch_ua = 'X-2ch-UA: ' . P2Util::getP2UA(false,false);
+        $x_2ch_ua = 'X-2ch-UA: ' . P2Commun::getP2UA(false,false);
     }
 
     try {
-        $req = P2Util::getHTTPRequest2($auth2ch_url,HTTP_Request2::METHOD_POST);
+        $req = P2Commun::createHTTPRequest($auth2ch_url,HTTP_Request2::METHOD_POST);
 
         // ヘッダー
         $req->setHeader('User-Agent', $dolib2ch);
@@ -54,7 +54,7 @@ function login2ch()
         $req->addPostParameter('PW', $login2chPW);
 
         // POSTデータの送信
-        $res = P2Util::getHTTPResponse($req);
+        $res = P2Commun::getHTTPResponse($req);
 
         $code = $res->getStatus();
         if ($code =! 200) {

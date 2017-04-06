@@ -82,24 +82,14 @@ class BrdCtl
 
         if ($_conf['brdfile_online']) {
             $cachefile = P2Util::cacheFileForDL($_conf['brdfile_online']);
-            $noDL = false;
+
             $read_html_flag = false;
 
-            // キャッシュがある場合
-            if (file_exists($cachefile.'.p2.brd')) {
-                // norefreshならDLしない
-                if (!empty($_GET['nr'])) {
-                    $noDL = true;
-                // キャッシュの更新が指定時間以内ならDLしない
-                } elseif (@filemtime($cachefile.'.p2.brd') > time() - 60 * 60 * $_conf['menu_dl_interval']) {
-                    $noDL = true;
-                }
-            }
-
-            // DLする
-            if (!$noDL) {
+            // DLする、ただしnorefreshならDLしない
+            if (empty($_GET['nr']) || !file_exists($cachefile.'.p2.brd')) {
                 //echo "DL!<br>";//
-                $brdfile_online_res = P2Util::fileDownload($_conf['brdfile_online'], $cachefile);
+                $cache_time = time() - 60 * 60 * $_conf['menu_dl_interval'];
+                $brdfile_online_res = P2Commun::fileDownload($_conf['brdfile_online'], $cachefile, $cache_time);
                 if (isset($brdfile_online_res) && $brdfile_online_res->getStatus() != 304) {
                     $isNewDL = true;
                 }

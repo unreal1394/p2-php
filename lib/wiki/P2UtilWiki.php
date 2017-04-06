@@ -21,48 +21,10 @@ class P2UtilWiki
     }
 
     /**
-     * Wiki:そのURLにアクセスできるか確認する
-     */
-    public static function isURLAccessible($url, $timeout = 7)
-    {
-        $code = self::getResponseCode($url);
-        return ($code == 200 || $code == 206) ? true : false;
-    }
-
-    /**
      * URLがイメピタならtrueを返す
      */
     public static function isUrlImepita($url)
     {
         return preg_match('{^http://imepita\.jp/}', $url);
-    }
-
-    public static function getResponseCode($url)
-    {
-        try {
-            $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_HEAD);
-            $response = P2Util::getHTTPResponse($req);
-            return $response->getStatus();
-
-        } catch (Exception $e) {
-            return false; // $error_msg
-        }
-    }
-
-    /**
-     * Wiki:Last-Modifiedをチェックしてキャッシュする
-     * time:チェックしない期間(unixtime)
-     */
-    public static function cacheDownload($url, $path, $time = 0)
-    {
-        $filetime = @filemtime($path);
-
-        // キャッシュ有効期間ならダウンロードしない
-        if ($filetime !== false && $filetime > time() - $time) {
-            return;
-        }
-
-        // 新しければ取得
-        P2Util::fileDownload($url, $path);
     }
 }

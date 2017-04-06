@@ -247,7 +247,7 @@ class P2HttpGet extends HttpRequest
 
         if (!isset($options['useragent'])) {
             $purl = parse_url($url); // URL•ª‰ð
-            $options['useragent'] = P2Util::getP2UA(true,P2Util::isHost2chs($purl['host']));
+            $options['useragent'] = P2Commun::getP2UA(true,P2Util::isHost2chs($purl['host']));
             unset($purl);
         }
 

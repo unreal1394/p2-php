@@ -385,7 +385,7 @@ function postIt($host, $bbs, $key, $post)
     }
 
     try {
-        $req = P2Util::getHTTPRequest2 ($bbs_cgi_url,HTTP_Request2::METHOD_POST);
+        $req = P2Commun::createHTTPRequest ($bbs_cgi_url,HTTP_Request2::METHOD_POST);
 
         // ヘッダ
         $req->setHeader('Referer', "http://{$host}/{$bbs}/{$key}/");
@@ -424,7 +424,7 @@ function postIt($host, $bbs, $key, $post)
         }
 
         // POSTデータの送信
-        $response = P2Util::getHTTPResponse($req);
+        $response = P2Commun::getHTTPResponse($req);
 
         // Cookieを取得
         $cookies = $response->getCookies();

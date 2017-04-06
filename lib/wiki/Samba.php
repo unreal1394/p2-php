@@ -74,7 +74,7 @@ class Samba
         }
         // samba‚ðŽæ“¾
         $url = "http://{$host}/{$bbs}/index.html";
-        $src = P2Util::getWebPage($url, $errmsg);
+        $src = P2Commun::getWebPage($url, $errmsg);
         $match = '{<a href="http://www.2ch.net/">‚Q‚¿‚á‚ñ‚Ë‚é</a> BBS\.CGI - .*?\+Samba24=(\d+)}';
         preg_match($match, $src, $samba);
         if(!$this->isLoaded) $this->load();

@@ -12,13 +12,13 @@ function dig2chsearch($query)
     $url = $_conf['test.dig2ch_url'] . '?AndOr=' . $query_arry['AndOr'] . '&maxResult=' . $query_arry['maxResult'] . '&atLeast=1&Sort=' . $query_arry['Sort'] . '&Link=1&Bbs=all&924=' . $query_arry['924'] . '&json=1&keywords=' . $query_arry['q'];
 
     try {
-        $req = P2Util::getHTTPRequest2 ($url, HTTP_Request2::METHOD_GET);
+        $req = P2Commun::createHTTPRequest ($url, HTTP_Request2::METHOD_GET);
         // $req->setHeader('User-Agent', $_SERVER['HTTP_USER_AGENT']); ‚â‚Á‚ÏMonazilla–¼æ‚Á‚Æ‚¢‚½•û‚ª—Ç‚³‚»‚¤‚©
         $req->setHeader('Accept-Charset', 'utf-8');
         $req->setHeader('Cache-Control', 'no-cache');
         $req->setHeader('Accept', 'application/json');
 
-        $response = P2Util::getHTTPResponse($req);
+        $response = P2Commun::getHTTPResponse($req);
 
         $code = $response->getStatus();
         if ($code != 200) {

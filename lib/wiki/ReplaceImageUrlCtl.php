@@ -255,7 +255,7 @@ class ReplaceImageUrlCtl extends WikiPluginCtlBase
         }
 
         try {
-            $req = P2Util::getHTTPRequest2 ($get_url, HTTP_Request2::METHOD_GET);
+            $req = P2Commun::createHTTPRequest ($get_url, HTTP_Request2::METHOD_GET);
             if ($this->cacheData[$url] && $this->cacheData[$url]['responseHeaders']
                     && $this->cacheData[$url]['responseHeaders']['last-modified']
                     && strlen($this->cacheData[$url]['responseHeaders']['last-modified'])) {
@@ -267,7 +267,7 @@ class ReplaceImageUrlCtl extends WikiPluginCtlBase
                 (!empty($_conf['expack.user_agent'])) ? $_conf['expack.user_agent']
                 : $_SERVER['HTTP_USER_AGENT']);
 
-            $response = P2Util::getHTTPResponse($req);
+            $response = P2Commun::getHTTPResponse($req);
 
             $code = $response->getStatus ();
 

@@ -305,7 +305,7 @@ $ic2_ua = (!empty($_conf['expack.user_agent']))
 
 // キャッシュされていなければ、取得を試みる
 try {
-    $req = P2Util::getHTTPRequest2($uri, HTTP_Request2::METHOD_GET);
+    $req = P2Commun::createHTTPRequest($uri, HTTP_Request2::METHOD_GET);
     $req->setConfig(array('follow_redirects' => true));
     $req->setHeader('User-Agent', $ic2_ua);
     if ($mtime > 0) {
@@ -358,7 +358,7 @@ try {
     ) {
         $retryCount = 0;
         do {
-            $response = P2Util::getHTTPResponse($req);
+            $response = P2Commun::getHTTPResponse($req);
             $code = $response->getStatus();
             if ($code != 403) {
                 break;
@@ -367,7 +367,7 @@ try {
             sleep($ini['Getter']['retry_interval']);
         } while ($retryCount < intval($ini['Getter']['retry_max']));
     } else {
-        $response = P2Util::getHTTPResponse($req);
+        $response = P2Commun::getHTTPResponse($req);
         $code = $response->getStatus();
     }
 

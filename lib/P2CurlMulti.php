@@ -68,7 +68,7 @@ class P2CurlMulti
             if(P2Util::isHost2chs($host) && !P2Util::isNotUse2chAPI($host) && $_conf['2chapi_use']){
                 $user_agent = sprintf ($_conf['2chapi_ua.read'], $_conf['2chapi_appname']);
             } else {
-                $user_agent = P2Util::getP2UA(true, P2Util::isHost2chs($purl['host']));
+                $user_agent = P2Commun::getP2UA(true, P2Util::isHost2chs($purl['host']));
             }
             curl_setopt($this->ch[$key], CURLOPT_USERAGENT, $user_agent);
 

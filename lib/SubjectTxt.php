@@ -96,10 +96,10 @@ class SubjectTxt
 
         // DL
         try {
-            $req = P2Util::getHTTPRequest2($this->subject_url, HTTP_Request2::METHOD_GET);
+            $req = P2Commun::createHTTPRequest($this->subject_url, HTTP_Request2::METHOD_GET);
             $modified && $req->setHeader("If-Modified-Since", $modified);
 
-            $response = P2Util::getHTTPResponse($req);
+            $response = P2Commun::getHTTPResponse($req);
 
             $code = $response->getStatus();
             if ($code == 302) {
