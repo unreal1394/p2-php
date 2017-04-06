@@ -113,20 +113,20 @@ if ($post_config = PostDataStore::get($post_config_key)) {
 // }}}
 // {{{ 名前とメールの最終調整
 
-// 空白はユーザ設定値に変換
-if ($hd['FROM'] === '') {
-    $hd['FROM'] = p2h($_conf['my_FROM']);
-}
-if ($hd['mail'] === '') {
-    $hd['mail'] = p2h($_conf['my_mail']);
-}
-
 // P2NULLは空白に変換
 if ($hd['FROM'] === 'P2NULL') {
     $hd['FROM'] = '';
 }
 if ($hd['mail'] === 'P2NULL') {
     $hd['mail'] = '';
+}
+
+// 空白はユーザ設定値に変換
+if ($hd['FROM'] === '') {
+    $hd['FROM'] = p2h($_conf['my_FROM']);
+}
+if ($hd['mail'] === '') {
+    $hd['mail'] = p2h($_conf['my_mail']);
 }
 
 // }}}
