@@ -925,7 +925,7 @@ abstract class ShowThread
             if ($code == 'aborn_be' || $code == 'ng_be') {
                 // プロフィールIDを抜き出す
                 if (preg_match('/BE:(\\d+)/', $resfield, $matches)) {
-                    $beId = P2UtilWiki::calcBeId((int)$matches[1]);
+                    $beId = P2Util::calcBeId((int)$matches[1]);
                     if ($beId === 0) {
                         return false;
                     }

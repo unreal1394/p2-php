@@ -74,7 +74,7 @@ if ($popup == 1 || $_conf['expack.spm.ngaborn_confirm'] == 0) {
         $aborn_id = '';
     }
     // +Wiki:BEÇ†Ç⁄Å[ÇÒ
-    $aborn_be = preg_match('/BE:(\\d+)/', $resar[2], $idar) ? P2UtilWiki::calcBeId($idar[1]) : '';
+    $aborn_be = preg_match('/BE:(\\d+)/', $resar[2], $idar) ? P2Util::calcBeId($idar[1]) : '';
     if ($_conf['expack.spm.ngaborn_confirm'] == 0 && !isset($aborn_str)) {
         if ($mode == 'aborn_res') {
             $aborn_str = $host . '/' . $bbs . '/' . $key . '/' . $resnum;

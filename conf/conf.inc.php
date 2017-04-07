@@ -177,8 +177,6 @@ function p2_init()
     include P2_LIB_DIR . '/startup.funcs.php';
     spl_autoload_register('p2_load_class');
 
-    include P2_LIB_DIR . '/wiki/P2UtilWiki.php';
-
     if ($debug) {
         $profiler = new Benchmark_Profiler(true);
         // p2_print_memory_usage();
