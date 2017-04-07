@@ -1225,61 +1225,6 @@ class P2Util
     }
 
     // }}}
-    // {{{ isBrowserSafariGroup()
-
-    /**
-     * ブラウザがSafari系ならtrueを返す
-     */
-    static public function isBrowserSafariGroup()
-    {
-        return UA::isSafariGroup();
-    }
-
-    // }}}
-    // {{{ isClientOSWindowsCE()
-
-    /**
-     * ブラウザがWindows CEで動作するものならtrueを返す
-     */
-    static public function isClientOSWindowsCE()
-    {
-        return (strpos($_SERVER['HTTP_USER_AGENT'], 'Windows CE') !== false);
-    }
-
-    // }}}
-    // {{{ isBrowserNintendoDS()
-
-    /**
-     * ニンテンドーDSブラウザーならtrueを返す
-     */
-    static public function isBrowserNintendoDS()
-    {
-        return UA::isNintendoDS();
-    }
-
-    // }}}
-    // {{{ isBrowserPSP()
-
-    /**
-     * ブラウザがPSPならtrueを返す
-     */
-    static public function isBrowserPSP()
-    {
-        return UA::isPSP();
-    }
-
-    // }}}
-    // {{{ isBrowserIphone()
-
-    /**
-     * ブラウザがiPhone, iPod Touch or Androidならtrueを返す
-     */
-    static public function isBrowserIphone()
-    {
-        return UA::isIPhoneGroup();
-    }
-
-    // }}}
     // {{{ isUrlWikipediaJa()
 
     /**

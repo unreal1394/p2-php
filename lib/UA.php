@@ -529,6 +529,17 @@ class UA
     }
 
     // }}}
+    // {{{ isClientOSWindowsCE()
+
+    /**
+     * ƒuƒ‰ƒEƒU‚ªWindows CE‚Å“®ì‚·‚é‚à‚Ì‚È‚çtrue‚ğ•Ô‚·
+     */
+    static public function isClientOSWindowsCE()
+    {
+        return (strpos($_SERVER['HTTP_USER_AGENT'], 'Windows CE') !== false);
+    }
+
+    // }}}
 }
 
 // }}}

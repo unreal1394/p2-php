@@ -12,7 +12,7 @@ $STYLE['a_underline_none'] = "1"; // ƒŠƒ“ƒN‚É‰ºü‚ği‚Â‚¯‚é:0, ‚Â‚¯‚È‚¢:1, ƒXƒŒƒ
 
 if (strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') !== false) {
 	/* Mac—pƒtƒHƒ“ƒgƒtƒ@ƒ~ƒŠ[*/
-	if (P2Util::isBrowserSafariGroup()){ /* SafariŒn‚È‚ç */
+	if (UA::isSafariGroup()){ /* SafariŒn‚È‚ç */
 		$STYLE['fontfamily'] = array("Hiragino Maru Gothic ProN", "Arial");
 		$STYLE['fontfamily_bold'] = array("Hiragino Kaku Gothic StdN", "Arial Black");
 //		$STYLE['fontweight_bold'] = "bold";

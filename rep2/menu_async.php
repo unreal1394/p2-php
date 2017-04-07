@@ -49,7 +49,7 @@ if (isset($_GET['m_favita_set'])) {
 // }}}
 // {{{ ñ{ëÃèoóÕ
 
-if (P2Util::isBrowserSafariGroup()) {
+if (UA::isSafariGroup()) {
     $menuItem = P2Util::encodeResponseTextForSafari($menuItem);
 }
 echo $menuItem;

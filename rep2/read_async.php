@@ -133,7 +133,7 @@ if ($aThread->rescount) {
 // }}}
 // {{{ –{‘Ìo—Í
 
-if (P2Util::isBrowserSafariGroup()) {
+if (UA::isSafariGroup()) {
     $node = P2Util::encodeResponseTextForSafari($node);
 }
 echo $node;

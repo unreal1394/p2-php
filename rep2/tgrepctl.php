@@ -99,7 +99,7 @@ if ($_conf['ktai']) {
     ob_start();
     include $include_file;
     $buf = ob_get_clean();
-    if (P2Util::isBrowserSafariGroup()) {
+    if (UA::isSafariGroup()) {
         $buf = P2Util::encodeResponseTextForSafari($buf);
     }
     echo $buf;

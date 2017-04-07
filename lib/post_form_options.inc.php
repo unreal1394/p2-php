@@ -219,7 +219,7 @@ if (!$_conf['ktai'] && $_conf['expack.editor.dpreview']) {
     }
     $_dpreview_hide = 'false';
     if ($_conf['expack.editor.dpreview'] == 2) {
-        if (P2Util::isBrowserSafariGroup() && basename($_SERVER['SCRIPT_NAME']) != 'post_form.php') {
+        if (UA::isSafariGroup() && basename($_SERVER['SCRIPT_NAME']) != 'post_form.php') {
             $_dpreview_hide = 'true';
         }
         $_dpreview_pos = 'dpreview2';

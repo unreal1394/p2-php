@@ -173,7 +173,7 @@ if (UA::isIPhoneGroup($userAgent)) {
         $_conf['accept_charset'] = 'UTF-8';
 
     // Windows Mobile
-    } elseif (P2Util::isClientOSWindowsCE()) {
+    } elseif (UA::isClientOSWindowsCE()) {
         $_conf['ktai'] = true;
 
     // ågë—ÉQÅ[ÉÄã@
