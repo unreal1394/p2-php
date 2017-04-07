@@ -223,7 +223,7 @@ echo $add_favita_form_ht;
 echo '<hr>';
 
 // PC（NetFrontを除外）
-if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !P2Util::isNetFront()) {
+if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !UA::isNetFront()) {
 
     if ($lines) {
         $script_enable_html .= <<<EOP
@@ -278,7 +278,7 @@ EOP;
 //================================================================
 if ($lines) {
     // PC（NetFrontを除外）
-    if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !P2Util::isNetFront()) {
+    if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !UA::isNetFront()) {
         echo '<noscript>';
     }
     echo 'お気に板の並び替え';
@@ -306,7 +306,7 @@ EOP;
 
     echo "</table>";
     // PC（NetFrontを除外）
-    if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !P2Util::isNetFront()) {
+    if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !UA::isNetFront()) {
         echo '</noscript>';
     }
 }

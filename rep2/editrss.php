@@ -231,7 +231,7 @@ echo $add_rss_form_ht;
 echo "<hr>\n";
 
 // PC（NetFrontを除外）
-if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !P2Util::isNetFront()) {
+if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !UA::isNetFront()) {
 
     if ($lines) {
         $script_enable_html .= <<<EOP
@@ -287,7 +287,7 @@ EOP;
 //================================================================
 if ($lines) {
     // PC（NetFrontを除外）
-    if ($_conf['ktai'] && $_conf['favita_order_dnd'] && !P2Util::isNetFront()) {
+    if ($_conf['ktai'] && $_conf['favita_order_dnd'] && !UA::isNetFront()) {
         echo '<noscript>';
     }
     echo 'RSSの並び替え';
@@ -326,7 +326,7 @@ EOP;
     }
     echo "</table>\n";
     // PC（NetFrontを除外）
-    if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !P2Util::isNetFront()) {
+    if (!$_conf['ktai'] && $_conf['favita_order_dnd'] && !UA::isNetFront()) {
         echo '</noscript>';
     }
 }

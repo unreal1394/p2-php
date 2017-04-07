@@ -1075,38 +1075,6 @@ class P2Util
     }
 
     // }}}
-    // {{{ transResHistLogDatToPhp()
-
-    /**
-     * dat形式（<>）の書き込み履歴をデータPHP形式（TAB）に変換する
-     */
-    static public function transResHistLogDatToPhp()
-    {
-        global $_conf;
-
-        // 書き込み履歴を記録しない設定の場合は何もしない
-        if ($_conf['res_write_rec'] == 0) {
-            return true;
-        }
-
-        // p2_res_hist.dat.php がなくて、p2_res_hist.dat が読み込み可能であったら
-        if ((!file_exists($_conf['res_hist_dat_php'])) and is_readable($_conf['res_hist_dat'])) {
-            // 読み込んで
-            if ($cont = FileCtl::file_read_contents($_conf['res_hist_dat'])) {
-                // <>区切りからタブ区切りに変更する
-                // まずタブを全て外して
-                $cont = str_replace("\t", "", $cont);
-                // <>をタブに変換して
-                $cont = str_replace("<>", "\t", $cont);
-
-                // データPHP形式で保存
-                DataPhp::writeDataPhp($_conf['res_hist_dat_php'], $cont);
-            }
-        }
-        return true;
-    }
-
-    // }}}
     // {{{ getLastAccessLog()
 
     /**
@@ -1727,23 +1695,6 @@ ERR;
         global $_info_msg_ht;
 
         if (isset($_info_msg_ht) && strlen($_info_msg_ht)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // }}}
-    // {{{ isNetFront()
-
-    /**
-     * isNetFront?
-     *
-     * @return boolean
-     */
-    static public function isNetFront()
-    {
-        if (preg_match('/(NetFront|AVEFront\/|AVE-Front\/)/', $_SERVER['HTTP_USER_AGENT'])) {
             return true;
         } else {
             return false;
