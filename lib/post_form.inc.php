@@ -28,22 +28,22 @@ if ($_conf['ktai']) {
     $htm['table_end'] = '<br>';
     if ($_conf['iphone']) {
     	$htm['k_br'] = '';
-        $htm['options'] .= <<<EOP
-<div style="text-align:right;">
-<!-- <input type="checkbox" id="autocorrect" onclick="iutil.toggleAutocorrect('MESSAGE', this.checked);"><label for="autocorrect">autocorrect</label> -->
-<input type="button" onclick="iutil.shrinkTextarea('MESSAGE');iutil.shrinkTextarea('MESSAGE');" value="－">
-<input type="button" onclick="iutil.expandTextarea('MESSAGE');" value="＋">
-</div>
-EOP;
         $htm['name_label'] = '';
         $htm['mail_label'] = '';
         $htm['name_extra_at'] = ' class="formelem maxwidth" placeholder="名前(省略可)" autocorrect="off" autocapitalize="off"';
         $htm['mail_extra_at'] = ' class="formelem maxwidth" placeholder="メール(省略可)" autocorrect="off" autocapitalize="off"';
         $htm['msg_extra_at'] = ' class="formelem maxwidth" placeholder="本文" autocorrect="off" autocapitalize="off"';
+
+        $htm['kaiko_on_js_fmt'] = ' onfocus="%1$s" onkeyup="if(%2$s){%1$s}"';
+        $htm['kaiko_on_js_func'] = sprintf("adjustTextareaRows(this,%d,2); ", $STYLE['post_msg_rows']);
+
         $htm['submit_extra_at'] = '';
         if ($_conf['expack.editor.mobile.savedraft'] != '0' && $_conf['expack.editor.mobile.savedraft.interval'] > 0) {
-            $htm['kaiko_on_js'] = ' onfocus="DraftKakiko.startAutoSave(this.form, ' . ($_conf['expack.editor.mobile.savedraft.interval'] * 1000) . ')"';
+            $htm['kaiko_on_js_func'] = 'DraftKakiko.startAutoSave(this.form, ' . ($_conf['expack.editor.mobile.savedraft.interval'] * 1000) . '); '.$htm['kaiko_on_js_func'];
         }
+
+        $htm['kaiko_on_js_cond'] = '!event||((event.keyCode&&(event.keyCode==8||event.keyCode==13))||event.ctrlKey||event.metaKey||event.altKey)';
+        $htm['kaiko_on_js'] = sprintf($htm['kaiko_on_js_fmt'], $htm['kaiko_on_js_func'], p2h($htm['kaiko_on_js_cond']));
     } else {
         $htm['name_label'] = '名前：';
         $htm['mail_label'] = 'E-mail：';
