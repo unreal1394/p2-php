@@ -30,14 +30,14 @@ if ($_conf['ktai']) {
     	$htm['k_br'] = '';
         $htm['name_label'] = '';
         $htm['mail_label'] = '';
-        $htm['name_extra_at'] = ' class="formelem maxwidth" placeholder="名前(省略可)" autocorrect="off" autocapitalize="off"';
-        $htm['mail_extra_at'] = ' class="formelem maxwidth" placeholder="メール(省略可)" autocorrect="off" autocapitalize="off"';
-        $htm['msg_extra_at'] = ' class="formelem maxwidth" placeholder="本文" autocorrect="off" autocapitalize="off"';
+        $htm['name_extra_at'] = ' class="form-control form-group" placeholder="名前(省略可)" autocorrect="off" autocapitalize="off"';
+        $htm['mail_extra_at'] = ' class="form-control form-group" placeholder="メール(省略可)" autocorrect="off" autocapitalize="off"';
+        $htm['msg_extra_at'] = ' class="form-control form-group" placeholder="本文" autocorrect="off" autocapitalize="off"';
 
         $htm['kaiko_on_js_fmt'] = ' onfocus="%1$s" onkeyup="if(%2$s){%1$s}"';
         $htm['kaiko_on_js_func'] = sprintf("adjustTextareaRows(this,%d,2); ", $STYLE['post_msg_rows']);
 
-        $htm['submit_extra_at'] = '';
+        $htm['submit_extra_at'] = 'class="btn form-group"';
         if ($_conf['expack.editor.mobile.savedraft'] != '0' && $_conf['expack.editor.mobile.savedraft.interval'] > 0) {
             $htm['kaiko_on_js_func'] = 'DraftKakiko.startAutoSave(this.form, ' . ($_conf['expack.editor.mobile.savedraft.interval'] * 1000) . '); '.$htm['kaiko_on_js_func'];
         }
@@ -91,7 +91,7 @@ $savedraft = '';
 if ((!$_conf['ktai'] && $_conf['expack.editor.savedraft'] != 0) ||
     ($_conf['iphone'] && $_conf['expack.editor.mobile.savedraft'] != 0)) {
     $savedraft = <<<EOP
-<input id="post_draft_button" type="button" value="下書き保存" onclick="DraftKakiko.saveDraftForm(this.form)">
+<input id="post_draft_button" type="button" value="下書き保存" class="btn" onclick="DraftKakiko.saveDraftForm(this.form)">
 <span id="post_draft_msg" class="autosave-info"></span>
 EOP;
 } elseif ($_conf['ktai'] && $_conf['expack.editor.mobile.savedraft']) {
