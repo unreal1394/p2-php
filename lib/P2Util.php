@@ -130,11 +130,11 @@ class P2Util
      * setcookie() では、auで必要なmax ageが設定されないので、こちらを利用する
      *
      * @access  public
-     * @param   string  $key
-     * @param   string  $value
-     * @param   int     $expires
-     * @param   string  $path
-     * @param   string  $domain
+     * @param   string $key
+     * @param   string $value
+     * @param   int $expires
+     * @param   string $path
+     * @param   string $domain
      * @param   boolean $secure
      * @param   boolean $httponly
      * @return  boolean
@@ -168,14 +168,14 @@ class P2Util
         }
 
         header(
-            'Set-Cookie: '. self::encodeCookieName($key) . '=' . rawurlencode($value)
-                 . (empty($domain) ? '' : '; Domain=' . $domain)
-                 . (empty($expires) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', $expires) . ' GMT')
-                 . (empty($maxage) ? '' : '; Max-Age=' . $maxage)
-                 . (empty($path) ? '' : '; Path=' . $path)
-                 . (!$secure ? '' : '; Secure')
-                 . (!$httponly ? '' : '; HttpOnly'),
-             $replace = false
+            'Set-Cookie: ' . self::encodeCookieName($key) . '=' . rawurlencode($value)
+            . (empty($domain) ? '' : '; Domain=' . $domain)
+            . (empty($expires) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', $expires) . ' GMT')
+            . (empty($maxage) ? '' : '; Max-Age=' . $maxage)
+            . (empty($path) ? '' : '; Path=' . $path)
+            . (!$secure ? '' : '; Secure')
+            . (!$httponly ? '' : '; HttpOnly'),
+            $replace = false
         );
 
         return true;
@@ -187,9 +187,9 @@ class P2Util
     /**
      * クッキーを消去する。変数 $_COOKIE も。
      *
-     * @param   string  $key  key, k1[k2]
-     * @param   string  $path
-     * @param   string  $domain
+     * @param   string $key key, k1[k2]
+     * @param   string $path
+     * @param   string $domain
      * @return  boolean
      */
     static public function unsetCookie($key, $path = '', $domain = null)
@@ -270,7 +270,7 @@ class P2Util
                     //$info_msg_ht .= "ディレクトリを自動作成できませんでした。<br>手動でディレクトリを作成し、パーミッションを設定して下さい。";
                 }
             } else {
-                    //$info_msg_ht .= "ディレクトリを作成し、パーミッションを設定して下さい。";
+                //$info_msg_ht .= "ディレクトリを作成し、パーミッションを設定して下さい。";
             }
             //$info_msg_ht .= '</p>';
 
@@ -295,9 +295,9 @@ class P2Util
 
         $parsed = parse_url($url); // URL分解
 
-        $save_uri  = isset($parsed['host'])  ?       $parsed['host']  : '';
-        $save_uri .= isset($parsed['port'])  ? ':' . $parsed['port']  : '';
-        $save_uri .= isset($parsed['path'])  ?       $parsed['path']  : '';
+        $save_uri = isset($parsed['host']) ? $parsed['host'] : '';
+        $save_uri .= isset($parsed['port']) ? ':' . $parsed['port'] : '';
+        $save_uri .= isset($parsed['path']) ? $parsed['path'] : '';
         $save_uri .= isset($parsed['query']) ? '?' . $parsed['query'] : '';
 
         $cachefile = $_conf['cache_dir'] . '/' . $save_uri;
@@ -382,26 +382,26 @@ class P2Util
         if (self::isHost2chs($host)) {
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . '2channel';
 
-        // machibbs.com
+            // machibbs.com
         } elseif (self::isHostMachiBbs($host)) {
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . 'machibbs.com';
-        // tor
+            // tor
         } elseif (self::isHostTor($host)) {
             $tor_host = preg_replace('/\.onion\.(\w+)$/', '.onion', $host);
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . $tor_host;
             unset($tor_host);
-        // jbbs.livedoor.jp (livedoor レンタル掲示板)
+            // jbbs.livedoor.jp (livedoor レンタル掲示板)
         } elseif (self::isHostJbbsShitaraba($host)) {
             if (DIRECTORY_SEPARATOR == '/') {
                 $host_dir = $base_dir . DIRECTORY_SEPARATOR . $host;
             } else {
                 $host_dir = $base_dir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $host);
             }
-        // vip.2ch.com
+            // vip.2ch.com
         } elseif (self::isHostVip2ch($host)) {
-        	$host_dir = $base_dir . DIRECTORY_SEPARATOR . 'ex14.vip2ch.com';
+            $host_dir = $base_dir . DIRECTORY_SEPARATOR . 'ex14.vip2ch.com';
 
-        // livedoor レンタル掲示板以外でスラッシュ等の文字を含むとき
+            // livedoor レンタル掲示板以外でスラッシュ等の文字を含むとき
         } elseif (preg_match('/[^0-9A-Za-z.\\-_]/', $host)) {
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . rawurlencode($host);
             /*
@@ -416,7 +416,7 @@ class P2Util
             }
             */
 
-        // その他
+            // その他
         } else {
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . $host;
         }
@@ -536,7 +536,7 @@ class P2Util
         }
 
         return $old_path;
-     }
+    }
 
     // }}}
     // {{{ getDatPath()
@@ -631,14 +631,14 @@ class P2Util
     {
         if (!$disp_all_num) {
             return array(
-                'all_once'  => true,
-                'from'      => 0,
-                'end'       => 0,
-                'limit'     => 0,
-                'offset'    => 0,
-                'mae_from'  => 1,
+                'all_once' => true,
+                'from' => 0,
+                'end' => 0,
+                'limit' => 0,
+                'offset' => 0,
+                'mae_from' => 1,
                 'tugi_from' => 1,
-                'range_st'  => '-',
+                'range_st' => '-',
             );
         }
 
@@ -654,7 +654,7 @@ class P2Util
             $disp_navi['from'] = max(1, $disp_all_num - $disp_range);
             $disp_navi['end'] = $disp_all_num;
 
-        // from 越えない
+            // from 越えない
         } else {
             $disp_navi['end'] = $disp_navi['from'] + $disp_range;
 
@@ -690,7 +690,7 @@ class P2Util
     /**
      *  key.idx に data を記録する
      *
-     * @param   array   $data   要素の順番に意味あり。
+     * @param   array $data 要素の順番に意味あり。
      */
     static public function recKeyIdx($keyidx, $data)
     {
@@ -699,7 +699,7 @@ class P2Util
         // 基本は配列で受け取る
         if (is_array($data)) {
             $cont = implode('<>', $data);
-        // 旧互換用にstringも受付
+            // 旧互換用にstringも受付
         } else {
             $cont = rtrim($data);
         }
@@ -719,8 +719,8 @@ class P2Util
     /**
      * 中継ゲートを通すためのURL変換
      *
-     * @param   string  $url
-     * @param   int     $delay  負数の場合は手動転送、それ以外はゲートの仕様による
+     * @param   string $url
+     * @param   int $delay 負数の場合は手動転送、それ以外はゲートの仕様による
      * @return  string
      */
     static public function throughIme($url, $delay = null)
@@ -738,8 +738,8 @@ class P2Util
     /**
      * URL変換の設定をする
      *
-     * @param   string  $type
-     * @param   array   $exceptions
+     * @param   string $type
+     * @param   array $exceptions
      * @param   boolean $ignoreHttp
      * @return  void
      * @see     P2Ime::__construct()
@@ -793,7 +793,7 @@ class P2Util
     static public function isHost2chs($host)
     {
         if (!array_key_exists($host, self::$_hostIs2chs)) {
-            self::$_hostIs2chs[$host] = (bool)preg_match('<^\\w+\\.(?:2ch\\.net|bbspink\\.com)$>', $host);
+            self::$_hostIs2chs[$host] = (bool)preg_match('<^\\w+\\.(?:2ch\\.net|5ch\\.net|bbspink\\.com)$>', $host);
         }
         return self::$_hostIs2chs[$host];
     }
@@ -807,13 +807,13 @@ class P2Util
      * @param string $host
      * @return bool
      */
-     static public function isHostVip2ch($host)
-     {
-     	if (!array_key_exists($host, self::$_hostIsVip2ch)) {
-     		self::$_hostIsVip2ch[$host] = (bool)preg_match('<^\\w+\\.(?:vip2ch\\.com)$>', $host);
-     	}
-     	return self::$_hostIsVip2ch[$host];
-     }
+    static public function isHostVip2ch($host)
+    {
+        if (!array_key_exists($host, self::$_hostIsVip2ch)) {
+            self::$_hostIsVip2ch[$host] = (bool)preg_match('<^\\w+\\.(?:vip2ch\\.com)$>', $host);
+        }
+        return self::$_hostIsVip2ch[$host];
+    }
 
     // }}}
     // {{{ isHostBe2chNet()
@@ -826,7 +826,7 @@ class P2Util
      */
     static public function isHostBe2chNet($host)
     {
-        return ($host == 'be.2ch.net');
+        return ($host == 'be.2ch.net' || $host == 'be.5ch.net');
         /*
         if (!array_key_exists($host, self::$_hostIsBe2chNet)) {
             self::$_hostIsBe2chNet[$host] = ($host == 'be.2ch.net');
@@ -846,7 +846,7 @@ class P2Util
      */
     static public function isNotUse2chAPI($host)
     {
-        return ($host == 'qb5.2ch.net' || $host == 'carpenter.2ch.net');
+        return ($host == 'qb5.2ch.net' || $host == 'carpenter.2ch.net' || $host == 'qb5.5ch.net' || $host == 'carpenter.5ch.net');
     }
 
     // }}}
@@ -870,15 +870,15 @@ class P2Util
     // {{{ isHostTor()
 
     /**
-    * host が tor 系板 なら true を返す
-    *
-    * @access public
-    * @param string $host
-    * @return boolean
-    */
+     * host が tor 系板 なら true を返す
+     *
+     * @access public
+     * @param string $host
+     * @return boolean
+     */
     static function isHostTor($host, $isGatewayMode = 99)
     {
-        switch($isGatewayMode){
+        switch ($isGatewayMode) {
             case 0:
                 $ret = (bool)preg_match('/\\.onion$/', $host);
                 break;
@@ -890,9 +890,9 @@ class P2Util
             default:
                 $ret = (bool)preg_match('/\\.(onion\\.cab|onion\\.city|onion\\.direct|onion\\.link|onion\\.nu|onion\\.to|onion\\.rip|onion)$/', $host);
                 break;
-    }
+        }
 
-    return $ret;
+        return $ret;
     }
 
     // }}}
@@ -962,7 +962,7 @@ class P2Util
     /**
      * livedoor レンタル掲示板 : したらばのホスト名変更に対応して変更する
      *
-     * @param   string  $in_str     ホスト名でもURLでもなんでも良い
+     * @param   string $in_str ホスト名でもURLでもなんでも良い
      * @return  string
      */
     static public function adjustHostJbbs($in_str)
@@ -1121,7 +1121,7 @@ class P2Util
 
         if ($lines) {
             // 制限行調整
-            while (sizeof($lines) > $maxline -1) {
+            while (sizeof($lines) > $maxline - 1) {
                 array_pop($lines);
             }
         } else {
@@ -1329,7 +1329,7 @@ EOP;
 ERR;
         // IEデフォルトのメッセージを表示させないようにスペースを出力
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
-            for ($i = 0 ; $i < 512; $i++) {
+            for ($i = 0; $i < 512; $i++) {
                 echo ' ';
             }
         }
@@ -1376,11 +1376,11 @@ ERR;
      *
      * $targetDirから最終更新より$lifeTime秒以上たったファイルを削除
      *
-     * @param   string   $targetDir  ガーベッジコレクション対象ディレクトリ
-     * @param   integer  $lifeTime   ファイルの有効期限（秒）
-     * @param   string   $prefix     対象ファイル名の接頭辞（オプション）
-     * @param   string   $suffix     対象ファイル名の接尾辞（オプション）
-     * @param   boolean  $recurive   再帰的にガーベッジコレクションするか否か（デフォルトではfalse）
+     * @param   string $targetDir ガーベッジコレクション対象ディレクトリ
+     * @param   integer $lifeTime ファイルの有効期限（秒）
+     * @param   string $prefix 対象ファイル名の接頭辞（オプション）
+     * @param   string $suffix 対象ファイル名の接尾辞（オプション）
+     * @param   boolean $recurive 再帰的にガーベッジコレクションするか否か（デフォルトではfalse）
      * @return  array    削除に成功したファイルと失敗したファイルを別々に記録した二次元の配列
      */
     static public function garbageCollection($targetDir,
@@ -1388,7 +1388,7 @@ ERR;
                                              $prefix = '',
                                              $suffix = '',
                                              $recursive = false
-                                             )
+    )
     {
         $result = array('successed' => array(), 'failed' => array(), 'skipped' => array());
         $expire = time() - $lifeTime;
@@ -1401,7 +1401,9 @@ ERR;
             $files = array();
             $targetDir = realpath($targetDir) . DIRECTORY_SEPARATOR;
             foreach ($list as $filename) {
-                if ($filename == '.' || $filename == '..') { continue; }
+                if ($filename == '.' || $filename == '..') {
+                    continue;
+                }
                 $files[] = $targetDir . $filename;
             }
         }
@@ -1471,8 +1473,8 @@ ERR;
      * (バージョン1.0.0以降、Var_Dump::display() の第二引数が真のとき
      *  直接表示する代わりに、ダンプ結果が文字列として返る。)
      *
-     * @param   array    $info    テーブルにしたい配列
-     * @param   integer  $indent  結果のHTMLを見やすくするためのインデント量
+     * @param   array $info テーブルにしたい配列
+     * @param   integer $indent 結果のHTMLを見やすくするためのインデント量
      * @return  string   <table>~</table>
      */
     static public function Info_Dump($info, $indent = 0)
@@ -1481,16 +1483,18 @@ ERR;
         $n = count($info);
         foreach ($info as $key => $value) {
             if (!is_object($value) && !is_resource($value)) {
-                for ($i = 0; $i < $indent; $i++) { $table .= "\t"; }
+                for ($i = 0; $i < $indent; $i++) {
+                    $table .= "\t";
+                }
                 if ($n == 1 && $key === 0) {
                     $table .= '<tr><td class="tdcont">';
-                /*} elseif (preg_match('/^\w+$/', $key)) {
-                    $table .= '<tr class="setting"><td class="tdleft"><b>' . $key . '</b></td><td class="tdcont">';*/
+                    /*} elseif (preg_match('/^\w+$/', $key)) {
+                        $table .= '<tr class="setting"><td class="tdleft"><b>' . $key . '</b></td><td class="tdcont">';*/
                 } else {
                     $table .= '<tr><td class="tdleft"><b>' . $key . '</b></td><td class="tdcont">';
                 }
                 if (is_array($value)) {
-                    $table .= self::Info_Dump($value, $indent+1); //配列の場合は再帰呼び出しで展開
+                    $table .= self::Info_Dump($value, $indent + 1); //配列の場合は再帰呼び出しで展開
                 } elseif ($value === true) {
                     $table .= '<i>true</i>';
                 } elseif ($value === false) {
@@ -1516,7 +1520,9 @@ ERR;
                 $table .= '</td></tr>' . "\n";
             }
         }
-        for ($i = 1; $i < $indent; $i++) { $table .= "\t"; }
+        for ($i = 1; $i < $indent; $i++) {
+            $table .= "\t";
+        }
         $table .= '</table>';
         $table = str_replace('<td class="tdcont"><table border="0" cellspacing="1" cellpadding="0">',
             '<td class="tdcont"><table border="0" cellspacing="1" cellpadding="0" class="child">', $table);
@@ -1536,7 +1542,7 @@ ERR;
             //if (strlen($key) > 8) {
             //    return self::mkTrip1(substr($key, 0, 8));
             //} else {
-                return self::mkTrip1($key);
+            return self::mkTrip1($key);
             //}
         }
 
@@ -1747,75 +1753,66 @@ ERR;
 
             // まちBBS - http://kanto.machi.to/bbs/read.cgi/kanto/1241815559/
             if (preg_match('<^http://(\\w+\\.machi(?:bbs\\.com|\\.to))/bbs/read\\.cgi
-                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
-            {
+                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches)) {
                 $host = $matches[1];
                 $bbs = $matches[2];
                 $key = $matches[3];
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
 
-            // まちBBS(ドメインのみ) - http://machi.to/bbs/read.cgi/kanto/1241815559/
+                // まちBBS(ドメインのみ) - http://machi.to/bbs/read.cgi/kanto/1241815559/
             } elseif (preg_match('<^http?://(machi\\.to)/bbs/read\\.cgi
-                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
-            {
+                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches)) {
                 $host = $matches[1];
                 $bbs = $matches[2];
                 $key = $matches[3];
                 $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
-                
-            // したらばJBBS - http://jbbs.livedoor.com/bbs/read.cgi/computer/2999/1081177036/-100
+
+                // したらばJBBS - http://jbbs.livedoor.com/bbs/read.cgi/computer/2999/1081177036/-100
             } elseif (preg_match('<^http://(jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))/(?:bbs|bbs/lite)/read\\.cgi
-                    /(\\w+)/(\\d+)/(\\d+)/((?:\\d+)?-(?:\\d+)?)?[^"]*>x', $nama_url, $matches))
-            {
+                    /(\\w+)/(\\d+)/(\\d+)/((?:\\d+)?-(?:\\d+)?)?[^"]*>x', $nama_url, $matches)) {
                 $host = $matches[1] . '/' . $matches[2];
                 $bbs = $matches[3];
                 $key = $matches[4];
                 $ls = isset($matches[5]) ? $matches[5] : '';
 
-            // 旧式まち＆したらばJBBS - http://kanto.machibbs.com/bbs/read.pl?BBS=kana&KEY=1034515019
-            } elseif (preg_match('<^http://(\\w+\\.machi(?:bbs\\.com|\\.to))/bbs/read\\.(?:pl|cgi)\\?(.+)>' ,
-                    $nama_url, $matches))
-            {
+                // 旧式まち＆したらばJBBS - http://kanto.machibbs.com/bbs/read.pl?BBS=kana&KEY=1034515019
+            } elseif (preg_match('<^http://(\\w+\\.machi(?:bbs\\.com|\\.to))/bbs/read\\.(?:pl|cgi)\\?(.+)>',
+                $nama_url, $matches)) {
                 $host = $matches[1];
                 list($bbs, $key, $ls) = self::parseMachiQuery($matches[2]);
 
             } elseif (preg_match('<^http://((jbbs\\.(?:livedoor\\.(?:jp|com)|shitaraba\\.(?:net|com)))(?:/(\\w+))?)/bbs/read\\.(?:pl|cgi)\\?(.+)>',
-                    $nama_url, $matches))
-            {
+                $nama_url, $matches)) {
                 $host = $matches[1];
                 list($bbs, $key, $ls) = self::parseMachiQuery($matches[4]);
 
-            // vip2ch.com - http://ex14.vip2ch.com/test/read.cgi/news4ssnip/1450958506/
-            } elseif (preg_match('<^https?://((\\w+)\\.vip2ch\\.com)/(?:test|i)/(?:read\\.(?:cgi|html|so)|mread\\.cgi|read)/(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
-            {
+                // vip2ch.com - http://ex14.vip2ch.com/test/read.cgi/news4ssnip/1450958506/
+            } elseif (preg_match('<^https?://((\\w+)\\.vip2ch\\.com)/(?:test|i)/(?:read\\.(?:cgi|html|so)|mread\\.cgi|read)/(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches)) {
                 $host = $matches[1];
                 $bbs = $matches[3];
                 $key = $matches[4];
                 $ls = (isset($matches[5]) && strlen($matches[5])) ? $matches[5] : '';
 
-            // vip2ch.com - http://ex14.vip2ch.com/i/responce.html?bbs=news4ssnip&dat=1450958506
-            } elseif (preg_match('<^https?://((\\w+)\\.vip2ch\\.com)/i/(?:responce|responce_r18)\\.html\\?bbs=(\\w+)&dat=([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
-            {
+                // vip2ch.com - http://ex14.vip2ch.com/i/responce.html?bbs=news4ssnip&dat=1450958506
+            } elseif (preg_match('<^https?://((\\w+)\\.vip2ch\\.com)/i/(?:responce|responce_r18)\\.html\\?bbs=(\\w+)&dat=([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches)) {
                 $host = $matches[1];
                 $bbs = $matches[3];
                 $key = $matches[4];
                 $ls = (isset($matches[5]) && strlen($matches[5])) ? $matches[5] : '';
 
-            // 2ch or pink - http://choco.2ch.net/test/read.cgi/event/1027770702/
+                // 2ch or pink - http://choco.2ch.net/test/read.cgi/event/1027770702/
             } elseif (preg_match('<^https?://(.+)/test/read\\.(?:cgi|html|so)
-                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches))
-            {
-                if(BbsMap::isRegisteredBbs($matches[1] ,$matches[2])) {
+                    /(\\w+)/([0-9]+)(?:/([^/]*))?>x', $nama_url, $matches)) {
+                if (BbsMap::isRegisteredBbs($matches[1], $matches[2])) {
                     $host = $matches[1];
                     $bbs = $matches[2];
                     $key = $matches[3];
                     $ls = (isset($matches[4]) && strlen($matches[4])) ? $matches[4] : '';
                 }
 
-            // 2ch or pink by ula.cc(bintan / bekkanko) - http://choco.2ch.net/test/read.cgi/event/1027770702/
+                // 2ch or pink by ula.cc(bintan / bekkanko) - http://choco.2ch.net/test/read.cgi/event/1027770702/
             } elseif (preg_match('<^https?://(?:(?:bintan|same)\\.ula\\.cc|ula\\.2ch\\.net)/test/(?:read\\.(?:cgi|html|so)|r\\.so)
-                    /(.+)/(\\w+)/([0-9]+)(?:/([^/]*))>x', $nama_url, $matches))
-            {
+                    /(.+)/(\\w+)/([0-9]+)(?:/([^/]*))>x', $nama_url, $matches)) {
                 $host = $matches[1];
                 $bbs = $matches[2];
                 $key = $matches[3];
@@ -1823,9 +1820,8 @@ ERR;
 
                 // 2ch or pink 過去ログhtml - http://pc.2ch.net/mac/kako/1015/10153/1015358199.html
             } elseif (preg_match('<^(https?://(.+)(?:/[^/]+)?/(\\w+)
-                    /kako/\\d+(?:/\\d+)?/(\\d+)).html>x', $nama_url, $matches))
-            {
-                if(BbsMap::isRegisteredBbs($matches[2] ,$matches[3])) {
+                    /kako/\\d+(?:/\\d+)?/(\\d+)).html>x', $nama_url, $matches)) {
+                if (BbsMap::isRegisteredBbs($matches[2], $matches[3])) {
                     $host = $matches[2];
                     $bbs = $matches[3];
                     $key = $matches[4];
@@ -1842,9 +1838,9 @@ ERR;
 
         } else {
             $host = isset($_REQUEST['host']) ? $_REQUEST['host'] : null; // "pc.2ch.net"
-            $bbs  = isset($_REQUEST['bbs'])  ? $_REQUEST['bbs']  : null; // "php"
-            $key  = isset($_REQUEST['key'])  ? $_REQUEST['key']  : null; // "1022999539"
-            $ls   = isset($_REQUEST['ls'])   ? $_REQUEST['ls']   : null; // "all"
+            $bbs = isset($_REQUEST['bbs']) ? $_REQUEST['bbs'] : null; // "php"
+            $key = isset($_REQUEST['key']) ? $_REQUEST['key'] : null; // "1022999539"
+            $ls = isset($_REQUEST['ls']) ? $_REQUEST['ls'] : null; // "all"
         }
 
         return array($nama_url, $host, $bbs, $key, $ls);
@@ -1856,7 +1852,7 @@ ERR;
     /**
      * 旧式まち＆したらばJBBSのスレッドを指定するQUERY_STRINGを解析する
      *
-     * @param   string  $query
+     * @param   string $query
      * @return  array
      */
     static public function parseMachiQuery($query)
@@ -1897,9 +1893,9 @@ ERR;
     /**
      * HTMLからDOMDocumentを生成する
      *
-     * @param   string  $html
-     * @param   string  $charset
-     * @param   bool    $report_error
+     * @param   string $html
+     * @param   string $charset
+     * @param   bool $report_error
      * @return  DOMDocument
      */
     static public function getHtmlDom($html, $charset = null, $report_error = true)
@@ -1951,7 +1947,7 @@ ERR;
         } elseif (self::isHostJbbsShitaraba($host)) {
             return 'shitaraba';
         } elseif (self::isHostVip2ch($host)) {
-        	return 'vip2ch';
+            return 'vip2ch';
         } else {
             return $host;
         }
@@ -1964,7 +1960,7 @@ ERR;
      * preg_replace_callback()のコールバック関数として
      * マッチ箇所全体にrawurlencode()をかける
      *
-     * @param   array   $m
+     * @param   array $m
      * @return  string
      */
     static public function rawurlencodeCallback(array $m)
@@ -2039,9 +2035,9 @@ ERR;
         }
 
         try {
-            $req = P2Commun::createHTTPRequest ('http://be.2ch.net/index.php', HTTP_Request2::METHOD_POST);
+            $req = P2Commun::createHTTPRequest('http://be.2ch.net/index.php', HTTP_Request2::METHOD_POST);
 
-            $req->setHeader('User-Agent', P2Commun::getP2UA(true,true));
+            $req->setHeader('User-Agent', P2Commun::getP2UA(true, true));
 
             $req->addPostParameter('mail', $mail);
             $req->addPostParameter('pass', $pass);
@@ -2074,6 +2070,7 @@ ERR;
     }
 
     // }}}
+
     /**
      * +Wiki:プロフィールIDからBEIDを計算する
      *
@@ -2083,7 +2080,7 @@ ERR;
     {
         for ($y = 2; $y <= 9; $y++) {
             for ($x = 2; $x <= 9; $x++) {
-                $id = (($prof_id - $x*10.0 - $y)/100.0 + $x - $y - 5.0)/(3.0 * $x * $y);
+                $id = (($prof_id - $x * 10.0 - $y) / 100.0 + $x - $y - 5.0) / (3.0 * $x * $y);
                 if ($id == floor($id)) {
                     return $id;
                 }
