@@ -30,7 +30,6 @@ if ($_conf['iphone']) {
     $_conf['extra_headers_ht'] .= <<<EOP
 \n<link rel="stylesheet" type="text/css" href="css/ic2_iphone.css?{$_conf['p2_version_id']}">
 <link rel="stylesheet" type="text/css" href="css/iv2_iphone.css?{$_conf['p2_version_id']}">
-<script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
 <script type="text/javascript" src="js/jquery.skOuterClick.js"></script>
 <script type="text/javascript" src="js/json2.js?{$_conf['p2_version_id']}"></script>
 <script type="text/javascript" src="js/ic2_iphone.js?{$_conf['p2_version_id']}"></script>
@@ -39,7 +38,6 @@ EOP;
     $_conf['extra_headers_xht'] .= <<<EOP
 \n<link rel="stylesheet" type="text/css" href="css/ic2_iphone.css?{$_conf['p2_version_id']}" />
 <link rel="stylesheet" type="text/css" href="css/iv2_iphone.css?{$_conf['p2_version_id']}" />
-<script type="text/javascript" src="js/jquery-{$_conf['jquery_version']}.min.js"></script>
 <script type="text/javascript" src="js/jquery.skOuterClick.js"></script>
 <script type="text/javascript" src="js/json2.js?{$_conf['p2_version_id']}"></script>
 <script type="text/javascript" src="js/ic2_iphone.js?{$_conf['p2_version_id']}"></script>
@@ -997,11 +995,8 @@ $flexy->setData('js', $js);
 $flexy->setData('page', $page);
 $flexy->setData('move', $qfObj);
 $flexy->setData('lightbox', $lightbox);
-if ($enable_zip) {
     $flexy->setData('jquery', $_conf['jquery_version']);
-} else {
     $flexy->setData('jquery', null);
-}
 
 // ページを表示
 P2Util::header_nocache();
