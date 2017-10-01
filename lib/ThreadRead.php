@@ -140,9 +140,9 @@ class ThreadRead extends Thread {
         // $url="http://news2.2ch.net/test/read.cgi?bbs=newsplus&key=1038486598";
 
         if($_conf['2chapi_ssl.read']) {
-            $url = 'https://api.5ch.net/v1/';
+            $url = 'https://api.2ch.net/v1/';
         } else {
-            $url = 'http://api.5ch.net/v1/';
+            $url = 'http://api.2ch.net/v1/';
         }
 
         $url .= $serverName[0] . '/' . $this->bbs . '/' . $this->key;
