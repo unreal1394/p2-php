@@ -17,9 +17,9 @@
 
         if ($_conf['2chapi_ssl.auth'])
         {
-            $url = 'https://api.2ch.net/v1/auth/';
+            $url = 'https://api.5ch.net/v1/auth/';
         } else {
-            $url = 'http://api.2ch.net/v1/auth/';
+            $url = 'http://api.5ch.net/v1/auth/';
         }
 
         $CT = time();
