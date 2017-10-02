@@ -140,9 +140,9 @@ class ThreadRead extends Thread {
         // $url="http://news2.2ch.net/test/read.cgi?bbs=newsplus&key=1038486598";
 
         if($_conf['2chapi_ssl.read']) {
-            $url = 'https://api.2ch.net/v1/';
+            $url = 'https://api.5ch.net/v1/';
         } else {
-            $url = 'http://api.2ch.net/v1/';
+            $url = 'http://api.5ch.net/v1/';
         }
 
         $url .= $serverName[0] . '/' . $this->bbs . '/' . $this->key;
@@ -308,6 +308,13 @@ class ThreadRead extends Thread {
             } elseif ($code == '304') {
                 $this->isonline = true;
                 return '304 Not Modified';
+            } elseif ($code == '403') {
+                $this->getdat_error_msg_ht .= "<p>rep2 error: CloudFlareに接続を拒否されたため、スレッド取得に失敗しました。設定の変更を検討してください。</p>";
+                $this->getdat_error_msg_ht .= "<p>".$response->getBody ()."</p>";
+                $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;relogin2chapi=true\">APIで再取得を試みる</a>]";
+                $this->getdat_error_msg_ht .= " [<a href=\"{$_conf['read_php']}?host={$this->host}&amp;bbs={$this->bbs}&amp;key={$this->key}&amp;ls={$this->ls}&amp;olddat=true\">旧datで再取得を試みる</a>]";
+                $this->diedat = true;
+                return false;
             } elseif ($code == '416') { // Requested Range Not Satisfiable
                                         // echo "あぼーん検出";
                 $this->onbytes = 0;
