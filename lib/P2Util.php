@@ -64,6 +64,11 @@ class P2Util
     static private $_hostIs2chSc = array();
 
     /**
+     * isHostOpen2ch()のキャッシュ
+     */
+    static private $_hostIsOpen2ch = array();
+
+    /**
      * P2Imeオブジェクト
      *
      * @var P2Ime
@@ -381,7 +386,21 @@ class P2Util
         // 2channel or bbspink
         if (self::isHost2chs($host)) {
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . '2channel';
+        } elseif (self::isHostOpen2ch($host)) {
+            //互換性維持のため旧式のディレクトリを指定
+            $host_dir = $base_dir . DIRECTORY_SEPARATOR . rawurlencode($host);
+            if (!file_exists($host_dir)) {
+                //旧式のディレクトリが無い=無い新規インストール時or鯖移転のため、ディレクトリの指定を変更
+                $host_dir = $base_dir . DIRECTORY_SEPARATOR . 'open2ch';
+            }
 
+        } elseif (self::isHost2chSc($host)) {
+            //互換性維持のため旧式のディレクトリを指定
+            $host_dir = $base_dir . DIRECTORY_SEPARATOR . rawurlencode($host);
+            if (!file_exists($host_dir)) {
+                //旧式のディレクトリが無い=無い新規インストール時or鯖移転のため、ディレクトリの指定を変更
+                $host_dir = $base_dir . DIRECTORY_SEPARATOR . '2channel_sc';
+            }
             // machibbs.com
         } elseif (self::isHostMachiBbs($host)) {
             $host_dir = $base_dir . DIRECTORY_SEPARATOR . 'machibbs.com';
@@ -989,6 +1008,25 @@ class P2Util
     }
 
     // }}}
+    // {{{ isHostOpen2ch()
+
+    /**
+     * host が おーぷん2ch なら true を返す
+     *
+     * @param string $host
+     * @return  boolean
+     */
+    static public function isHostOpen2ch($host)
+    {
+        if (!array_key_exists($host, self::$_hostIsOpen2ch)) {
+            self::$_hostIsOpen2ch[$host] = (bool)preg_match('/\\.(open2ch\\.net)$/', $host);
+        }
+        return self::$_hostIsOpen2ch[$host];
+    }
+
+    // }}}
+
+
     // {{{ header_nocache()
 
     /**
