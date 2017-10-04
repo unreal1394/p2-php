@@ -439,7 +439,7 @@ function rss_url_rel_to_abs($url)
 {
     // URL ‚ğƒp[ƒX
     $p = @parse_url($GLOBALS['channel']['link']);
-    if (!$p || !isset($p['scheme']) || $p['scheme'] != 'http' || !isset($p['host'])) {
+    if (!$p || !isset($p['scheme']) || !isset($p['host'])) {
         return $url;
     }
 

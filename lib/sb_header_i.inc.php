@@ -9,9 +9,11 @@
 //===============================================================
 $newtime = date('gis');
 $norefresh_q = '&amp;norefresh=1';
+$refresh_q = '&amp;refresh=1';
 $bbs_q = '&amp;bbs=' . $aThreadList->bbs;
 $host_bbs_q = 'host=' . $aThreadList->host . $bbs_q;
-$paging_q = $host_bbs_q . '&amp;spmode=' . $aThreadList->spmode . $norefresh_q;
+$spmode_q = '&amp;spmode=' . $aThreadList->spmode;
+$paging_q = $host_bbs_q . $spmode_q . $norefresh_q;
 
 // {{{ ページタイトル部分URL設定
 
@@ -143,6 +145,9 @@ echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', nu
 // お気に板
 if ($board_info) {
     echo toolbar_i_favita_button('img/glyphish/icons2/28-star.png', null, $board_info);
+} elseif ($aThreadList->spmode == 'soko') {
+	$refresh_url = "{$_conf['subject_php']}?{$host_bbs_q}{$spmode_q}{$_conf['k_at_a']}{$refresh_q}";
+	echo toolbar_i_standard_button('img/glyphish/icons2/01-refresh.png', null, $refresh_url);
 }
 
 // その他
