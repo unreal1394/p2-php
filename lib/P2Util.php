@@ -24,9 +24,14 @@ class P2Util
     static private $_hostDirs = array();
 
     /**
-     * isHost2chs() のキャッシュ
+     * isHost2ch() のキャッシュ
      */
-    static private $_hostIs2chs = array();
+    static private $_hostIs2ch = array();
+
+    /**
+     * isHost5ch() のキャッシュ
+     */
+    static private $_hostIs5ch = array();
 
     /**
      * isHostBe2chNet() のキャッシュ
@@ -804,17 +809,48 @@ class P2Util
     // {{{ isHost2chs()
 
     /**
-     * host が 2ch or bbspink なら true を返す
+     * host が 2ch or 5ch or bbspink なら true を返す
      *
      * @param string $host
      * @return bool
      */
     static public function isHost2chs($host)
     {
-        if (!array_key_exists($host, self::$_hostIs2chs)) {
-            self::$_hostIs2chs[$host] = (bool)preg_match('<^\\w+\\.(?:2ch\\.net|5ch\\.net|bbspink\\.com)$>', $host);
+        return self::isHost2ch($host)||self::isHost5ch($host)||self::isHostBbsPink($host);
+    }
+
+    // }}}
+    // {{{ isHost2ch()
+
+    /**
+     * host が 2ch なら true を返す
+     *
+     * @param string $host
+     * @return bool
+     */
+    static public function isHost2ch($host)
+    {
+        if (!array_key_exists($host, self::$_hostIs2ch)) {
+            self::$_hostIs2ch[$host] = (bool)preg_match('<^\\w+\\.(?:2ch\\.net)$>', $host);
         }
-        return self::$_hostIs2chs[$host];
+        return self::$_hostIs2ch[$host];
+    }
+
+    // }}}
+    // {{{ isHost5ch()
+
+    /**
+     * host が 5ch なら true を返す
+     *
+     * @param string $host
+     * @return bool
+     */
+    static public function isHost5ch($host)
+    {
+        if (!array_key_exists($host, self::$_hostIs5ch)) {
+            self::$_hostIs5ch[$host] = (bool)preg_match('<^\\w+\\.(?:5ch\\.net)$>', $host);
+        }
+        return self::$_hostIs5ch[$host];
     }
 
     // }}}

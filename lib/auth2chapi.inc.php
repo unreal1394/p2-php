@@ -15,12 +15,10 @@
     {
     	global $_conf;
 
-        if ($_conf['2chapi_ssl.auth'])
-        {
-            $url = 'https://api.5ch.net/v1/auth/';
-        } else {
-            $url = 'http://api.5ch.net/v1/auth/';
-        }
+        $url= http_build_url(array(
+            "scheme" => $_conf['2chapi_ssl.auth']?"https":"http",
+            "host" => "api.5ch.net",
+            "path" => "v1/auth/"));
 
         $CT = time();
         $AppKey = $_conf['2chapi_appkey'];

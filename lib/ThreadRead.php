@@ -139,13 +139,11 @@ class ThreadRead extends Thread {
         // $url = "http://{$this->host}/{$this->bbs}/dat/{$this->key}.dat";
         // $url="http://news2.2ch.net/test/read.cgi?bbs=newsplus&key=1038486598";
 
-        if($_conf['2chapi_ssl.read']) {
-            $url = 'https://api.5ch.net/v1/';
-        } else {
-            $url = 'http://api.5ch.net/v1/';
-        }
+        $url= http_build_url(array(
+            "scheme" => $_conf['2chapi_ssl.read']?"https":"http",
+            "host" => P2Util::isHost5ch($this->host)?"api.5ch.net":"api.2ch.net",
+            "path" => "v1/".$serverName[0] . '/' . $this->bbs . '/' . $this->key));
 
-        $url .= $serverName[0] . '/' . $this->bbs . '/' . $this->key;
         $message = '/v1/' . $serverName[0] . '/' . $this->bbs . '/' . $this->key . $SID2ch . $AppKey;
         $HB = hash_hmac ("sha256", $message, $HMKey);
 
@@ -198,7 +196,7 @@ class ThreadRead extends Thread {
 
             if($_conf['2chapi_debug_print']==1)
             {
-                P2Util::pushInfoHtml('<p>p2 debug(ThreadRead::API): User-Status='.$apiUserStatus.' Thread-Status='.$apiThreadStatus.' HTTP-Status='.$code.'</p>');
+                P2Util::pushInfoHtml('<p>p2 debug(ThreadRead::API):URL='.$url.' User-Status='.$apiUserStatus.' Thread-Status='.$apiThreadStatus.' HTTP-Status='.$code.'</p>');
             }
 
             // APIの返答が過去ログ(Ronin無)だったら過去ログリンクを表示して終了
