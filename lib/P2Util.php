@@ -816,7 +816,7 @@ class P2Util
      */
     static public function isHost2chs($host)
     {
-        return self::isHost2ch($host)||self::isHost5ch($host)||self::isHostBbsPink($host);
+        return self::isHost2ch($host) || self::isHost5ch($host) || self::isHostBbsPink($host);
     }
 
     // }}}
@@ -2070,14 +2070,15 @@ ERR;
      * （認証コードはurlencodeされたままの状態）
      *
      * @access  public
+     * @param string $host Be認証するホスト名
      * @return  array|false|null  認証コード配列|認証できなかった|無設定だった
      */
-    static public function getBe2chCodeWithUserConf()
+    static public function getBe2chCodeWithUserConf($host)
     {
         global $_conf;
 
         if ($_conf['be_2ch_mail'] && strlen($_conf['be_2ch_password'])) {
-            $r = self::getBe2chCodeByMailPass($_conf['be_2ch_mail'], $_conf['be_2ch_password']);
+            $r = self::_getBe2chCodeByMailPass($_conf['be_2ch_mail'], $_conf['be_2ch_password'], $host);
             if (is_array($r)) {
                 return $r;
             }
@@ -2093,23 +2094,20 @@ ERR;
      * （認証コードはurlencodeされたままの状態）
      *
      * @access  private
+     * @param string $host Be認証するホスト名
      * @return  array|string 成功|エラーメッセージ
      */
-    static public function getBe2chCodeByMailPass($mail, $pass)
+    static private function _getBe2chCodeByMailPass($mail, $pass, $host)
     {
         global $_conf;
 
-        //require_once 'HTTP/Request.php';
-
-        $params = array('timeout' => $_conf['fsockopen_timeout']);
-
-        if (!empty($GLOBALS['_conf']['proxy_use'])) {
-            $params['proxy_host'] = $GLOBALS['_conf']['proxy_host'];
-            $params['proxy_port'] = $GLOBALS['_conf']['proxy_port'];
-        }
+        $url = http_build_url(array(
+            "scheme" => $_conf['2ch_ssl.post'] ? "https" : "http",
+            "host" => P2Util::isHost5ch($host) ? "be.5ch.net" : "be.2ch.net",
+            "path" => "index.php"));
 
         try {
-            $req = P2Commun::createHTTPRequest('http://be.2ch.net/index.php', HTTP_Request2::METHOD_POST);
+            $req = P2Commun::createHTTPRequest($url, HTTP_Request2::METHOD_POST);
 
             $req->setHeader('User-Agent', P2Commun::getP2UA(true, true));
 

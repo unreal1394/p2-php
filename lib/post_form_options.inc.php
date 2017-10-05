@@ -34,10 +34,19 @@ $htm['disable_js'] = <<<EOP
 //<![CDATA[
 // Thanks naoya <http://d.hatena.ne.jp/naoya/20050804/1123152230>
 
+function isNetFront() {
+  var ua = navigator.userAgent;
+  if (ua.indexOf("NetFront") != -1 || ua.indexOf("AVEFront/") != -1 || ua.indexOf("AVE-Front/") != -1) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function disableSubmit(form) {
 
   // 2006/02/15 NetFront‚Æ‚Í‘Š«‚ªˆ«‚­ŒÅ‚Ü‚é‚ç‚µ‚¢‚Ì‚Å”²‚¯‚é
-  if (UA::isNetFront()) {
+  if (isNetFront()) {
     return;
   }
 
@@ -52,7 +61,7 @@ function disableSubmit(form) {
 function setHiddenValue(button) {
 
   // 2006/02/15 NetFront‚Æ‚Í‘Š«‚ªˆ«‚­ŒÅ‚Ü‚é‚ç‚µ‚¢‚Ì‚Å”²‚¯‚é
-  if (UA::isNetFront()) {
+  if (isNetFront()) {
     return;
   }
 

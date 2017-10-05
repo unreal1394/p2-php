@@ -410,7 +410,7 @@ function postIt($host, $bbs, $key, $post)
                 $req->addCookie('DMDM', urlencode( rawurldecode( $_conf['be_2ch_DMDM']) ) );
                 $req->addCookie('MDMD', urlencode( rawurldecode( $_conf['be_2ch_MDMD']) ) );
             } else {
-                $ar = P2Util::getBe2chCodeWithUserConf(); // urlencode‚³‚ê‚½‚Ü‚Ü‚Ìó‘Ô
+                $ar = P2Util::getBe2chCodeWithUserConf($host); // urlencode‚³‚ê‚½‚Ü‚Ü‚Ìó‘Ô
                 if (is_array($ar)) {
                     $req->addCookie('DMDM', $ar['DMDM']);
                     $req->addCookie('MDMD', $ar['MDMD']);
