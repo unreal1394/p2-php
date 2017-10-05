@@ -7,7 +7,7 @@
 // バージョン情報
 $_conf = array(
     'p2name'    => 'rep2-expack_allinone',   // rep2の名前
-    'p2version' => '170921.1800',   // rep2のバージョン
+    'p2version' => '171005.1930',   // rep2のバージョン
 );
 
 $_conf['p2ua'] = "{$_conf['p2name']}/{$_conf['p2version']}";
@@ -74,11 +74,11 @@ function p2_init()
     $_conf['p2web_url']             = 'http://akid.s17.xrea.com/';
     $_conf['p2ime_url']             = 'http://akid.s17.xrea.com/p2ime.php';
 //  $_conf['favrank_url']           = 'http://akid.s17.xrea.com/favrank/favrank.php';
-    $_conf['expack.web_url']        = 'http://open774.github.io/p2-php/';
-    $_conf['expack.download_url']   = 'https://github.com/2ch774/p2-php/releases';
-    $_conf['expack.history_url']    = 'https://github.com/2ch774/p2-php/blob/master/doc/README-774.txt';
+    $_conf['expack.web_url']        = 'https://open774.github.io/p2-php/';
+    $_conf['expack.download_url']   = 'https://github.com/open774/p2-php/releases';
+    $_conf['expack.history_url']    = 'https://github.com/open774/p2-php/blob/master/doc/README-774.txt';
     $_conf['expack.tgrep_url']      = 'http://page2.xrea.jp/tgrep/search';
-    $_conf['test.dig2ch_url']       = 'http://dig.2ch.net/';
+    $_conf['test.dig2ch_url']       = 'http://dig.5ch.net/';
     $_conf['expack.gate_php']       = '//open774.github.io/p2-php/gate.html';
     $_conf['menu_php']              = 'menu.php';
     $_conf['subject_php']           = 'subject.php';
