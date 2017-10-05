@@ -36,7 +36,7 @@ class P2Commun
         // よく使うヘッダを指定
         // p2のHTTP通信は特に指定の無い限りMonazillaを名乗るようにする
         $req->setHeader ('User-Agent', self::getP2UA(true,P2Util::isHost2chs($purl['host'])));
-        $req->setHeader ('Acecpt-Language', 'ja,en-us;q=0.7,en;q=0.3');
+        $req->setHeader ('Accept-Language', 'ja,en-us;q=0.7,en;q=0.3');
         $req->setHeader ('Accept', '*/*');
         $req->setHeader ('Accept-Encoding', 'gzip, deflate');
 
@@ -113,7 +113,6 @@ class P2Commun
             } else {
                 p2die("2chと通信するために必要な情報が設定されていません。");
             }
-
         } else {
             $p2ua = $_conf['p2ua'];
         }
@@ -134,7 +133,7 @@ class P2Commun
      * 206 Partial Content
      * 304 Not Modified → 失敗扱い
      *
-     * @return array|false 成功したらページ内容を返す。失敗したらfalseを返す。
+     * @return string|false 成功したらページ内容を返す。失敗したらfalseを返す。
      */
     static public function getWebPage($url, &$error_msg, $timeout = 15)
     {
@@ -203,7 +202,7 @@ class P2Commun
                 $url_t = P2Util::throughIme($url);
                 $info_msg_ht = "<p class=\"info-msg\">Error: {$error_msg}<br>";
                 $info_msg_ht .= "rep2 info: <a href=\"{$url_t}\"{$_conf['ext_win_target_at']}>{$url}</a> に接続できませんでした。</p>";
-                self::pushInfoHtml($info_msg_ht);
+                P2Util::pushInfoHtml($info_msg_ht);
             }
             return null;
         }

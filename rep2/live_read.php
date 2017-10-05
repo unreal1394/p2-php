@@ -32,7 +32,6 @@ if ($_conf['iphone']) {
 //================================================================
 $newtime = date('gis');  // 同じリンクをクリックしても再読込しない仕様に対抗するダミークエリー
 // $_today = date('y/m/d');
-$is_ajax = !empty($_GET['ajax']);
 
 //=================================================
 // スレの指定
@@ -325,7 +324,7 @@ flush();
 if ($aThread->rescount) {
 
     // 検索の時は、既読数を更新しない
-    if ((isset($GLOBALS['word']) && strlen($GLOBALS['word']) > 0) || $is_ajax) {
+    if ((isset($GLOBALS['word']) && strlen($GLOBALS['word']) > 0)) {
         $aThread->readnum = $idx_data[5];
     } else {
         $aThread->readnum = min($aThread->rescount, max(0, $idx_data[5], $aThread->resrange['to']));
@@ -342,7 +341,7 @@ if ($aThread->rescount) {
 // 履歴を記録
 // 速報headlineは最近読んだスレに記録しないようにしてみる
 //===========================================================
-if ($aThread->rescount && !$is_ajax && $aThread->host != 'headline.2ch.net'&& $aThread->host != 'headline.5ch.net') {
+if ($aThread->rescount && $aThread->host != 'headline.2ch.net'&& $aThread->host != 'headline.5ch.net') {
     recRecent(implode('<>', array($aThread->ttitle, $aThread->key, $idx_data[2], '', '',
                                   $aThread->readnum, $idx_data[6], $idx_data[7], $idx_data[8], $newline,
                                   $aThread->host, $aThread->bbs)));

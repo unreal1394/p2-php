@@ -182,6 +182,7 @@ echo <<<EOP
     <ul>
         <li><a href="viewtxt.php?file=doc/README.txt">README.txt</a></li>
         <li><a href="viewtxt.php?file=doc/README-EX.txt">README-EX.txt</a></li>
+        <li><a href="viewtxt.php?file=doc/README-774.txt">README-774.txt</a></li>
         <li><a href="img/how_to_use.png">ごく簡単な操作法</a></li>
         <li><a href="{$expack_hist_url_r}"{$_conf['ext_win_target_at']}>拡張パック 更新記録</a></li>
         <!-- <li><a href="viewtxt.php?file=doc/ChangeLog.txt">ChangeLog（rep2 更新記録）</a></li> -->

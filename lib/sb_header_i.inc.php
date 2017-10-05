@@ -145,7 +145,7 @@ echo toolbar_i_showhide_button('img/glyphish/icons2/06-magnifying-glass.png', nu
 // ‚¨‹C‚É”Â
 if ($board_info) {
     echo toolbar_i_favita_button('img/glyphish/icons2/28-star.png', null, $board_info);
-} elseif ($aThreadList->spmode == 'soko') {
+} elseif ($aThreadList->spmode != 'soko') {
 	$refresh_url = "{$_conf['subject_php']}?{$host_bbs_q}{$spmode_q}{$_conf['k_at_a']}{$refresh_q}";
 	echo toolbar_i_standard_button('img/glyphish/icons2/01-refresh.png', null, $refresh_url);
 }
