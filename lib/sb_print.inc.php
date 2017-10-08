@@ -450,7 +450,7 @@ EOP;
 
         // Birth
         $birth_format = isset($_conf['birth_format']) ? $_conf['birth_format'] : 'y/m/d';
-        $birth = date($birth_format, $aThread->key); // (y/m/d H:i)
+        $birth = date($birth_format, intval($aThread->key)); // (y/m/d H:i)
         $td['birth'] = "<td{$class_t}>{$birth}</td>\n";
         unset($birth_format);
 
