@@ -319,6 +319,11 @@ class ThreadRead extends Thread {
             } elseif ($code == '501' && $apiUserStatus == '1') { // 浪人無しで尚且つRange付でDAT落ちにアクセスした場合は501
                 return $this->_downloadDat2chNotFound ('302');
             } else {
+            	if($_conf['2chapi_debug_print']==1)
+                {
+                    P2Util::pushInfoHtml('<p>p2 debug(ThreadRead::API):body='.$response->getBody ().'</p>');
+                }
+
                 return $this->_downloadDat2chNotFound ($code);
             }
 
