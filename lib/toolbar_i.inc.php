@@ -100,7 +100,7 @@ function toolbar_i_disabled_menuItem($icon, $label)
     $srcset = _toolbar_i_srcset($icon);
 
     return <<<EOS
-<li class="disabled"><img src="{$icon}" srcset="{$srcset}" alt="">{$label}</li>
+<li class="disabled"><a href="#" ><img src="{$icon}" srcset="{$srcset}" alt="{$label}">{$label}</a></li>
 EOS;
 }
 
