@@ -150,77 +150,37 @@ if ($thread_info) {
     echo toolbar_i_fav_button('img/glyphish/icons2/28-star.png', null, $thread_info);
 }
 
-// その他
-echo toolbar_i_showhide_button('img/gp0-more.png', null, 'read_toolbar_extra');
+// その他ボタンとドロップダウンメニュー
+$icon = "img/gp0-more.png";
+$srcset = _toolbar_i_srcset($icon);
+echo ' <span class="dropdown">';
+//echo toolbar_i_dropdown_button('img/gp0-more.png', null);
+echo <<<EOP
+	<a class="dropdown-toggle" href="#" data-toggle="dropdown"><img src="{$icon}" {$srcset}></a>
+  <ul class="dropdown-menu dropdown-menu-right popup">
+EOP;
 
-
-echo '</div>';
-
-// }}}
-// {{{ その他のツール
-
-echo '<div id="read_toolbar_extra" class="extra">';
-echo '<table><tbody>';
-
-// {{{ その他 - お気に入りセット
-
-if ($thread_info && $_conf['expack.misc.multi_favs']) {
-    echo '<tr>';
-    for ($i = 1; $i <= $_conf['expack.misc.favset_num']; $i++) {
-        echo '<td>';
-        echo toolbar_i_fav_button('img/glyphish/icons2/28-star.png', '-', $thread_info, $i);
-        echo '</td>';
-        if ($i % 5 === 0 && $i != $_conf['expack.misc.favset_num']) {
-            echo '</tr><tr>';
-        }
-    }
-    $mod_cells = $_conf['expack.misc.favset_num'] % 5;
-    if ($mod_cells) {
-        $mod_cells = 5 - $mod_cells;
-        for ($i = 0; $i < $mod_cells; $i++) {
-            echo '<td>&nbsp;</td>';
-        }
-    }
-    echo '</tr>';
-}
-
-// }}}
-// {{{ その他 - ボタン類
-
-echo '<tr>';
-
-// >>1
-echo '<td>';
+// >>1に移動
 $escaped_url = "{$_conf['read_php']}?{$host_bbs_key_q}&amp;ls=1-{$rnum_range}{$offline_q}{$_conf['k_at_a']}";
-echo toolbar_i_standard_button('img/glyphish/icons2/63-runner.png', '&gt;&gt;1', $escaped_url);
-echo '</td>';
+echo toolbar_i_menuItem('img/glyphish/icons2/63-runner.png', '&gt;&gt;1に移動', $escaped_url);
 
 // 類似スレ検索
-echo '<td>';
 $escaped_url = "{$_conf['subject_php']}?{$host_bbs_key_q}&amp;itaj_en="
              . UrlSafeBase64::encode($aThread->itaj)
              . '&amp;method=similar&amp;word='
              . rawurlencode($aThread->ttitle_hc)
              . "&amp;refresh=1{$_conf['k_at_a']}";
-echo toolbar_i_standard_button('img/glyphish/icons2/06-magnifying-glass.png', '類似スレ', $escaped_url);
-echo '</td>';
+echo toolbar_i_menuItem('img/glyphish/icons2/06-magnifying-glass.png', '類似スレを検索', $escaped_url);
 
 // 殿堂入り
-echo '<td>';
-echo toolbar_i_palace_button('img/glyphish/icons2/108-badge.png', '殿堂入り', $thread_info);
-echo '</td>';
-
-// スレッドあぼーん
-echo '<td>';
-echo toolbar_i_aborn_button('img/glyphish/icons2/128-bone.png', 'あぼーん', $thread_info);
-echo '</td>';
+echo toolbar_i_palace_menuItem('img/glyphish/icons2/108-badge.png', '殿堂入り', $thread_info);
 
 // IC2リンク、件数
 if ($_conf['expack.ic2.enabled'] && $_conf['expack.ic2.thread_imagelink']) {
     $escaped_url = 'iv2.php?field=memo&amp;keyword='
         . rawurlencode($aThread->ttitle)
         . "&amp;session_no_close=1{$_conf['k_at_a']}";
-    echo '<td>';
+
     if ($_conf['expack.ic2.thread_imagecount']) {
         require_once P2EX_LIB_DIR . '/ic2_getcount.inc.php';
         $cnt = 0;
@@ -231,26 +191,76 @@ if ($_conf['expack.ic2.enabled'] && $_conf['expack.ic2.thread_imagelink']) {
             $cnt = -1;
         }
         if ($cnt == 0) {
-            echo toolbar_i_disabled_button('img/glyphish/icons2/42-photos.png',
-                '画像');
+            echo toolbar_i_disabled_menuItem('img/glyphish/icons2/42-photos.png',
+                '画像一覧');
         } else {
-            echo toolbar_i_opentab_button('img/glyphish/icons2/42-photos.png',
-                '画像' . ($cnt < 0 ? '(?)' : "({$cnt})"), $escaped_url);
+            echo toolbar_i_menuItem('img/glyphish/icons2/42-photos.png',
+                '画像一覧' . ($cnt < 0 ? '(?)' : "({$cnt})"), $escaped_url, ' target="_blank"');
         }
     } else {
-        echo toolbar_i_opentab_button('img/glyphish/icons2/42-photos.png',
-            '画像', $escaped_url);
+        echo toolbar_i_menuItem('img/glyphish/icons2/42-photos.png',
+            '画像一覧', $escaped_url, ' target="_blank"');
     }
-    echo '</td>';
 }
 
-echo '</tr>';
+// お気に入りセット
+if ($thread_info && $_conf['expack.misc.multi_favs']) {
+    echo toolbar_i_menuItem('img/glyphish/icons2/28-star.png', 'お気に入りセットに登録', '#' ,'data-toggle="modal" data-target="#favsetModal"');
+}
 
+echo '<li class="divider"></li>'; //仕切り
+
+// スレッドあぼーん
+echo toolbar_i_aborn_menuItem('img/glyphish/icons2/128-bone.png', 'スレをあぼーん', $thread_info);
+
+// ログ削除
+if (file_exists($aThread->keydat)) {
+    $escaped_url = "info.php?{$host_bbs_key_q}{$ttitle_en_q}&amp;dele=1{$_conf['k_at_a']}";
+    echo toolbar_i_menuItem('img/glyphish/icons2/64-zap.png', 'ログを削除', $escaped_url);
+} else {
+    echo toolbar_i_disabled_menuItem('img/glyphish/icons2/64-zap.png', 'ログを削除');
+}
+
+echo '</ul></span></div>';
+
+unset($icon,$srcset);
 // }}}
+// {{{ お気にセットダイアログ
+if ($thread_info && $_conf['expack.misc.multi_favs']) {
+    $favset_body = '<table><tbody><tr>';
+    for ($i = 1; $i <= $_conf['expack.misc.favset_num']; $i++) {
+        $favset_body .= '<td>';
+        $favset_body .= toolbar_i_fav_button('img/glyphish/icons2/28-star.png', '-', $thread_info, $i);
+        $favset_body .= '</td>';
+        if ($i % 5 === 0 && $i != $_conf['expack.misc.favset_num']) {
+            $favset_body .= '</tr><tr>';
+        }
+    }
+    $mod_cells = $_conf['expack.misc.favset_num'] % 5;
+    if ($mod_cells) {
+        $mod_cells = 5 - $mod_cells;
+        for ($i = 0; $i < $mod_cells; $i++) {
+            $favset_body .= '<td>&nbsp;</td>';
+        }
+    }
+    $favset_body .= '</tr></tbody></table>';
 
-echo '</tbody></table>';
+echo <<<EOP
+<div id="favsetModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
 
-echo '</div>';
+    <!-- Modal content-->
+    <div class="modal-content popup">
+      <div class="modal-body">
+      	<button type="button" class="close" style="color: #fff" data-dismiss="modal">&times;</button>
+        {$favset_body}
+      </div>
+    </div>
+
+  </div>
+</div>
+EOP;
+}
 
 // }}}
 // {{{ レス検索フォーム

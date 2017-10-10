@@ -58,6 +58,53 @@ EOS;
 }
 
 // }}}
+/**
+ * ツールバーボタン (リンク)
+ *
+ * @param string $icon
+ * @param string $label
+ * @param string $uri
+ * @param string $attrs
+ * @return string
+ */
+function toolbar_i_menuItem($icon, $label, $uri, $attrs = '')
+{
+    global $_conf;
+
+    if (strlen($attrs) && strncmp($attrs, ' ', 1) !== 0) {
+        $attrs = ' ' . $attrs;
+    }
+
+    $srcset = _toolbar_i_srcset($icon);
+
+    return <<<EOS
+<li><a href="{$uri}" {$attrs}><img src="{$icon}" srcset="{$srcset}" >{$label}</a></li>
+EOS;
+}
+
+// }}}
+// {{{ toolbar_i_disabled_button()
+
+/**
+ * 無効なツールバーボタン
+ *
+ * @param string $icon
+ * @param string $label
+ * @param string $uri
+ * @return string
+ */
+function toolbar_i_disabled_menuItem($icon, $label)
+{
+    global $_conf;
+
+    $srcset = _toolbar_i_srcset($icon);
+
+    return <<<EOS
+<li class="disabled"><img src="{$icon}" srcset="{$srcset}" alt="">{$label}</li>
+EOS;
+}
+
+// }}}
 // {{{ toolbar_i_standard_button()
 
 /**
@@ -279,7 +326,7 @@ function toolbar_i_fav_button($icon, $label, $info, $setnum = 0)
  * @param object $info @see lib/get_info.inc.php: get_thread_info()
  * @return string
  */
-function toolbar_i_palace_button($icon, $label, $info)
+function toolbar_i_palace_menuItem($icon, $label, $info)
 {
     $attrs = ' onclick="return iutil.toolbarRunHttpCommand(this, event);"';
     if (!$info->palace) {
@@ -293,13 +340,8 @@ function toolbar_i_palace_button($icon, $label, $info)
         'ttitle_en' => UrlSafeBase64::encode($info->ttitle),
         'setpal'    => 2,
     ), '', '&amp;');
-    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
-        $label = '<br>' . $label;
-    } else {
-        $label = '';
-    }
 
-    return _toolbar_i_button($icon, $label, $uri, $attrs);
+    return toolbar_i_menuItem($icon, $label, $uri, $attrs);
 }
 
 // }}}
@@ -313,7 +355,7 @@ function toolbar_i_palace_button($icon, $label, $info)
  * @param object $info @see lib/get_info.inc.php: get_thread_info()
  * @return string
  */
-function toolbar_i_aborn_button($icon, $label, $info)
+function toolbar_i_aborn_menuItem($icon, $label, $info)
 {
     $attrs = ' onclick="return iutil.toolbarRunHttpCommand(this, event);"';
     if (!$info->taborn) {
@@ -327,13 +369,8 @@ function toolbar_i_aborn_button($icon, $label, $info)
         'ttitle_en' => UrlSafeBase64::encode($info->ttitle),
         'taborn'    => 2,
     ), '', '&amp;');
-    if (empty($_conf['expack.iphone.toolbars.no_label']) && !empty($label) ) {
-        $label = '<br>' . $label;
-    } else {
-        $label = '';
-    }
 
-    return _toolbar_i_button($icon, $label, $uri, $attrs);
+    return toolbar_i_menuItem($icon, $label, $uri, $attrs);
 }
 
 // }}}

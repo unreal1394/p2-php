@@ -1046,6 +1046,10 @@ div.mtoolbar > .ttitle > span.btitle {
     width: 98%;
 }
 
+.popup {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
 /* }}} */
 
 /*
