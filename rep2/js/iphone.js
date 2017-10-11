@@ -9,7 +9,7 @@ var iutil = {
 	 * クライアントがiPhoneかどうか
 	 * @type {Boolean}
 	 */
-	'iphone': (/iP(hone|od)/).test(navigator.userAgent),
+	'iphone': (/(iP(hone|od|ad)|Chrome)/).test(navigator.userAgent),
 	/**
 	 * 内部リンクの正規表現
 	 * @type {RegExp}
